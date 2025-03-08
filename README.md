@@ -1,3 +1,7 @@
+터미널 1: npm start
+터미널 2(새로운 터미널을 열어야함): npx react-native run-ios
+
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
