@@ -179,12 +179,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
-    marginTop: 30,
-  },
+   buttonContainer: {
+     flexDirection: 'row',
+     justifyContent: 'space-between',
+     width: '90%',
+     marginTop: 30,
+     position: 'absolute',
+     bottom: 50,
+   },
   button: {
     alignItems: 'center',
     paddingVertical: 12,

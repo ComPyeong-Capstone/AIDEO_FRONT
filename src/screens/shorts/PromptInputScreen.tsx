@@ -144,8 +144,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%',
-    marginTop: scaleSize(30, 375),
+    width: '90%',
+    marginTop: 30,
+    position: 'absolute',
+    bottom: 50,
   },
   button: {
     alignItems: 'center',

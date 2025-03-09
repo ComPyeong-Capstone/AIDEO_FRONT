@@ -97,7 +97,7 @@ const ShortsVideoScreen = ({navigation}) => {
             styles.nextButton,
             {width: scaleSize(100, width)},
           ]}
-          onPress={() => navigation.navigate('MyPhotoPrompth')} // ✅ 다음 단계로 이동
+          onPress={() => navigation.navigate('PromptInputScreen')} // ✅ 다음 단계로 이동
         >
           <Text style={styles.buttonText}>다음</Text>
         </TouchableOpacity>
