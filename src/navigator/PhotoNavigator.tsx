@@ -2,9 +2,9 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import VideoLengthScreen from '../screens/photo/VideoLengthScreen';
 import ResultScreen from '../screens/photo/ResultScreen';
-import MyPhotoPrompth from '../screens/photo/MyPhotoPrompth';
-import FinalVideoScreen from '../screens/photo/FinalVideoScreen';
-import MusicSelectionScreen from '../screens/photo/MusicSelectionScreen';
+import MyPhotoPrompth from '../screens/photo/3110-PhotoPromptScreen';
+import FinalVideoScreen from '../screens/photo/3120-FinalVideoScreen';
+import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
 
 // ✅ PhotoAI Screens 추가
 
