@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import styles from '../../styles/photo/ResultScreenStyles'; // ✅ 스타일 분리
+import {styles} from '../../styles/shorts/resultScreenStyles'; // ✅ 스타일 가져오기
 import {scaleSize} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -12,8 +12,10 @@ type RootStackParamList = {
   Main: undefined;
 };
 
+type NavigationProps = StackNavigationProp<RootStackParamList, 'ResultScreen'>;
+
 const ResultScreen: React.FC = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProps>();
 
   const handleExit = () => {
     navigation.reset({
