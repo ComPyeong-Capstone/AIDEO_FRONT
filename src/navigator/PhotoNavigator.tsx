@@ -1,33 +1,33 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import VideoLengthScreen from '../screens/photo/VideoLengthScreen';
 import ResultScreen from '../screens/photo/ResultScreen';
-import MyPhotoPrompth from '../screens/photo/3110-PhotoPromptScreen';
+import PhotoPromptScreen from '../screens/photo/3110-PhotoPromptScreen';
 import FinalVideoScreen from '../screens/photo/3120-FinalVideoScreen';
 import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
 
-// ✅ PhotoAI Screens 추가
+// ✅ Stack Navigator 타입 정의
+export type PhotoStackParamList = {
+  PhotoPromptScreen: undefined;
+  FinalVideoScreen: undefined;
+  MusicSelectionScreen: undefined;
+  ResultScreen: undefined;
+};
 
+// ✅ Stack Navigator 생성
+const Stack = createStackNavigator<PhotoStackParamList>();
 
-const Stack = createStackNavigator();
-
-const PhotoNavigator = () => {
+const PhotoNavigator: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="VideoLengthScreen" component={VideoLengthScreen} />
-      <Stack.Screen name="MyPhotoPrompth" component={MyPhotoPrompth} />
+      <Stack.Screen name="PhotoPromptScreen" component={PhotoPromptScreen} />
       <Stack.Screen name="FinalVideoScreen" component={FinalVideoScreen} />
-      <Stack.Screen name="MusicSelectionScreen" component={MusicSelectionScreen} />
+      <Stack.Screen
+        name="MusicSelectionScreen"
+        component={MusicSelectionScreen}
+      />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
-
-       
-       
-       
-        </Stack.Navigator>
+    </Stack.Navigator>
   );
 };
 
-
 export default PhotoNavigator;
-
-

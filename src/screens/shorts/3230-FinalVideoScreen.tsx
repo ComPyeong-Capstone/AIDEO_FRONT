@@ -7,25 +7,27 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {styles} from '../../styles/shorts/finalVideoStyles'; // ✅ 스타일 분리
-import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 함수 가져오기
+import {StackNavigationProp} from '@react-navigation/stack';
+import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
+import styles from '../../styles/photo/FinalVideoStyles'; // 스타일 파일 분리
 
-// 📌 네비게이션 타입 정의
-type RootStackParamList = {
-  FinalVideoScreen: undefined;
-  MusicSelectionScreen: undefined;
-  ResultScreen: undefined;
-};
-type Props = NativeStackScreenProps<RootStackParamList, 'FinalVideoScreen'>;
+// ✅ 네비게이션 타입 정의
+type FinalVideoScreenNavigationProp = StackNavigationProp<
+  ShortsStackParamList,
+  'FinalVideoScreen'
+>;
 
-const FinalVideoScreen: React.FC<Props> = props => {
+interface Props {
+  navigation: FinalVideoScreenNavigationProp;
+}
+
+const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  // 📌 더미 데이터 (생성된 동영상 목록)
+  // ✅ 더미 데이터 (생성된 동영상 목록)
   const videos = ['생성된 동영상 1', '생성된 동영상 2', '생성된 동영상 3'];
-  const [selectedVideo, setSelectedVideo] = useState(0);
+  const [selectedVideo, setSelectedVideo] = useState<number>(0);
   const translateX = new Animated.Value(0);
 
   const handleNext = () => {
@@ -51,23 +53,20 @@ const FinalVideoScreen: React.FC<Props> = props => {
   return (
     <SafeAreaView style={styles.container}>
       {/* ✅ 최상단 진행 상태 점 */}
-      <View
-        style={[styles.progressContainer, {top: insets.top + scaleSize(10)}]}>
-        <Text style={[styles.progressDotInactive, {fontSize: scaleFont(18)}]}>
-          ○
-        </Text>
-        <View style={styles.progressLine} />
-        <Text style={[styles.progressDotActive, {fontSize: scaleFont(18)}]}>
-          ●
-        </Text>
-        <View style={styles.progressLine} />
-        <Text style={[styles.progressDotInactive, {fontSize: scaleFont(18)}]}>
-          ○
-        </Text>
-        <View style={styles.progressLine} />
-        <Text style={[styles.progressDotInactive, {fontSize: scaleFont(18)}]}>
-          ○
-        </Text>
+      <View style={[styles.progressContainer, {top: insets.top + 10}]}>
+        {['○', '●', '○', '○'].map((dot, index) => (
+          <React.Fragment key={index}>
+            <Text
+              style={
+                index === 1
+                  ? styles.progressDotActive
+                  : styles.progressDotInactive
+              }>
+              {dot}
+            </Text>
+            {index < 3 && <View style={styles.progressLine} />}
+          </React.Fragment>
+        ))}
       </View>
 
       {/* 📌 동영상 슬라이드 */}
@@ -77,9 +76,7 @@ const FinalVideoScreen: React.FC<Props> = props => {
           {width: width * 0.9, height: height * 0.4},
         ]}>
         <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
-          <Text style={[styles.arrowText, {fontSize: scaleFont(24)}]}>
-            {'<'}
-          </Text>
+          <Text style={styles.arrowText}>{'<'}</Text>
         </TouchableOpacity>
         <Animated.View
           style={[
@@ -90,44 +87,31 @@ const FinalVideoScreen: React.FC<Props> = props => {
               height: height * 0.35,
             },
           ]}>
-          <Text style={[styles.videoText, {fontSize: scaleFont(16)}]}>
-            {videos[selectedVideo]}
-          </Text>
+          <Text style={styles.videoText}>{videos[selectedVideo]}</Text>
         </Animated.View>
         <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
-          <Text style={[styles.arrowText, {fontSize: scaleFont(24)}]}>
-            {'>'}
-          </Text>
+          <Text style={styles.arrowText}>{'>'}</Text>
         </TouchableOpacity>
       </View>
 
       {/* 📌 배경 음악 선택 버튼 */}
       <TouchableOpacity
-        style={[
-          styles.musicButton,
-          {width: width * 0.7, height: scaleSize(40)},
-        ]}
-        onPress={() => props.navigation.navigate('MusicSelectionScreen')}>
-        <Text style={[styles.buttonText, {fontSize: scaleFont(16)}]}>
-          배경 음악
-        </Text>
+        style={[styles.musicButton, {width: width * 0.7, height: 40}]}
+        onPress={() => navigation.navigate('MusicSelectionScreen')}>
+        <Text style={styles.buttonText}>배경 음악</Text>
       </TouchableOpacity>
 
       {/* 📌 하단 버튼 */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, styles.prevButton]}
-          onPress={() => props.navigation.goBack()}>
-          <Text style={[styles.buttonText, {fontSize: scaleFont(16)}]}>
-            이전
-          </Text>
+          onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonText}>이전</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.nextButton]}
-          onPress={() => props.navigation.navigate('ResultScreen')}>
-          <Text style={[styles.buttonText, {fontSize: scaleFont(16)}]}>
-            영상 병합
-          </Text>
+          onPress={() => navigation.navigate('ResultScreen')}>
+          <Text style={styles.buttonText}>영상 병합</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -2,24 +2,32 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   useWindowDimensions,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
+import styles from '../../styles/photo/PhotoPromptStyles';
 
-// 📌 반응형 크기 조정 함수
-const scaleSize = (size, width) => (size * width) / 375;
-const scaleFont = (size, width) => (size * width) / 375;
+// ✅ 네비게이션 타입 정의
+type PhotoPromptScreenNavigationProp = StackNavigationProp<
+  PhotoStackParamList,
+  'PhotoPromptScreen'
+>;
 
-const MyPhotoPrompth = ({navigation}) => {
-  const {width, height} = useWindowDimensions();
+interface Props {
+  navigation: PhotoPromptScreenNavigationProp;
+}
+
+const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
+  const {width} = useWindowDimensions();
   const insets = useSafeAreaInsets(); // ✅ 노치 대응
 
-  // 📌 더미 데이터 (사진 목록)
+  // ✅ 더미 데이터 (사진 목록)
   const images = ['사진', '사진', '사진', '사진 2', '사진 3'];
-  const [selectedImage, setSelectedImage] = useState(2); // 기본 선택 (중앙)
+  const [selectedImage, setSelectedImage] = useState<number>(2); // 기본 선택 (중앙)
   const translateX = new Animated.Value(0);
 
   const handleNext = () => {
@@ -45,39 +53,20 @@ const MyPhotoPrompth = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* ✅ 최상단 4단계 진행바 (노치 대응) */}
-      <View
-        style={[
-          styles.progressContainer,
-          {top: insets.top + scaleSize(40, height)},
-        ]}>
-        <Text
-          style={[
-            styles.progressDotInactive,
-            {fontSize: scaleFont(18, width)},
-          ]}>
-          ○
-        </Text>
-        <View style={styles.progressLine} />
-        <Text
-          style={[
-            styles.progressDotInactive,
-            {fontSize: scaleFont(18, width)},
-          ]}>
-          ○
-        </Text>
-        <View style={styles.progressLine} />
-        <Text
-          style={[styles.progressDotActive, {fontSize: scaleFont(18, width)}]}>
-          ●
-        </Text>
-        <View style={styles.progressLine} />
-        <Text
-          style={[
-            styles.progressDotInactive,
-            {fontSize: scaleFont(18, width)},
-          ]}>
-          ○
-        </Text>
+      <View style={[styles.progressContainer, {top: insets.top + 40}]}>
+        {['○', '○', '●', '○'].map((dot, index) => (
+          <React.Fragment key={index}>
+            <Text
+              style={
+                index === 2
+                  ? styles.progressDotActive
+                  : styles.progressDotInactive
+              }>
+              {dot}
+            </Text>
+            {index < 3 && <View style={styles.progressLine} />}
+          </React.Fragment>
+        ))}
       </View>
 
       {/* 📌 사진 선택 슬라이드 (한 장씩 넘기는 애니메이션 방식) */}
@@ -101,12 +90,12 @@ const MyPhotoPrompth = ({navigation}) => {
       {/* 📌 버튼 추가 */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, styles.prevButton, {width: '45%'}]}
+          style={[styles.button, styles.prevButton]}
           onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>이전</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.nextButton, {width: '45%'}]}
+          style={[styles.button, styles.nextButton]}
           onPress={() => navigation.navigate('FinalVideoScreen')}>
           <Text style={styles.buttonText}>영상 생성</Text>
         </TouchableOpacity>
@@ -115,93 +104,4 @@ const MyPhotoPrompth = ({navigation}) => {
   );
 };
 
-// 📌 **스타일 정의 (반응형 적용)**
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1F2C3D',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute',
-    width: '100%',
-    paddingHorizontal: '10%',
-  },
-  progressLine: {
-    height: 2,
-    backgroundColor: '#51BCB4',
-    flex: 1,
-    marginHorizontal: '2%',
-  },
-  progressDotActive: {
-    color: '#51BCB4',
-  },
-  progressDotInactive: {
-    color: '#888',
-  },
-  sliderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: scaleSize(80, 375),
-  },
-  imageItem: {
-    width: 200,
-    height: 250,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#51BCB4',
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#51BCB4',
-  },
-  imageText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
-  },
-  arrowButton: {
-    padding: 20,
-  },
-  arrowText: {
-    fontSize: 24,
-    color: '#51BCB4',
-  },
-  captionBox: {
-    width: '90%',
-    height: 50,
-    borderColor: '#51BCB4',
-    borderWidth: 2,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-   buttonContainer: {
-     flexDirection: 'row',
-     justifyContent: 'space-between',
-     width: '90%',
-     marginTop: 30,
-     position: 'absolute',
-     bottom: 50,
-   },
-  button: {
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
-  prevButton: {
-    backgroundColor: '#ccc',
-  },
-  nextButton: {
-    backgroundColor: '#51BCB4',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
-  },
-});
-
-export default MyPhotoPrompth;
+export default PhotoPromptScreen;
