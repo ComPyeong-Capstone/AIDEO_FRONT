@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end', // ✅ 버튼을 아래로 위치 조정
+    justifyContent: 'flex-end', // ✅ 모달을 아래쪽 정렬
     alignItems: 'center',
   },
   blurBackground: {
@@ -12,12 +12,12 @@ export const styles = StyleSheet.create({
     height: '100%',
   },
   modalContent: {
-    width: '90%',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // ✅ 반투명한 배경색
+    width: '80%',
+    //backgroundColor: 'rgba(255, 255, 255, 0.9)', // ✅ 반투명한 배경색
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
-    marginBottom: 40, // ✅ 아래쪽으로 더 내리기
+    marginBottom: 350, // ✅ 기존보다 위로 50px 이동
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
