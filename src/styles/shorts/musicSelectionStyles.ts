@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 export const styles = StyleSheet.create({
   container: {

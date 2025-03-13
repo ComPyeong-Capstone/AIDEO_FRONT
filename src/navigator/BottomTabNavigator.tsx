@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddScreenModal from '../screens/bottomtab/3000-AddScreen';
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // ✅ 스크린 가져오기
 import HomeScreen from '../screens/bottomtab/1000-HomeScreen';
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 35,
-    backgroundColor: '#51BCB4',
+    backgroundColor:COLORS.background,
     width: 70,
     height: 70,
     elevation: 5,
