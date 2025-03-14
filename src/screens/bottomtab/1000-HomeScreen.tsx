@@ -3,6 +3,7 @@ import {View, Text, FlatList, Image, useWindowDimensions} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {styles} from '../../styles/bottomtab/1000-homeStyles'; // ✅ 스타일 가져오기
 import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // 📌 비디오 데이터 타입 정의
 interface VideoItem {

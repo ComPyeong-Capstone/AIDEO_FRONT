@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../styles/shorts/resultScreenStyles'; // ✅ 스타일 가져오기
 import {scaleSize} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
 import {StackNavigationProp} from '@react-navigation/stack';
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // 📌 네비게이션 타입 정의
 type RootStackParamList = {

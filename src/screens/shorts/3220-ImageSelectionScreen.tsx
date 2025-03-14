@@ -4,6 +4,7 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {styles} from '../../styles/shorts/imageSelectionStyles'; // ✅ 스타일 분리
 import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // ✅ 네비게이션 타입 정의
 type RootStackParamList = {

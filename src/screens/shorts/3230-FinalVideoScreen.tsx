@@ -10,6 +10,7 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import styles from '../../styles/photo/FinalVideoStyles'; // 스타일 파일 분리
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // ✅ 네비게이션 타입 정의
 type FinalVideoScreenNavigationProp = StackNavigationProp<

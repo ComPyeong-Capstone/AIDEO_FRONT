@@ -3,6 +3,7 @@ import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {styles} from '../../styles/bottomtab/5000-profileStyles'; // ✅ 스타일 파일 분리
 import {scaleFont} from '../../styles/responsive'; // ✅ scaleSize 제거
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 const ProfileScreen: React.FC = () => {
   return (

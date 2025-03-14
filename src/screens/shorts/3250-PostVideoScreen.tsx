@@ -9,6 +9,7 @@ import {
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import styles from '../../styles/shorts/PostScreenStyles'; // ✅ 스타일 파일 분리
 import {StackNavigationProp} from '@react-navigation/stack';
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // 📌 네비게이션 타입 정의
 type RootStackParamList = {
