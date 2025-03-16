@@ -1,10 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
+
 import {
   View,
   Text,
   TouchableOpacity,
   Animated,
   useWindowDimensions,
+   FlatList,
+    Dimensions,
+    StyleSheet,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -21,48 +25,54 @@ type PhotoPromptScreenNavigationProp = StackNavigationProp<
 interface Props {
   navigation: PhotoPromptScreenNavigationProp;
 }
+const { width } = Dimensions.get('window');
 
-const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
-  const {width} = useWindowDimensions();
-  const insets = useSafeAreaInsets(); // ✅ 노치 대응
+const images = [
+  { id: '1', text: '사진 1' },
+  { id: '2', text: '사진 2' },
+  { id: '3', text: '사진 3' },
+  { id: '4', text: '사진 4' },
+];
+const PhotoPromptScreen = ({ navigation }) => {
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef(null);
+const IMAGE_WIDTH = width * 0.7; // 화면 너비의 70%
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 적용
 
-  // ✅ 더미 데이터 (사진 목록)
-  const images = ['사진', '사진', '사진', '사진 2', '사진 3'];
-  const [selectedImage, setSelectedImage] = useState<number>(2); // 기본 선택 (중앙)
-  const translateX = new Animated.Value(0);
+  const renderItem = ({ item, index }) => {
+    const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 
-  const handleNext = () => {
-    if (selectedImage < images.length - 1) {
-      Animated.timing(translateX, {
-        toValue: -width * (selectedImage + 1),
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setSelectedImage(selectedImage + 1));
-    }
-  };
+    const scale = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.8, 1, 0.8],
+      extrapolate: 'clamp',
+    });
 
-  const handlePrev = () => {
-    if (selectedImage > 0) {
-      Animated.timing(translateX, {
-        toValue: -width * (selectedImage - 1),
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setSelectedImage(selectedImage - 1));
-    }
+    const opacity = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.5, 1, 0.5],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <Animated.View
+        style={[
+          styles.imageItem,
+          { transform: [{ scale }], opacity },
+        ]}
+      >
+        <Text style={styles.imageText}>{item.text}</Text>
+      </Animated.View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 최상단 4단계 진행바 (노치 대응) */}
-      <View style={[styles.progressContainer, {top: insets.top + 40}]}>
-        {['○', '○', '●', '○'].map((dot, index) => (
+      {/* ✅ 진행 바 */}
+      <View style={styles.progressContainer}>
+        {['○ ', ' ○ ', ' ● ', ' ○ '].map((dot, index) => (
           <React.Fragment key={index}>
-            <Text
-              style={
-                index === 2
-                  ? styles.progressDotActive
-                  : styles.progressDotInactive
-              }>
+            <Text style={index === 2 ? styles.progressDotActive : styles.progressDotInactive}>
               {dot}
             </Text>
             {index < 3 && <View style={styles.progressLine} />}
@@ -70,34 +80,40 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
         ))}
       </View>
 
-      {/* 📌 사진 선택 슬라이드 (한 장씩 넘기는 애니메이션 방식) */}
-      <View style={styles.sliderContainer}>
-        <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
-          <Text style={styles.arrowText}>{'<'}</Text>
-        </TouchableOpacity>
-        <Animated.View style={[styles.imageItem, {transform: [{translateX}]}]}>
-          <Text style={styles.imageText}>{images[selectedImage]}</Text>
-        </Animated.View>
-        <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
-          <Text style={styles.arrowText}>{'>'}</Text>
-        </TouchableOpacity>
+      {/* ✅ 애니메이션 슬라이더 */}
+      <View style={styles.sliderWrapper}>
+   <FlatList
+     ref={flatListRef}
+     data={images}
+     keyExtractor={(item) => item.id}
+     horizontal
+     pagingEnabled
+     snapToAlignment="center" // ✅ 가운데 정렬 강제
+     decelerationRate="fast" // ✅ 더 자연스럽게 스크롤
+     showsHorizontalScrollIndicator={false}
+     renderItem={renderItem}
+     onScroll={Animated.event(
+       [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+       { useNativeDriver: false }
+     )}
+   />
+
       </View>
 
-      {/* 📌 선택된 이미지의 자막 표시 */}
+      {/* ✅ 선택된 이미지의 자막 표시 */}
       <View style={styles.captionBox}>
         <Text style={styles.captionText}>생성된 자막</Text>
       </View>
 
-      {/* 📌 버튼 추가 */}
+      {/* ✅ 버튼 추가 */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.prevButton]}
-          onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>이전</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.nextButton]}
-          onPress={() => navigation.navigate('FinalVideoScreen')}>
+          style={styles.button}
+          onPress={() => navigation.navigate('FinalVideoScreen')}
+        >
           <Text style={styles.buttonText}>영상 생성</Text>
         </TouchableOpacity>
       </View>
