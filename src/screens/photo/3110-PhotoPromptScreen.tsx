@@ -36,7 +36,7 @@ const images = [
 const PhotoPromptScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
-const IMAGE_WIDTH = width * 0.7; // 화면 너비의 70%
+const IMAGE_WIDTH = width * 0.4; // 화면 너비의 70%
 const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 적용
 
   const renderItem = ({ item, index }) => {
