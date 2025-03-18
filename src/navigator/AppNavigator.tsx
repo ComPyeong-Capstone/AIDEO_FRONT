@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // ✅ 하단 탭 네비게이션 (메인 화면)
 import BottomTabNavigator from './BottomTabNavigator';

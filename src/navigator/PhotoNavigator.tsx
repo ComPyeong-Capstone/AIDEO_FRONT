@@ -4,6 +4,7 @@ import ResultScreen from '../screens/photo/ResultScreen';
 import PhotoPromptScreen from '../screens/photo/3110-PhotoPromptScreen';
 import FinalVideoScreen from '../screens/photo/3120-FinalVideoScreen';
 import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {

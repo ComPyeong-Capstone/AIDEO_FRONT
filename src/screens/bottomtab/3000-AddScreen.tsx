@@ -12,6 +12,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { BlurView } from '@react-native-community/blur'; // ✅ Blur 효과 추가
 import { styles } from '../../styles/bottomtab/3000-addScreenStyles';
 import { scaleSize, scaleFont } from '../../styles/responsive';
+import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 type RootStackParamList = {
   ShortsStack: { screen: string };
