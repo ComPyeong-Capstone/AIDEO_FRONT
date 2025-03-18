@@ -1,4 +1,5 @@
 import {StyleSheet, Dimensions} from 'react-native';
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 // ✅ 현재 화면 크기 가져오기
 const {width} = Dimensions.get('window');
