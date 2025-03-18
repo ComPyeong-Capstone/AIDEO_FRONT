@@ -1,31 +1,18 @@
-import React, {useState, useRef} from 'react';
-
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Animated,
-  useWindowDimensions,
-   FlatList,
-    Dimensions,
-    StyleSheet,
+  Dimensions,
+  StyleSheet
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
-import styles from '../../styles/photo/PhotoPromptStyles';
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
+import Carousel from 'react-native-snap-carousel';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-// ✅ 네비게이션 타입 정의
-type PhotoPromptScreenNavigationProp = StackNavigationProp<
-  PhotoStackParamList,
-  'PhotoPromptScreen'
->;
-
-interface Props {
-  navigation: PhotoPromptScreenNavigationProp;
-}
 const { width } = Dimensions.get('window');
+const IMAGE_WIDTH = width * 0.6;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 const images = [
   { id: '1', text: '사진 1' },
@@ -33,12 +20,13 @@ const images = [
   { id: '3', text: '사진 3' },
   { id: '4', text: '사진 4' },
 ];
+
 const PhotoPromptScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
-  const flatListRef = useRef(null);
-const IMAGE_WIDTH = width * 0.4; // 화면 너비의 70%
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 적용
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef(null);
 
+  // ✅ 개별 슬라이드 애니메이션 적용
   const renderItem = ({ item, index }) => {
     const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 
@@ -57,8 +45,8 @@ const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 적용
     return (
       <Animated.View
         style={[
-          styles.imageItem,
-          { transform: [{ scale }], opacity },
+          styles.slide,
+          { transform: [{ scale }], opacity }
         ]}
       >
         <Text style={styles.imageText}>{item.text}</Text>
@@ -68,44 +56,40 @@ const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 적용
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 진행 바 */}
-      <View style={styles.progressContainer}>
-        {['○ ', ' ○ ', ' ● ', ' ○ '].map((dot, index) => (
-          <React.Fragment key={index}>
-            <Text style={index === 2 ? styles.progressDotActive : styles.progressDotInactive}>
-              {dot}
-            </Text>
-            {index < 3 && <View style={styles.progressLine} />}
-          </React.Fragment>
+      {/* ✅ 슬라이더 */}
+      <Carousel
+        ref={carouselRef}
+        data={images}
+        renderItem={renderItem}
+        sliderWidth={width}
+        itemWidth={IMAGE_WIDTH}
+        inactiveSlideScale={0.8}
+        inactiveSlideOpacity={0.6}
+        enableMomentum
+        onSnapToItem={(index) => {
+          scrollX.setValue(index);
+          setActiveIndex(index);
+        }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
+        )}
+      />
+
+      {/* ✅ 페이지 인디케이터 */}
+      <View style={styles.pagination}>
+        {images.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              activeIndex === index ? styles.dotActive : styles.dotInactive
+            ]}
+          />
         ))}
       </View>
 
-      {/* ✅ 애니메이션 슬라이더 */}
-      <View style={styles.sliderWrapper}>
-   <FlatList
-     ref={flatListRef}
-     data={images}
-     keyExtractor={(item) => item.id}
-     horizontal
-     pagingEnabled
-     snapToAlignment="center" // ✅ 가운데 정렬 강제
-     decelerationRate="fast" // ✅ 더 자연스럽게 스크롤
-     showsHorizontalScrollIndicator={false}
-     renderItem={renderItem}
-     onScroll={Animated.event(
-       [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-       { useNativeDriver: false }
-     )}
-   />
-
-      </View>
-
-      {/* ✅ 선택된 이미지의 자막 표시 */}
-      <View style={styles.captionBox}>
-        <Text style={styles.captionText}>생성된 자막</Text>
-      </View>
-
-      {/* ✅ 버튼 추가 */}
+      {/* ✅ 버튼 컨트롤 */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>이전</Text>
@@ -122,3 +106,62 @@ const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 적용
 };
 
 export default PhotoPromptScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0D1B2A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  slide: {
+    width: IMAGE_WIDTH,
+    height: IMAGE_HEIGHT,
+    backgroundColor: '#1B263B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 10,
+  },
+  imageText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#E0E1DD',
+  },
+  pagination: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  dotActive: {
+    backgroundColor: '#00A6FB',
+    width: 12,
+    height: 12,
+  },
+  dotInactive: {
+    backgroundColor: '#415A77',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 30,
+  },
+  button: {
+    backgroundColor: '#00A6FB',
+    padding: 12,
+    marginHorizontal: 10,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});

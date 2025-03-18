@@ -1,83 +1,75 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
-// ✅ 현재 화면 크기 가져오기
-const {width} = Dimensions.get('window');
-
-// ✅ 크기 조정 (이미지 크기를 줄이기)
-const IMAGE_WIDTH = width * 0.4; // 기존 70% → 55% 로 축소
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 9:16 비율 유지
+const { width } = Dimensions.get('window');
+const IMAGE_WIDTH = width * 0.7;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
-    alignItems: 'center', // ✅ 전체 컨텐츠를 가운데 정렬
-    justifyContent: 'center',
+    backgroundColor: '#fff',
+    alignItems: 'center',
   },
   progressContainer: {
     flexDirection: 'row',
-    marginTop: 20,
     alignItems: 'center',
+    marginVertical: 10,
   },
   progressDotActive: {
-    color: '#51BCB4',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#333',
   },
   progressDotInactive: {
-    color: '#aaa',
-    fontSize: 18,
+    fontSize: 16,
+    color: '#bbb',
   },
   progressLine: {
     width: 20,
     height: 2,
-    backgroundColor: '#aaa',
-    alignSelf: 'center',
-    marginHorizontal: 5,
+    backgroundColor: '#bbb',
   },
   sliderWrapper: {
-    height: IMAGE_HEIGHT,
+    height: IMAGE_HEIGHT + 40,
     justifyContent: 'center',
-    alignItems: 'center', // ✅ 슬라이더를 중앙 정렬
-    marginVertical: 20,
   },
-  imageItem: {
+  slide: {
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
-    backgroundColor: '#51BCB4',
-    borderRadius: 20,
-    alignItems: 'center',
+    backgroundColor: '#ddd',
     justifyContent: 'center',
-    alignSelf: 'center', // ✅ 개별 이미지도 중앙 정렬
+    alignItems: 'center',
+    borderRadius: 10,
   },
   imageText: {
-    fontSize: 18, // ✅ 기존보다 조금 줄임
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#333',
   },
   captionBox: {
-    padding: 8, // ✅ 패딩 줄임
-    backgroundColor: '#273647',
+    marginTop: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 10,
-    marginBottom: 15, // ✅ 마진 줄임
   },
   captionText: {
-    fontSize: 14, // ✅ 기존보다 폰트 크기 줄임
-    color: '#fff',
+    fontSize: 16,
+    color: '#333',
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginBottom: 25, // ✅ 마진 줄임
+    marginTop: 30,
   },
   button: {
-    backgroundColor: '#51BCB4',
-    padding: 8, // ✅ 패딩 줄임
-    borderRadius: 10,
-    marginHorizontal: 8, // ✅ 마진 줄임
+    backgroundColor: '#007BFF',
+    padding: 12,
+    marginHorizontal: 10,
+    borderRadius: 8,
   },
   buttonText: {
-    fontSize: 14, // ✅ 기존보다 폰트 크기 줄임
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#1F2C3D',
   },
 });
