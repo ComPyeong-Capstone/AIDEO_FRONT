@@ -3,77 +3,56 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Animated,
   Dimensions,
-  StyleSheet
+  StyleSheet,
+  Image,
+  FlatList,
+  Animated
 } from 'react-native';
-import Carousel from 'react-native-snap-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
-const IMAGE_WIDTH = width * 0.6;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
+const IMAGE_WIDTH = width * 0.8;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (9 / 16); // 16:9 비율 적용
 
 const images = [
-  { id: '1', text: '사진 1' },
-  { id: '2', text: '사진 2' },
-  { id: '3', text: '사진 3' },
-  { id: '4', text: '사진 4' },
+  { id: '1', uri: require('../../assets/images/photo1.jpeg') },
+  { id: '2', uri: require('../../assets/images/photo2.jpeg') },
+  { id: '3', uri: require('../../assets/images/photo1.jpeg') },
+  { id: '4', uri: require('../../assets/images/photo2.jpeg') },
 ];
 
 const PhotoPromptScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const carouselRef = useRef(null);
 
-  // ✅ 개별 슬라이드 애니메이션 적용
-  const renderItem = ({ item, index }) => {
-    const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-
-    const scale = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.8, 1, 0.8],
-      extrapolate: 'clamp',
-    });
-
-    const opacity = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.5, 1, 0.5],
-      extrapolate: 'clamp',
-    });
-
-    return (
-      <Animated.View
-        style={[
-          styles.slide,
-          { transform: [{ scale }], opacity }
-        ]}
-      >
-        <Text style={styles.imageText}>{item.text}</Text>
-      </Animated.View>
-    );
-  };
+  const renderItem = ({ item }) => (
+    <View style={styles.slide}>
+      {/* ✅ 수정된 부분 */}
+      <Image source={item.uri} style={styles.image} />
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 슬라이더 */}
-      <Carousel
-        ref={carouselRef}
+      {/* ✅ 이미지 슬라이더 */}
+      <FlatList
+        ref={flatListRef}
         data={images}
         renderItem={renderItem}
-        sliderWidth={width}
-        itemWidth={IMAGE_WIDTH}
-        inactiveSlideScale={0.8}
-        inactiveSlideOpacity={0.6}
-        enableMomentum
-        onSnapToItem={(index) => {
-          scrollX.setValue(index);
-          setActiveIndex(index);
-        }}
+        keyExtractor={(item) => item.id}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
         )}
+        onMomentumScrollEnd={(event) => {
+          const index = Math.round(event.nativeEvent.contentOffset.x / width);
+          setActiveIndex(index);
+        }}
       />
 
       {/* ✅ 페이지 인디케이터 */}
@@ -117,19 +96,13 @@ const styles = StyleSheet.create({
   slide: {
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
-    backgroundColor: '#1B263B',
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 5 },
-    shadowRadius: 10,
+    overflow: 'hidden',
+    marginHorizontal: width * 0.05, // 가운데 정렬
   },
-  imageText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#E0E1DD',
+  image: {
+    width: '100%',
+    height: '100%',
   },
   pagination: {
     flexDirection: 'row',

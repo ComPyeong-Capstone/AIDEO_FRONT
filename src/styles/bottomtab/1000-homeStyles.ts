@@ -1,14 +1,15 @@
 import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive'; // ✅ 반응형 함수 가져오기
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
+    backgroundColor: COLORS.background,
   },
   header: {
     fontWeight: 'bold',
-    color: '#51BCB4',
+    color: COLORS.background,
     textAlign: 'center',
     fontSize: scaleFont(20), // ✅ width 제거
   },
