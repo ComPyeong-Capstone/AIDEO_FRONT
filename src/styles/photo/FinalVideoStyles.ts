@@ -11,7 +11,7 @@ const scaleFont = (size: number) => (size * width) / 375;
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     paddingHorizontal: scaleSize(20), // 가변적인 패딩 설정
   },

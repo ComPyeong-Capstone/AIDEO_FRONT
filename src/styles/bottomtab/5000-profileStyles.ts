@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   },
   profileSection: {
     alignItems: 'center',
-    backgroundColor: '#273647',
+backgroundColor: COLORS.background,
     borderRadius: scaleSize(10),
     width: '90%',
     padding: scaleSize(20),
@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   historyTitle: {
-    color: '#51BCB4',
+
     fontWeight: 'bold',
     alignSelf: 'flex-start',
     marginLeft: scaleSize(20),
@@ -71,13 +71,13 @@ export const styles = StyleSheet.create({
   historyContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
-    marginTop: scaleSize(10),
+    width: '85%',
+    marginTop: scaleSize(20),
   },
   historyCard: {
-    height: scaleSize(100),
-    backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(10),
+    height: scaleSize(200),
+    backgroundColor: COLORS.imagebox,
+    borderRadius: scaleSize(20),
     width: '45%',
   },
 });

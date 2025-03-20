@@ -6,7 +6,7 @@ import {styles} from '../../styles/shorts/musicSelectionStyles'; // ✅ 스타�
 import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 함수 가져오기
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 // 📌 네비게이션 타입 정의
 type RootStackParamList = {

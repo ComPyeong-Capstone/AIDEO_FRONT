@@ -5,7 +5,7 @@ import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
+backgroundColor: COLORS.background,
     alignItems: 'center',
   },
   progressContainer: {

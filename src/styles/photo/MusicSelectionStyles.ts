@@ -10,7 +10,7 @@ const scaleSize = (size: number) => (size * width) / 375;
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     paddingHorizontal: '5%',
   },

@@ -5,7 +5,7 @@ import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
+    backgroundColor: COLORS.background,
     paddingHorizontal: scaleSize(12),
     paddingVertical: scaleSize(10),
   },
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     fontSize: scaleSize(16),
   },
   videoItem: {
-    backgroundColor: '#0D1B2A',
+    backgroundColor: COLORS.imagebox,
     padding: scaleSize(18),
     borderRadius: scaleSize(12),
     marginBottom: scaleSize(12),

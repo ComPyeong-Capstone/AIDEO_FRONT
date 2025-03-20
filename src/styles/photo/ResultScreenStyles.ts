@@ -1,35 +1,38 @@
 import {StyleSheet, Dimensions} from 'react-native';
+import {scaleSize, scaleFont} from '../responsive';
 import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
-// ✅ 현재 화면 크기 가져오기
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
-// ✅ 반응형 크기 조정 함수
-const scaleSize = (size: number) => (size * width) / 375;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1F2C3D',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: scaleSize(20),
+export const styles = StyleSheet.create({
+container: {
+flex: 1,
+alignItems: 'center',
+backgroundColor: COLORS.background,
+paddingTop: scaleSize(70),
   },
   resultBox: {
-    width: width * 0.9,
-    height: width * 0.6,
-    backgroundColor: '#2A3B4F',
+    width: width * 0.8,
+    height: height * 0.6,
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: scaleSize(12),
-    marginBottom: scaleSize(30),
+    borderRadius: scaleSize(20),
+    borderWidth: 2,
+    borderColor: '#51BCB4',
+    marginVertical: scaleSize(20),
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   resultText: {
-    fontSize: scaleSize(18),
+    fontSize: scaleFont(20),
     fontWeight: 'bold',
-    color: 'white',
+    color: '#1F2C3D',
   },
   buttonContainer: {
+    marginTop: scaleSize(10),
     alignItems: 'center',
   },
   postButton: {
@@ -37,45 +40,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(12),
-    paddingVertical: scaleSize(12),
-    paddingHorizontal: scaleSize(24),
-    width: width * 0.7,
-    marginBottom: scaleSize(20),
+    paddingVertical: scaleSize(15),
+    paddingHorizontal: scaleSize(130),
+    borderRadius: scaleSize(15),
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   buttonText: {
-    color: 'white',
-    fontSize: scaleSize(16),
+    fontSize: scaleFont(20),
     fontWeight: 'bold',
-    marginLeft: scaleSize(8),
+    color: 'white',
+    marginLeft: scaleSize(10),
   },
   smallButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: width * 0.7,
+    marginTop: scaleSize(16),
   },
   saveButton: {
-    flex: 1,
-    backgroundColor: '#4A90E2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: scaleSize(10),
-    borderRadius: scaleSize(8),
-    marginRight: scaleSize(10),
+    backgroundColor: '#356868',
+    paddingVertical: scaleSize(15),
+    paddingHorizontal: scaleSize(65),
+    borderRadius: scaleSize(15),
+    marginHorizontal: scaleSize(8),
   },
   exitButton: {
-    flex: 1,
-    backgroundColor: '#E74C3C',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: scaleSize(10),
-    borderRadius: scaleSize(8),
+    backgroundColor: '#777',
+    paddingVertical: scaleSize(15),
+    paddingHorizontal: scaleSize(65),
+    borderRadius: scaleSize(15),
+    marginHorizontal: scaleSize(8),
   },
   smallButtonText: {
+    fontSize: scaleFont(17),
     color: 'white',
-    fontSize: scaleSize(14),
-    fontWeight: 'bold',
   },
 });
-
-export default styles;

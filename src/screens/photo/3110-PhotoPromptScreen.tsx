@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const { width } = Dimensions.get('window');
 const IMAGE_WIDTH = width * 0.8;
 const IMAGE_HEIGHT = IMAGE_WIDTH * (9 / 16); // 16:9 비율 적용
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 const images = [
   { id: '1', uri: require('../../assets/images/photo1.jpeg') },
@@ -90,7 +90,7 @@ export default PhotoPromptScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0D1B2A',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
