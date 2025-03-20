@@ -10,15 +10,13 @@ const ProfileScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       {/* 프로필 정보 섹션 */}
       <View style={styles.profileSection}>
-        <Text style={[styles.username, {fontSize: scaleFont(20)}]}>아무개</Text>
-
-        {/* 프로필 이미지 */}
-        <Image
-          source={{uri: 'https://via.placeholder.com/100'}} // 더미 프로필 이미지
-          style={styles.profileImage}
-        />
-
-        {/* 게시물, 팔로워, 팔로잉 */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start' }}>
+                {/* 프로필 이미지 */}
+                <Image
+                  source={{uri: 'https://via.placeholder.com/100'}} // 더미 프로필 이미지
+                  style={styles.profileImage}
+                />
+     {/* 게시물, 팔로워, 팔로잉 */}
         <View style={styles.statsContainer}>
           {['게시물', '팔로워', '팔로잉'].map((label, index) => (
             <View key={index} style={styles.statItem}>
@@ -31,6 +29,11 @@ const ProfileScreen: React.FC = () => {
             </View>
           ))}
         </View>
+                        </View>
+
+
+ {/* 사용자 이름 */}
+          <Text style={[styles.username, {fontSize: scaleFont(20), marginLeft: -250}]}>아무개</Text>
 
         {/* 프로필 편집 & 공유 버튼 */}
         <View style={styles.buttonContainer}>
@@ -55,8 +58,9 @@ const ProfileScreen: React.FC = () => {
 
       {/* 히스토리 카드 */}
       <View style={styles.historyContainer}>
-        {[1, 2].map(item => (
+        {[2, 4].map(item => (
           <View key={item} style={styles.historyCard} />
+
         ))}
       </View>
     </SafeAreaView>

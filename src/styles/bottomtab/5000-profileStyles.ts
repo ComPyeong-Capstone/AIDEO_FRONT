@@ -14,10 +14,11 @@ backgroundColor: COLORS.background,
     width: '90%',
     padding: scaleSize(20),
   },
-  username: {
+   username: {
+
     fontWeight: 'bold',
-    color: '#51BCB4',
     marginBottom: scaleSize(10),
+    //alignSelf: 'flex-start', // 왼쪽 정렬
   },
   profileImage: {
     width: scaleSize(80),
@@ -29,7 +30,7 @@ backgroundColor: COLORS.background,
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '100%',
+    width: '80%',
     marginBottom: scaleSize(10),
   },
   statItem: {
@@ -37,26 +38,28 @@ backgroundColor: COLORS.background,
   },
   statNumber: {
     fontWeight: 'bold',
-    color: '#51BCB4',
+    //color: '#51BCB4',
   },
   statLabel: {
-    color: '#51BCB4',
+    //color: '#51BCB4',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: scaleSize(10),
-  },
-  button: {
-    backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(5),
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: scaleSize(5),
-    paddingVertical: scaleSize(8),
-    paddingHorizontal: scaleSize(15),
-  },
+buttonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'flex-start', // 왼쪽 정렬
+  alignItems: 'center', // 버튼들 수직 정렬
+  width: '110%', // 전체 너비 사용
+  marginTop: scaleSize(20),
+},
+button: {
+  backgroundColor: '#51BCB4',
+  borderRadius: scaleSize(8),
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: scaleSize(10),
+  paddingVertical: scaleSize(8),
+  paddingHorizontal: scaleSize(60), // 패딩 조정
+},
+
   buttonText: {
     color: '#1F2C3D',
     fontWeight: 'bold',
