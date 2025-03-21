@@ -10,30 +10,55 @@ import {
   Animated
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const { width } = Dimensions.get('window');
 const IMAGE_WIDTH = width * 0.8;
 const IMAGE_HEIGHT = IMAGE_WIDTH * (9 / 16); // 16:9 비율 적용
 import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
-const images = [
-  { id: '1', uri: require('../../assets/images/photo1.jpeg') },
-  { id: '2', uri: require('../../assets/images/photo2.jpeg') },
-  { id: '3', uri: require('../../assets/images/photo1.jpeg') },
-  { id: '4', uri: require('../../assets/images/photo2.jpeg') },
-];
-
 const PhotoPromptScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
+  const [images, setImages] = useState([
+    { id: 'add', uri: null }, // 첫 번째 슬라이드는 항상 + 버튼
+  ]);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.slide}>
-      {/* ✅ 수정된 부분 */}
-      <Image source={item.uri} style={styles.image} />
-    </View>
-  );
+const pickImage = () => {
+  const options = {
+    mediaType: 'photo',
+    maxWidth: 1920,
+    maxHeight: 1080,
+    quality: 1,
+    includeBase64: false,
+    aspect: [9, 16], // 📌 업로드 시 강제 크롭
+  };
+
+  launchImageLibrary(options, (response) => {
+    if (!response.didCancel && !response.error) {
+      setImages((prevImages) => [
+        ...prevImages.filter(img => img.id !== 'add'),
+        { id: String(Date.now()), uri: response.assets[0].uri },
+        { id: 'add', uri: null }, // 마지막에는 항상 + 버튼 유지
+      ]);
+    }
+  });
+};
+
+
+const renderItem = ({ item }) => (
+  <View style={styles.slide}>
+    {item.uri ? (
+      <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
+    ) : (
+      <TouchableOpacity style={styles.addButton} onPress={pickImage}>
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,6 +71,12 @@ const PhotoPromptScreen = ({ navigation }) => {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        getItemLayout={(data, index) => ({
+          length: width, // 각 아이템의 길이를 고정
+          offset: width * index, // 각 아이템의 위치를 고정
+          index,
+        })}
+        initialScrollIndex={images.length - 1} // 새 이미지 추가 시 마지막으로 이동
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
@@ -100,10 +131,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
     marginHorizontal: width * 0.05, // 가운데 정렬
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.lightGray,
   },
   image: {
     width: '100%',
     height: '100%',
+  },
+  addButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#00A6FB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    fontSize: 40,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   pagination: {
     flexDirection: 'row',
