@@ -15,10 +15,10 @@ backgroundColor: COLORS.background,
     padding: scaleSize(20),
   },
    username: {
-
+    marginTop: scaleSize(10),
     fontWeight: 'bold',
-    marginBottom: scaleSize(10),
-    //alignSelf: 'flex-start', // 왼쪽 정렬
+    marginLeft: scaleSize(20),
+    alignSelf: 'flex-start', // 왼쪽 정렬
   },
   profileImage: {
     width: scaleSize(80),
@@ -65,7 +65,6 @@ button: {
     fontWeight: 'bold',
   },
   historyTitle: {
-
     fontWeight: 'bold',
     alignSelf: 'flex-start',
     marginLeft: scaleSize(20),

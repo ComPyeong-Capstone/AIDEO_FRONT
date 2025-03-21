@@ -29,11 +29,12 @@ const ProfileScreen: React.FC = () => {
             </View>
           ))}
         </View>
-                        </View>
-
+    </View>
 
  {/* 사용자 이름 */}
-          <Text style={[styles.username, {fontSize: scaleFont(20), marginLeft: -250}]}>아무개</Text>
+          <Text style={[styles.username, {fontSize: scaleFont(20), marginLeft: -20}]}>(name)
+             </Text>
+
 
         {/* 프로필 편집 & 공유 버튼 */}
         <View style={styles.buttonContainer}>
