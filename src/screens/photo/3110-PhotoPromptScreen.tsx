@@ -1,104 +1,72 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Dimensions,
   StyleSheet,
-  Image,
-  FlatList,
-  Animated
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Swiper from 'react-native-swiper';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const { width } = Dimensions.get('window');
-const IMAGE_WIDTH = width * 0.8;
+const IMAGE_WIDTH = width * 0.7; // 살짝 보이도록 크기 줄이기
 const IMAGE_HEIGHT = IMAGE_WIDTH * (9 / 16); // 16:9 비율 적용
 import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 const PhotoPromptScreen = ({ navigation }) => {
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const flatListRef = useRef(null);
   const [images, setImages] = useState([
     { id: 'add', uri: null }, // 첫 번째 슬라이드는 항상 + 버튼
   ]);
-  const [activeIndex, setActiveIndex] = useState(0);
 
-const pickImage = () => {
-  const options = {
-    mediaType: 'photo',
-    maxWidth: 1920,
-    maxHeight: 1080,
-    quality: 1,
-    includeBase64: false,
-    aspect: [9, 16], // 📌 업로드 시 강제 크롭
+  const pickImage = () => {
+    const options = {
+      mediaType: 'photo',
+      maxWidth: 1920,
+      maxHeight: 1080,
+      quality: 1,
+      includeBase64: false,
+      aspect: [9, 16], // 📌 업로드 시 강제 크롭
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (!response.didCancel && !response.error) {
+        setImages((prevImages) => [
+          ...prevImages.filter(img => img.id !== 'add'),
+          { id: String(Date.now()), uri: response.assets[0].uri },
+          { id: 'add', uri: null }, // 마지막에는 항상 + 버튼 유지
+        ]);
+      }
+    });
   };
-
-  launchImageLibrary(options, (response) => {
-    if (!response.didCancel && !response.error) {
-      setImages((prevImages) => [
-        ...prevImages.filter(img => img.id !== 'add'),
-        { id: String(Date.now()), uri: response.assets[0].uri },
-        { id: 'add', uri: null }, // 마지막에는 항상 + 버튼 유지
-      ]);
-    }
-  });
-};
-
-
-const renderItem = ({ item }) => (
-  <View style={styles.slide}>
-    {item.uri ? (
-      <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
-    ) : (
-      <TouchableOpacity style={styles.addButton} onPress={pickImage}>
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
-    )}
-  </View>
-);
-
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 이미지 슬라이더 */}
-      <FlatList
-        ref={flatListRef}
-        data={images}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        getItemLayout={(data, index) => ({
-          length: width, // 각 아이템의 길이를 고정
-          offset: width * index, // 각 아이템의 위치를 고정
-          index,
-        })}
-        initialScrollIndex={images.length - 1} // 새 이미지 추가 시 마지막으로 이동
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
+      {/* ✅ Swiper 이미지 슬라이더 */}
+  <Swiper
+    key={images.length} // ✅ Swiper 재생성을 유도
+    style={styles.wrapper}
+    showsButtons={false}
+    loop={false}
+    activeDotColor="#00A6FB"
+    dotColor="#D9D9D9"
+    paginationStyle={{ bottom: -20 }}
+    containerStyle={{ width: width, alignSelf: 'center' }}
+  >
+    {images.map((item) => (
+      <View key={item.id} style={[styles.slide]}>
+        {item.uri ? (
+          <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
+        ) : (
+          <TouchableOpacity style={styles.addButton} onPress={pickImage}>
+            <Text style={styles.addButtonText}>+</Text>
+          </TouchableOpacity>
         )}
-        onMomentumScrollEnd={(event) => {
-          const index = Math.round(event.nativeEvent.contentOffset.x / width);
-          setActiveIndex(index);
-        }}
-      />
-
-      {/* ✅ 페이지 인디케이터 */}
-      <View style={styles.pagination}>
-        {images.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.dot,
-              activeIndex === index ? styles.dotActive : styles.dotInactive
-            ]}
-          />
-        ))}
       </View>
+    ))}
+  </Swiper>
 
       {/* ✅ 버튼 컨트롤 */}
       <View style={styles.buttonContainer}>
@@ -125,16 +93,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  slide: {
-    width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginHorizontal: width * 0.05, // 가운데 정렬
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.lightGray,
-  },
+  wrapper: {},
+slide: {
+  width: IMAGE_WIDTH,
+  height: IMAGE_HEIGHT,
+  borderRadius: 10,
+  overflow: 'hidden',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: COLORS.imagebox,
+  marginHorizontal: (width - IMAGE_WIDTH) / 2, // 가운데 정렬 + 양옆 이미지 살짝 보이게
+},
+
   image: {
     width: '100%',
     height: '100%',
@@ -151,24 +121,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: '#fff',
     fontWeight: 'bold',
-  },
-  pagination: {
-    flexDirection: 'row',
-    marginTop: 20,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  dotActive: {
-    backgroundColor: '#00A6FB',
-    width: 12,
-    height: 12,
-  },
-  dotInactive: {
-    backgroundColor: '#415A77',
   },
   buttonContainer: {
     flexDirection: 'row',
