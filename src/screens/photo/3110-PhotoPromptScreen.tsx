@@ -60,9 +60,10 @@ const PhotoPromptScreen = ({ navigation }) => {
         {item.uri ? (
           <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
         ) : (
-          <TouchableOpacity style={styles.addButton} onPress={pickImage}>
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
+<TouchableOpacity style={styles.addButton} onPress={pickImage}>
+    <Text style={styles.addButtonText}>+</Text>
+</TouchableOpacity>
+
         )}
       </View>
     ))}
@@ -109,19 +110,21 @@ slide: {
     width: '100%',
     height: '100%',
   },
-  addButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#00A6FB',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addButtonText: {
-    fontSize: 40,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+addButton: {
+  width: 50,
+  height: 50,
+  borderRadius: 10,
+  backgroundColor: COLORS.background,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+addButtonText: {
+  fontSize: 28,
+  color: '#00A6FB',
+  fontWeight: 'bold',
+},
+
   buttonContainer: {
     flexDirection: 'row',
     marginTop: 30,

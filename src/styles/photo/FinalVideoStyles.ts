@@ -46,10 +46,10 @@ export default StyleSheet.create({
   videoItem: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.imagebox,
     borderRadius: scaleSize(10),
     borderWidth: scaleSize(2),
-    borderColor: '#51BCB4',
+    backgroundColor: COLORS.imagebox,
     width: width * 0.7,
     height: height * 0.35,
   },
