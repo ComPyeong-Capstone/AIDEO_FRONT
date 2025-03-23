@@ -1,35 +1,43 @@
+// src/navigator/AppNavigator.tsx
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
-// ✅ 하단 탭 네비게이션 (메인 화면)
+// 네비게이터
+import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
-
-// ✅ Shorts 관련 네비게이션
 import ShortsNavigator from './ShortsNavigator';
+import PhotoNavigator from './PhotoNavigator';
 
-// ✅ Photo 관련 네비게이션
-import PhotoNavigator from './PhotoNavigator'; // ✅ 추가
+// 화면
+import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
 
-// ✅ Stack Navigator 생성
+// Context
+import {useUser} from '../context/UserContext'; // ✅ 사용자 정보 가져오기
+
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
+  const {user} = useUser(); // ✅ 전역 사용자 정보
+
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Main" // ✅ 기본 화면을 'Main'으로 설정
-        screenOptions={{ headerShown: false }} // ✅ 모든 화면에서 헤더 숨김
-      >
-        {/* ✅ 메인 하단 탭 네비게이션 */}
-        <Stack.Screen name="Main" component={BottomTabNavigator} />
-
-        {/* ✅ Shorts 관련 네비게이션 */}
-        <Stack.Screen name="ShortsStack" component={ShortsNavigator} />
-
-        {/* ✅ Photo 관련 네비게이션 */}
-        <Stack.Screen name="PhotoStack" component={PhotoNavigator} />
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {user ? (
+          <>
+            {/* ✅ 로그인 후 메인 화면들 */}
+            <Stack.Screen name="Main" component={BottomTabNavigator} />
+            <Stack.Screen name="ShortsStack" component={ShortsNavigator} />
+            <Stack.Screen name="PhotoStack" component={PhotoNavigator} />
+            <Stack.Screen
+              name="ShortsPlayerScreen"
+              component={ShortsPlayerScreen}
+            />
+          </>
+        ) : (
+          // ✅ 로그인 안됐으면 Auth 화면
+          <Stack.Screen name="Auth" component={AuthNavigator} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

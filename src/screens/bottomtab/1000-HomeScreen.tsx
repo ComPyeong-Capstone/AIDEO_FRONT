@@ -1,11 +1,25 @@
 import React from 'react';
-import {View, Text, FlatList, Image, useWindowDimensions} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {styles} from '../../styles/bottomtab/1000-homeStyles'; // ✅ 스타일 가져오기
-import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {styles} from '../../styles/bottomtab/1000-homeStyles';
+import {scaleSize, scaleFont} from '../../styles/responsive';
 
-// 📌 비디오 데이터 타입 정의
+// ✅ 네비게이션 타입 지정
+type RootStackParamList = {
+  ShortsPlayerScreen: {title: string; creator: string};
+};
+
+type NavigationProps = StackNavigationProp<RootStackParamList>;
+
 interface VideoItem {
   id: string;
   title: string;
@@ -16,25 +30,25 @@ interface VideoItem {
 const videoData: VideoItem[] = [
   {
     id: '1',
-    title: '제목',
+    title: '제목 1',
     creator: '사용자1',
     thumbnail: 'https://via.placeholder.com/150',
   },
   {
     id: '2',
-    title: '제목',
+    title: '제목 2',
     creator: '사용자2',
     thumbnail: 'https://via.placeholder.com/150',
   },
   {
     id: '3',
-    title: '제목',
+    title: '제목 3',
     creator: '사용자3',
     thumbnail: 'https://via.placeholder.com/150',
   },
   {
     id: '4',
-    title: '제목',
+    title: '제목 4',
     creator: '사용자4',
     thumbnail: 'https://via.placeholder.com/150',
   },
@@ -42,14 +56,21 @@ const videoData: VideoItem[] = [
 
 const HomeScreen: React.FC = () => {
   const {width} = useWindowDimensions();
+  const navigation = useNavigation<NavigationProps>(); // ✅ 네비게이션 타입 지정
   const itemWidth = (width - scaleSize(40)) / 2;
   const itemHeight = itemWidth * 0.75;
   const paddingBottomValue = scaleSize(40);
 
-  // ✅ 개별 비디오 항목 렌더링
   const renderItem = ({item}: {item: VideoItem}) => (
-    <View style={[styles.videoContainer, {width: itemWidth}]}>
-      {/* 썸네일 */}
+    <TouchableOpacity
+      style={[styles.videoContainer, {width: itemWidth}]}
+      onPress={
+        () =>
+          navigation.navigate('ShortsPlayerScreen', {
+            title: item.title,
+            creator: item.creator,
+          }) // ✅ 에러 해결
+      }>
       <Image
         source={{uri: item.thumbnail}}
         style={[
@@ -57,7 +78,6 @@ const HomeScreen: React.FC = () => {
           {height: itemHeight, borderRadius: scaleSize(8)},
         ]}
       />
-      {/* ✅ 제목과 제작자를 썸네일과 분리 */}
       <View style={styles.textContainer}>
         <Text style={[styles.title, {fontSize: scaleFont(16)}]}>
           {item.title}
@@ -79,37 +99,18 @@ const HomeScreen: React.FC = () => {
           </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        {
-          paddingHorizontal: scaleSize(10),
-          paddingTop: scaleSize(20),
-        },
-      ]}>
-      {/* 상단 타이틀 */}
-      <Text
-        style={[
-          styles.header,
-          {fontSize: scaleFont(24), marginBottom: scaleSize(20)},
-        ]}>
-        VideoAI
-      </Text>
-
-      {/* ✅ 비디오 리스트 */}
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>VideoAI</Text>
       <FlatList
         data={videoData}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         numColumns={2}
-        columnWrapperStyle={[
-          styles.columnWrapper,
-          {marginHorizontal: scaleSize(5)},
-        ]}
+        columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={[
           styles.contentContainer,
           {paddingBottom: paddingBottomValue},
