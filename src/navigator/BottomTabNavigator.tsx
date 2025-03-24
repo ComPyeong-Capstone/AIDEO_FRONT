@@ -50,7 +50,7 @@ const BottomTabNavigator: React.FC = () => {
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#51BCB4',
+          tabBarActiveTintColor:  COLORS.primary,
           tabBarInactiveTintColor: '#aaa',
           tabBarStyle: { backgroundColor: COLORS.background, paddingBottom: 5 },
         })}
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 60,
     height: 60,
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.primary,
     borderRadius: 30,
   },
 });

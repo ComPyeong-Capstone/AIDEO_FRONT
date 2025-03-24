@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Dimensions,
   StyleSheet,
-  Image
+  Image,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
@@ -13,13 +14,14 @@ import { launchImageLibrary } from 'react-native-image-picker';
 
 const { width } = Dimensions.get('window');
 const IMAGE_WIDTH = width * 0.7; // 살짝 보이도록 크기 줄이기
-const IMAGE_HEIGHT = IMAGE_WIDTH * (9 / 16); // 16:9 비율 적용
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 16:9 비율 적용
 import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 const PhotoPromptScreen = ({ navigation }) => {
   const [images, setImages] = useState([
     { id: 'add', uri: null }, // 첫 번째 슬라이드는 항상 + 버튼
   ]);
+const [prompt, setPrompt] = useState('');
 
   const pickImage = () => {
     const options = {
@@ -45,14 +47,15 @@ const PhotoPromptScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* ✅ Swiper 이미지 슬라이더 */}
+
   <Swiper
-    key={images.length} // ✅ Swiper 재생성을 유도
+    key={images.length}
     style={styles.wrapper}
     showsButtons={false}
     loop={false}
     activeDotColor="#00A6FB"
     dotColor="#D9D9D9"
-    paginationStyle={{ bottom: -20 }}
+    paginationStyle={{ bottom: 10 }}
     containerStyle={{ width: width, alignSelf: 'center' }}
   >
     {images.map((item) => (
@@ -60,14 +63,21 @@ const PhotoPromptScreen = ({ navigation }) => {
         {item.uri ? (
           <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
         ) : (
-<TouchableOpacity style={styles.addButton} onPress={pickImage}>
-    <Text style={styles.addButtonText}>+</Text>
-</TouchableOpacity>
-
+          <TouchableOpacity style={styles.addButton} onPress={pickImage}>
+            <Text style={styles.addButtonText}>+</Text>
+          </TouchableOpacity>
         )}
       </View>
     ))}
   </Swiper>
+
+  <TextInput
+    style={styles.promptInput}
+    placeholder="프롬프트를 입력하세요"
+    placeholderTextColor="#aaa"
+    value={prompt}
+    onChangeText={setPrompt}
+  />
 
       {/* ✅ 버튼 컨트롤 */}
       <View style={styles.buttonContainer}>
@@ -104,6 +114,8 @@ slide: {
   justifyContent: 'center',
   backgroundColor: COLORS.imagebox,
   marginHorizontal: (width - IMAGE_WIDTH) / 2, // 가운데 정렬 + 양옆 이미지 살짝 보이게
+  marginTop: 30, // ✅ 요기 추가!
+
 },
 
   image: {
@@ -124,15 +136,26 @@ addButtonText: {
   color: '#00A6FB',
   fontWeight: 'bold',
 },
+promptInput: {
+  width: width * 0.8,
+  height: 40,
+  borderColor: '#00A6FB',
+  borderWidth: 1.5,
+  borderRadius: 8,
+  paddingHorizontal: 12,
+  marginTop: 40,
+  fontSize: 16,
+  color: '#1F2C3D',
+},
 
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: 30,
+    marginTop: 80,
   },
   button: {
-    backgroundColor: '#00A6FB',
-    padding: 12,
-    marginHorizontal: 10,
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    marginHorizontal: 60,
     borderRadius: 8,
   },
   buttonText: {
