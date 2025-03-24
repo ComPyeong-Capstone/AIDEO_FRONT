@@ -1,4 +1,3 @@
-// src/screens/auth/SignupScreen.tsx
 import React, {useState} from 'react';
 import {
   SafeAreaView,
@@ -10,39 +9,28 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {signupStyles} from '../../styles/auth/SignupScreenStyles';
 import {userApi} from '../../api/userApi';
-import {generateRandomNickname} from '../../utils/nicknameGenerator';
-import {getRandomProfileImageFileName} from '../../utils/defaultProfile'; // ✅ 수정된 부분
 
 const SignupScreen = () => {
   const navigation = useNavigation();
+  const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
 
   const handleSignup = async () => {
+    if (!userName || !email || !pw || !confirmPw) {
+      Alert.alert('입력 오류', '모든 항목을 입력해주세요.');
+      return;
+    }
+
     if (pw !== confirmPw) {
       Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
       return;
     }
 
-    if (!email || !pw) {
-      Alert.alert('입력 오류', '이메일과 비밀번호를 모두 입력해주세요.');
-      return;
-    }
-
-    const nickname = generateRandomNickname(); // ✅ 랜덤 닉네임 생성
-    const profileImageFileName = getRandomProfileImageFileName(); // ✅ 랜덤 프로필 이미지 파일명
-
     try {
       // 1️⃣ 회원가입 요청
-      const signupResponse = await userApi.signup(nickname, email, pw);
-
-      // 2️⃣ 응답에서 userId 추출
-      const userId = signupResponse.data?.userId;
-      if (!userId) throw new Error('회원가입 후 userId를 받아오지 못했습니다.');
-
-      // 3️⃣ 프로필 이미지 설정
-      await userApi.updateProfileImage(userId, profileImageFileName);
+      await userApi.signup(userName, email, pw);
 
       Alert.alert('회원가입 성공 🎉', '이제 로그인 해주세요!');
       navigation.goBack();
@@ -64,6 +52,12 @@ const SignupScreen = () => {
 
       <Text style={signupStyles.title}>회원가입</Text>
 
+      <TextInput
+        placeholder="닉네임"
+        style={signupStyles.input}
+        value={userName}
+        onChangeText={setUserName}
+      />
       <TextInput
         placeholder="이메일"
         style={signupStyles.input}

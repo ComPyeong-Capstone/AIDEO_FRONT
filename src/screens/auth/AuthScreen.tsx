@@ -1,4 +1,3 @@
-// src/screens/auth/AuthScreen.tsx
 import React, {useState} from 'react';
 import {
   Text,
@@ -11,9 +10,9 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {authStyles} from '../../styles/auth/AuthScreenStyles';
 import {userApi} from '../../api/userApi';
-import {useUser} from '../../context/UserContext'; // ✅ 커스텀 훅 사용
+import {useUser} from '../../context/UserContext';
+import {getRandomProfileImageFileName} from '../../utils/defaultProfile'; // ✅ 추가
 
-// ✅ Main 포함된 루트 네비게이션 타입 정의
 type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
@@ -45,15 +44,55 @@ const AuthScreen = () => {
       const response = await userApi.login(email, password);
       const user: User = response.data;
 
+      // ✅ 기본 프로필 이미지가 없는 경우 처리
+      if (!user.profileImage) {
+        const randomImage = getRandomProfileImageFileName();
+
+        // 서버에 저장
+        await userApi.updateProfileImage(user.userId, randomImage);
+        user.profileImage = randomImage;
+      }
+
       console.log('로그인 성공:', user);
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
 
-      setUser(user); // ✅ 전역 저장
-      navigation.replace('Main'); // ✅ 메인탭 이동
+      setUser(user);
+      navigation.replace('Main');
     } catch (error: any) {
-      console.error('로그인 실패:', error);
-      const errorMsg =
-        error?.response?.data || '로그인 중 오류가 발생했습니다.';
+      const status = error?.response?.status;
+      const data = error?.response?.data;
+
+      console.error('❌ 로그인 실패 디버그:', {
+        status,
+        data,
+        url: error?.config?.url,
+        params: error?.config?.params,
+      });
+
+      let errorMsg = '로그인 중 오류가 발생했습니다.';
+
+      // 메시지 파싱 (문자열 또는 객체)
+      const serverMessage =
+        typeof data === 'string'
+          ? data
+          : typeof data?.message === 'string'
+          ? data.message
+          : null;
+
+      if (status === 403) {
+        if (serverMessage?.includes('비밀번호')) {
+          errorMsg = '비밀번호가 올바르지 않습니다.';
+        } else if (serverMessage?.includes('이메일')) {
+          errorMsg = '존재하지 않는 이메일입니다.';
+        } else if (serverMessage) {
+          errorMsg = serverMessage;
+        } else {
+          errorMsg = '접근이 거부되었습니다.';
+        }
+      } else if (status === 400 || status === 401) {
+        errorMsg = serverMessage || '잘못된 요청입니다.';
+      }
+
       Alert.alert('로그인 실패', errorMsg);
     }
   };

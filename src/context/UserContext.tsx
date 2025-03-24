@@ -1,4 +1,7 @@
-// src/context/UserContext.tsx
+// 서버에서 가져온 사용자 정보를 임시로 저장하기 위한 역할
+// 정보를 계속 서버에서 가져오게 되면 비효율적
+// 앱이 느려짐, 네트워크 비용 낭비 등...
+// 사용자 정보가 필요한 모든 곳에 쓰이고 로그아웃 시 null 처리
 import React, {createContext, useContext, useState} from 'react';
 
 // ✅ User 인터페이스
