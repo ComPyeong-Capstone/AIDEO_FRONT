@@ -29,7 +29,7 @@ backgroundColor: COLORS.background,
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    //justifyContent: 'space-around',
     width: '80%',
     marginBottom: scaleSize(10),
   },

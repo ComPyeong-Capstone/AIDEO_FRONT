@@ -33,26 +33,26 @@ const BottomTabNavigator: React.FC = () => {
             let iconName = '';
             switch (route.name) {
               case 'Home':
-                iconName = focused ? 'home' : 'home-outline';
+                iconName = focused ? 'home' : 'home';
                 break;
               case 'Search':
-                iconName = focused ? 'search' : 'search-outline';
+                iconName = focused ? 'search' : 'search';
                 break;
               case 'Add':
                 iconName = 'add';
                 break;
               case 'Notifications':
-                iconName = focused ? 'notifications' : 'notifications-outline';
+                iconName = focused ? 'notifications' : 'notifications';
                 break;
               case 'Profile':
-                iconName = focused ? 'person' : 'person-outline';
+                iconName = focused ? 'person' : 'person';
                 break;
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor:  COLORS.primary,
           tabBarInactiveTintColor: '#aaa',
-          tabBarStyle: { backgroundColor: COLORS.background, paddingBottom: 5 },
+          tabBarStyle: styles.tabBarStyle,
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: 30,
   },
+
 });
 
 export default BottomTabNavigator;

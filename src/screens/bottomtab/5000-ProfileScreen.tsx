@@ -12,13 +12,13 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.profileSection}>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start' }}>
                 {/* 프로필 이미지 */}
-                <Image
-                  source={{uri: 'https://via.placeholder.com/100'}} // 더미 프로필 이미지
-                  style={styles.profileImage}
+                <Image style={styles.profileImage}
                 />
      {/* 게시물, 팔로워, 팔로잉 */}
         <View style={styles.statsContainer}>
-          {['게시물', '팔로워', '팔로잉'].map((label, index) => (
+         {/* 사용자 이름 */}
+
+          {['게시물'].map((label, index) => (
             <View key={index} style={styles.statItem}>
               <Text style={[styles.statNumber, {fontSize: scaleFont(16)}]}>
                 0
@@ -32,7 +32,7 @@ const ProfileScreen: React.FC = () => {
     </View>
 
  {/* 사용자 이름 */}
-          <Text style={[styles.username, {fontSize: scaleFont(20), marginLeft: -20}]}>(name)
+          <Text style={[styles.username, {fontSize: scaleFont(20), marginLeft: -20}]}>//
              </Text>
 
 

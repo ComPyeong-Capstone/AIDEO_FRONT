@@ -11,11 +11,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { launchImageLibrary } from 'react-native-image-picker';
+import styles from '../../styles/photo/PhotoPromptStyles'; // ✅ 스타일 import
 
 const { width } = Dimensions.get('window');
 const IMAGE_WIDTH = width * 0.7; // 살짝 보이도록 크기 줄이기
 const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 16:9 비율 적용
 import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import CustomButton from '../../styles/Button';
 
 const PhotoPromptScreen = ({ navigation }) => {
   const [images, setImages] = useState([
@@ -80,87 +82,23 @@ const [prompt, setPrompt] = useState('');
   />
 
       {/* ✅ 버튼 컨트롤 */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>이전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('FinalVideoScreen')}
-        >
-          <Text style={styles.buttonText}>영상 생성</Text>
-        </TouchableOpacity>
-      </View>
+ <View style={styles.buttonContainer}>
+   <CustomButton
+     title="이전"
+     onPress={() => navigation.goBack()}
+     type="secondary"
+     style={{ marginHorizontal: 8 }}
+   />
+   <CustomButton
+     title="영상 생성"
+     onPress={() => navigation.navigate('FinalVideoScreen')}
+     type="primary"
+     style={{ marginHorizontal: 8 }}
+   />
+ </View>
+
     </SafeAreaView>
   );
 };
 
 export default PhotoPromptScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  wrapper: {},
-slide: {
-  width: IMAGE_WIDTH,
-  height: IMAGE_HEIGHT,
-  borderRadius: 10,
-  overflow: 'hidden',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: COLORS.imagebox,
-  marginHorizontal: (width - IMAGE_WIDTH) / 2, // 가운데 정렬 + 양옆 이미지 살짝 보이게
-  marginTop: 30, // ✅ 요기 추가!
-
-},
-
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-addButton: {
-  width: 50,
-  height: 50,
-  borderRadius: 10,
-  backgroundColor: COLORS.background,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-
-addButtonText: {
-  fontSize: 28,
-  color: '#00A6FB',
-  fontWeight: 'bold',
-},
-promptInput: {
-  width: width * 0.8,
-  height: 40,
-  borderColor: '#00A6FB',
-  borderWidth: 1.5,
-  borderRadius: 8,
-  paddingHorizontal: 12,
-  marginTop: 40,
-  fontSize: 16,
-  color: '#1F2C3D',
-},
-
-  buttonContainer: {
-    flexDirection: 'row',
-    marginTop: 80,
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    padding: 10,
-    marginHorizontal: 60,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
