@@ -32,20 +32,20 @@ export const userApi = {
     }
 
     return {
-      accessToken: token, // 🔁 명시적으로 accessToken으로 리턴
-      refreshToken: '', // ❌ 없으므로 비워서 처리
+      accessToken: token, // ✅ 명시적으로 이름 변경
+      refreshToken: '', // ✅ 백엔드에서 안 주므로 빈 문자열
       user,
     };
   },
 
-  // ✅ 닉네임 변경
+  // ✅ 닉네임 변경 (토큰 필요)
   updateNickname: (newNickname: string) => {
     return axiosInstance.put('/users/nickname', {
       newNickname,
     });
   },
 
-  // ✅ 프로필 이미지 변경
+  // ✅ 프로필 이미지 변경 (토큰 필요)
   updateProfileImage: (profileImageUrl: string) => {
     return axiosInstance.put('/users/profile-image', {
       profileImageUrl,

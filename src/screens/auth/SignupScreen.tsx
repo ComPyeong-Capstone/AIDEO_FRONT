@@ -24,7 +24,7 @@ const SignupScreen = () => {
     }
 
     if (pw !== confirmPw) {
-      Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
+      Alert.alert('비밀번호 불일치', '비밀번호가 일치하지 않습니다.');
       return;
     }
 
@@ -33,9 +33,15 @@ const SignupScreen = () => {
       Alert.alert('회원가입 성공 🎉', '이제 로그인 해주세요!');
       navigation.goBack();
     } catch (error: any) {
-      console.error('회원가입 실패:', error);
+      const status = error?.response?.status;
+      const data = error?.response?.data;
+      const message = typeof data === 'string' ? data : data?.message;
 
-      const message = error?.response?.data;
+      console.error('❌ 회원가입 실패:', {
+        status,
+        responseData: data,
+        fullError: error,
+      });
 
       let errorMsg = '회원가입 중 오류가 발생했습니다.';
 
@@ -49,7 +55,10 @@ const SignupScreen = () => {
         }
       }
 
-      Alert.alert('회원가입 실패', errorMsg);
+      Alert.alert(
+        '회원가입 실패',
+        `${errorMsg}${status ? ` (code: ${status})` : ''}`,
+      );
     }
   };
 

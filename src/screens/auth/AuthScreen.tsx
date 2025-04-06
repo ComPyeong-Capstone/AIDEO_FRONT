@@ -35,13 +35,15 @@ const AuthScreen = () => {
     }
 
     try {
-      const response = await userApi.login(email, password);
-      const {accessToken, refreshToken, user} = response;
+      const {accessToken, refreshToken, user} = await userApi.login(
+        email,
+        password,
+      );
 
       // 🔐 토큰 저장
       await saveAuthTokens(accessToken, refreshToken);
 
-      // 🖼️ 프로필 이미지 없으면 랜덤 이미지로 설정
+      // 🖼️ 프로필 이미지 없으면 기본 이미지 지정
       if (!user.profileImage) {
         const randomImage = getRandomProfileImageFileName();
         await userApi.updateProfileImage(randomImage);
@@ -50,7 +52,8 @@ const AuthScreen = () => {
 
       setUser(user);
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-      navigation.replace('Main');
+
+      // 🔁 AppNavigator에서 user 값에 따라 화면이 바뀌므로 따로 replace 불필요
     } catch (error: any) {
       const status = error?.response?.status;
       const data = error?.response?.data;
