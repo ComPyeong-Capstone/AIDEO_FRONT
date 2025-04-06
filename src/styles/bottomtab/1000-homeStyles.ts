@@ -1,29 +1,45 @@
 import {StyleSheet} from 'react-native';
-import {scaleSize, scaleFont} from '../responsive'; // ✅ 반응형 함수 가져오기
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {scaleSize, scaleFont} from '../responsive';
+import {COLORS} from '../../styles/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
+
+  // ✅ 타이틀 & 업로드 아이콘 배치용
+  headerWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: scaleSize(16),
+    marginBottom: scaleSize(12),
+  },
+
   header: {
     fontWeight: 'bold',
     color: COLORS.background,
-    textAlign: 'center',
-    fontSize: scaleFont(20), // ✅ width 제거
+    fontSize: scaleFont(20),
   },
+
+  headerIconButton: {
+    backgroundColor: '#51BCB4',
+    padding: scaleSize(8),
+    borderRadius: scaleSize(8),
+  },
+
   videoContainer: {
     backgroundColor: '#273647',
-    borderRadius: scaleSize(12), // ✅ width 제거
+    borderRadius: scaleSize(12),
     alignItems: 'center',
     paddingBottom: scaleSize(12),
     marginBottom: scaleSize(15),
-    width: '45%', // ✅ 기기에 따라 동일한 비율 적용
+    width: '45%',
   },
   thumbnail: {
     width: '100%',
-    aspectRatio: 16 / 9, // ✅ 모든 기기에서 같은 비율 유지 (16:9)
+    aspectRatio: 16 / 9,
     borderRadius: scaleSize(8),
   },
   textContainer: {
@@ -34,7 +50,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#51BCB4',
     textAlign: 'center',
-    fontSize: scaleFont(16), // ✅ width 제거
+    fontSize: scaleFont(16),
   },
   creatorContainer: {
     flexDirection: 'row',
@@ -44,18 +60,19 @@ export const styles = StyleSheet.create({
   },
   profileCircle: {
     backgroundColor: '#51BCB4',
-    width: scaleSize(24), // ✅ width 제거
+    width: scaleSize(24),
     height: scaleSize(24),
     borderRadius: scaleSize(12),
   },
   creator: {
     color: '#51BCB4',
-    fontSize: scaleFont(14), // ✅ width 제거
+    fontSize: scaleFont(14),
   },
   columnWrapper: {
     justifyContent: 'space-between',
   },
   contentContainer: {
-    paddingBottom: scaleSize(20), // ✅ width 제거
+    paddingBottom: scaleSize(20),
+    paddingHorizontal: scaleSize(16),
   },
 });

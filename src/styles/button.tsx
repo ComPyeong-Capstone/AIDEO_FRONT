@@ -1,6 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { COLORS } from '../styles/colors'; // 🎨 프로젝트의 컬러 시스템 사용
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import {COLORS} from './colors'; // 🎨 프로젝트의 컬러 시스템 사용
 
 interface Props {
   title: string;
@@ -10,13 +16,18 @@ interface Props {
   textStyle?: TextStyle;
 }
 
-const CommonButton: React.FC<Props> = ({ title, onPress, type = 'primary', style, textStyle }) => {
+const CommonButton: React.FC<Props> = ({
+  title,
+  onPress,
+  type = 'primary',
+  style,
+  textStyle,
+}) => {
   return (
     <TouchableOpacity
       style={[styles.base, styles[type], style]}
       onPress={onPress}
-      activeOpacity={0.8}
-    >
+      activeOpacity={0.8}>
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );

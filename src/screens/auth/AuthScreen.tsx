@@ -11,20 +11,14 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {authStyles} from '../../styles/auth/AuthScreenStyles';
 import {userApi} from '../../api/userApi';
 import {useUser} from '../../context/UserContext';
-import {getRandomProfileImageFileName} from '../../utils/defaultProfile'; // ✅ 추가
+import {getRandomProfileImageFileName} from '../../utils/defaultProfile';
+import {saveAuthTokens} from '../../utils/storage';
 
 type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Main: undefined;
 };
-
-interface User {
-  userId: number;
-  userName: string;
-  email: string;
-  profileImage: string | null;
-}
 
 const AuthScreen = () => {
   const navigation =
@@ -42,36 +36,37 @@ const AuthScreen = () => {
 
     try {
       const response = await userApi.login(email, password);
-      const user: User = response.data;
+      const {accessToken, refreshToken, user} = response;
 
-      // ✅ 기본 프로필 이미지가 없는 경우 처리
+      // 🔐 토큰 저장
+      await saveAuthTokens(accessToken, refreshToken);
+
+      // 🖼️ 프로필 이미지 없으면 랜덤 이미지로 설정
       if (!user.profileImage) {
         const randomImage = getRandomProfileImageFileName();
-
-        // 서버에 저장
-        await userApi.updateProfileImage(user.userId, randomImage);
+        await userApi.updateProfileImage(randomImage);
         user.profileImage = randomImage;
       }
 
-      console.log('로그인 성공:', user);
-      Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-
       setUser(user);
+      Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
       navigation.replace('Main');
     } catch (error: any) {
       const status = error?.response?.status;
       const data = error?.response?.data;
+      const message = error?.message;
+      const request = error?.request;
 
-      console.error('❌ 로그인 실패 디버그:', {
+      console.error('❌ 로그인 실패 상세 로그:', {
         status,
-        data,
-        url: error?.config?.url,
-        params: error?.config?.params,
+        responseData: data,
+        request,
+        message,
+        fullError: error,
       });
 
       let errorMsg = '로그인 중 오류가 발생했습니다.';
 
-      // 메시지 파싱 (문자열 또는 객체)
       const serverMessage =
         typeof data === 'string'
           ? data
@@ -84,16 +79,21 @@ const AuthScreen = () => {
           errorMsg = '비밀번호가 올바르지 않습니다.';
         } else if (serverMessage?.includes('이메일')) {
           errorMsg = '존재하지 않는 이메일입니다.';
-        } else if (serverMessage) {
-          errorMsg = serverMessage;
         } else {
-          errorMsg = '접근이 거부되었습니다.';
+          errorMsg = serverMessage || '접근이 거부되었습니다.';
         }
       } else if (status === 400 || status === 401) {
         errorMsg = serverMessage || '잘못된 요청입니다.';
+      } else if (!status && message?.includes('Network')) {
+        errorMsg = '서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.';
+      } else if (serverMessage) {
+        errorMsg = serverMessage;
       }
 
-      Alert.alert('로그인 실패', errorMsg);
+      Alert.alert(
+        '로그인 실패',
+        `${errorMsg}${status ? ` (code: ${status})` : ''}`,
+      );
     }
   };
 

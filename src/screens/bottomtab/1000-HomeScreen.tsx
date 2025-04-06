@@ -12,10 +12,12 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {styles} from '../../styles/bottomtab/1000-homeStyles';
 import {scaleSize, scaleFont} from '../../styles/responsive';
+import Feather from 'react-native-vector-icons/Feather'; // ✅ 아이콘 import
 
 // ✅ 네비게이션 타입 지정
 type RootStackParamList = {
   ShortsPlayerScreen: {title: string; creator: string};
+  PostVideoScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<RootStackParamList>;
@@ -56,7 +58,7 @@ const videoData: VideoItem[] = [
 
 const HomeScreen: React.FC = () => {
   const {width} = useWindowDimensions();
-  const navigation = useNavigation<NavigationProps>(); // ✅ 네비게이션 타입 지정
+  const navigation = useNavigation<NavigationProps>();
   const itemWidth = (width - scaleSize(40)) / 2;
   const itemHeight = itemWidth * 0.75;
   const paddingBottomValue = scaleSize(40);
@@ -64,12 +66,11 @@ const HomeScreen: React.FC = () => {
   const renderItem = ({item}: {item: VideoItem}) => (
     <TouchableOpacity
       style={[styles.videoContainer, {width: itemWidth}]}
-      onPress={
-        () =>
-          navigation.navigate('ShortsPlayerScreen', {
-            title: item.title,
-            creator: item.creator,
-          }) // ✅ 에러 해결
+      onPress={() =>
+        navigation.navigate('ShortsPlayerScreen', {
+          title: item.title,
+          creator: item.creator,
+        })
       }>
       <Image
         source={{uri: item.thumbnail}}
@@ -104,7 +105,16 @@ const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>VideoAI</Text>
+      {/* ✅ 타이틀 + 아이콘 버튼 */}
+      <View style={styles.headerWrapper}>
+        <Text style={styles.header}>VideoAI</Text>
+        <TouchableOpacity
+          style={styles.headerIconButton}
+          onPress={() => navigation.navigate('PostVideoScreen')}>
+          <Feather name="upload" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={videoData}
         renderItem={renderItem}

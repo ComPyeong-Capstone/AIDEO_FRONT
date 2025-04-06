@@ -4,7 +4,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../styles/bottomtab/4000-notificationsStyles'; // ✅ 스타일 파일 분리
 import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
 
 // 📌 알림 데이터 타입 정의
 interface NotificationItem {

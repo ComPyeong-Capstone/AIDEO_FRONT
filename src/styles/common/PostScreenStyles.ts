@@ -1,16 +1,14 @@
 import {StyleSheet, Dimensions} from 'react-native';
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {COLORS} from '../../styles/colors';
 
-// ✅ 현재 화면 크기 가져오기
 const {width} = Dimensions.get('window');
 
-// ✅ 반응형 크기 조정 함수
 const scaleSize = (size: number) => (size * width) / 375;
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F2C3D',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingHorizontal: '5%',
@@ -18,22 +16,22 @@ export default StyleSheet.create({
   videoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#51BCB4',
+    borderColor: COLORS.primary,
     borderWidth: 2,
     borderRadius: scaleSize(10),
     marginVertical: scaleSize(10),
   },
   videoText: {
-    color: '#51BCB4',
+    color: COLORS.primary,
     fontWeight: 'bold',
     fontSize: scaleSize(18),
   },
   input: {
-    borderColor: '#51BCB4',
+    borderColor: COLORS.primary,
     borderWidth: 1,
     borderRadius: scaleSize(8),
     paddingHorizontal: scaleSize(10),
-    color: '#51BCB4',
+    color: COLORS.primary,
     marginVertical: scaleSize(8),
   },
   buttonContainer: {
@@ -44,7 +42,7 @@ export default StyleSheet.create({
   exitButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ccc',
+    backgroundColor: '#ccc', // ✳️ gray 색상 원하면 COLORS.gray 추가 권장
     borderRadius: scaleSize(10),
     width: width * 0.4,
     height: scaleSize(45),
@@ -52,14 +50,17 @@ export default StyleSheet.create({
   postButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.buttonBackground,
     borderRadius: scaleSize(10),
     width: width * 0.4,
     height: scaleSize(45),
   },
   buttonText: {
     fontWeight: 'bold',
-    color: '#1F2C3D',
+    color: COLORS.buttonText,
     fontSize: scaleSize(16),
+  },
+  inputMultiline: {
+    height: scaleSize(60),
   },
 });

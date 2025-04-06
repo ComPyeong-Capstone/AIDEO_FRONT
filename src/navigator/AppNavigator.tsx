@@ -11,21 +11,23 @@ import PhotoNavigator from './PhotoNavigator';
 
 // 화면
 import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
+import PostVideoScreen from '../screens/common/PostVideoScreen';
 
-// Context
-import {useUser} from '../context/UserContext'; // ✅ 사용자 정보 가져오기
+// ✅ 타입
+import {AppStackParamList} from './types';
+import {useUser} from '../context/UserContext'; // ✅ UserContext 불러오기
 
-const Stack = createStackNavigator();
+// ✅ Stack에 타입 적용
+const Stack = createStackNavigator<AppStackParamList>();
 
 const AppNavigator = () => {
-  const {user} = useUser(); // ✅ 전역 사용자 정보
+  const {user} = useUser(); // 🔥 로그인 여부 확인
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {user ? (
           <>
-            {/* ✅ 로그인 후 메인 화면들 */}
             <Stack.Screen name="Main" component={BottomTabNavigator} />
             <Stack.Screen name="ShortsStack" component={ShortsNavigator} />
             <Stack.Screen name="PhotoStack" component={PhotoNavigator} />
@@ -33,9 +35,9 @@ const AppNavigator = () => {
               name="ShortsPlayerScreen"
               component={ShortsPlayerScreen}
             />
+            <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />
           </>
         ) : (
-          // ✅ 로그인 안됐으면 Auth 화면
           <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
       </Stack.Navigator>

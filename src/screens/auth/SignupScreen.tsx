@@ -29,15 +29,26 @@ const SignupScreen = () => {
     }
 
     try {
-      // 1️⃣ 회원가입 요청
       await userApi.signup(userName, email, pw);
-
       Alert.alert('회원가입 성공 🎉', '이제 로그인 해주세요!');
       navigation.goBack();
     } catch (error: any) {
       console.error('회원가입 실패:', error);
-      const errorMsg =
-        error?.response?.data || '회원가입 중 오류가 발생했습니다.';
+
+      const message = error?.response?.data;
+
+      let errorMsg = '회원가입 중 오류가 발생했습니다.';
+
+      if (typeof message === 'string') {
+        if (message.includes('이메일')) {
+          errorMsg = '이미 존재하는 이메일입니다.';
+        } else if (message.includes('닉네임')) {
+          errorMsg = '이미 존재하는 닉네임입니다.';
+        } else {
+          errorMsg = message;
+        }
+      }
+
       Alert.alert('회원가입 실패', errorMsg);
     }
   };
