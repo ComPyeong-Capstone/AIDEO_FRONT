@@ -20,24 +20,32 @@ export const userApi = {
       password,
     });
 
-    const user = response.data;
+    const {token, user} = response.data;
+
+    if (!token || !user) {
+      throw new Error('로그인 응답이 올바르지 않습니다.');
+    }
 
     // 🔧 프로필 이미지가 null일 경우 기본 이미지 랜덤 지정
     if (!user.profileImage) {
       user.profileImage = getRandomProfileImageFileName();
     }
 
-    return user;
+    return {
+      accessToken: token, // 🔁 명시적으로 accessToken으로 리턴
+      refreshToken: '', // ❌ 없으므로 비워서 처리
+      user,
+    };
   },
 
-  // ✅ 닉네임 변경 (토큰 기반)
+  // ✅ 닉네임 변경
   updateNickname: (newNickname: string) => {
     return axiosInstance.put('/users/nickname', {
       newNickname,
     });
   },
 
-  // ✅ 프로필 이미지 변경 (토큰 기반)
+  // ✅ 프로필 이미지 변경
   updateProfileImage: (profileImageUrl: string) => {
     return axiosInstance.put('/users/profile-image', {
       profileImageUrl,

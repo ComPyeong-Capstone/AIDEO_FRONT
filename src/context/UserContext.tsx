@@ -1,7 +1,5 @@
-// 서버에서 가져온 사용자 정보를 임시로 저장하기 위한 역할
-// 정보를 계속 서버에서 가져오게 되면 비효율적
-// 앱이 느려짐, 네트워크 비용 낭비 등...
-// 사용자 정보가 필요한 모든 곳에 쓰이고 로그아웃 시 null 처리
+// src/context/UserContext.tsx
+
 import React, {createContext, useContext, useState} from 'react';
 
 // ✅ User 인터페이스
@@ -14,18 +12,18 @@ export interface User {
 
 // ✅ Context 타입 정의
 interface UserContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: User | null | undefined; // 🔁 undefined: 아직 판단 안 됨
+  setUser: (user: User | null | undefined) => void;
 }
 
-// ✅ Context 생성 (초기값은 undefined)
+// ✅ Context 생성
 export const UserContext = createContext<UserContextType | undefined>(
   undefined,
-); // 🔥 export 추가!
+);
 
 // ✅ Provider 컴포넌트
 export const UserProvider = ({children}: {children: React.ReactNode}) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | undefined>(undefined); // 🔁 초기값 undefined
 
   return (
     <UserContext.Provider value={{user, setUser}}>

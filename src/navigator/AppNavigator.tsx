@@ -13,15 +13,18 @@ import PhotoNavigator from './PhotoNavigator';
 import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
 import PostVideoScreen from '../screens/common/PostVideoScreen';
 
-// ✅ 타입
+// 타입
 import {AppStackParamList} from './types';
-import {useUser} from '../context/UserContext'; // ✅ UserContext 불러오기
+import {useUser} from '../context/UserContext';
 
 // ✅ Stack에 타입 적용
 const Stack = createStackNavigator<AppStackParamList>();
 
 const AppNavigator = () => {
-  const {user} = useUser(); // 🔥 로그인 여부 확인
+  const {user} = useUser();
+
+  // 🔐 로그인 여부 판단 중이면 아무것도 렌더링하지 않음 (또는 로딩 화면 가능)
+  if (user === undefined) return null;
 
   return (
     <NavigationContainer>
