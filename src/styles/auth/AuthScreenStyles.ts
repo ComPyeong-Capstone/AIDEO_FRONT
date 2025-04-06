@@ -1,18 +1,19 @@
 // src/styles/auth/AuthScreenStyles.ts
 import {StyleSheet} from 'react-native';
 import {scaleFont, scaleSize} from '../responsive';
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 export const authStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E2A38',
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: scaleSize(20),
   },
   title: {
     fontSize: scaleFont(28),
-    color: '#fff',
+    //color: '#fff',
     fontWeight: 'bold',
     marginBottom: scaleSize(30),
   },

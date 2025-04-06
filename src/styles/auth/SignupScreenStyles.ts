@@ -1,11 +1,12 @@
 // src/styles/auth/SignupScreenStyles.ts
 import {StyleSheet} from 'react-native';
 import {scaleFont, scaleSize} from '../responsive';
+import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
 
 export const signupStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F0ECFF', // 연보라 계열
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: scaleSize(20),
