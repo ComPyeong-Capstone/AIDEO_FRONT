@@ -12,30 +12,23 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {getComments, createComment, deleteComment} from '../../api/commentsApi';
 import {likeComment, unlikeComment} from '../../api/commentLikeApi';
+import {createNotification} from '../../api/notificationApi';
 import {styles} from '../../styles/shortsPlayer/CommentsScreenStyles';
-
-interface Reply {
-  id: number;
-  username: string;
-  content: string;
-  liked: boolean;
-}
-
-interface Comment {
-  id: number;
-  username: string;
-  content: string;
-  liked: boolean;
-  replies: Reply[];
-}
+import CommentItem, {Comment, Reply} from '../../components/CommentItem';
 
 interface Props {
   postId: number;
   currentUserId: number;
+  creatorUserId: number;
   onClose: () => void;
 }
 
-const CommentsScreen: React.FC<Props> = ({postId, currentUserId, onClose}) => {
+const CommentsScreen: React.FC<Props> = ({
+  postId,
+  currentUserId,
+  creatorUserId,
+  onClose,
+}) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<{
@@ -47,29 +40,32 @@ const CommentsScreen: React.FC<Props> = ({postId, currentUserId, onClose}) => {
 
   const loadComments = useCallback(async () => {
     try {
-      const data = await getComments(postId, currentUserId);
+      const data = await getComments(postId);
       setComments(data);
     } catch (error) {
       console.error('댓글 불러오기 실패:', error);
     }
-  }, [postId, currentUserId]);
+  }, [postId]);
 
   useEffect(() => {
     loadComments();
   }, [loadComments]);
 
   const handleCreateComment = async () => {
-    if (newComment.trim().length === 0) {
-      return;
-    }
+    if (newComment.trim().length === 0) return;
 
     try {
-      await createComment(
-        postId,
-        currentUserId,
-        newComment,
-        replyingTo ? replyingTo.commentId : null,
-      );
+      await createComment(postId, newComment, replyingTo?.commentId || null);
+
+      // 🔔 알림: 본인 글이 아닐 경우만
+      if (currentUserId !== creatorUserId) {
+        await createNotification({
+          receiverId: creatorUserId,
+          postId,
+          type: 'COMMENT',
+        });
+      }
+
       setNewComment('');
       setReplyingTo(null);
       await loadComments();
@@ -80,7 +76,7 @@ const CommentsScreen: React.FC<Props> = ({postId, currentUserId, onClose}) => {
 
   const handleDeleteComment = async (commentId: number) => {
     try {
-      await deleteComment(postId, commentId, currentUserId);
+      await deleteComment(postId, commentId);
       await loadComments();
     } catch (error) {
       console.error('댓글 삭제 실패:', error);
@@ -89,17 +85,42 @@ const CommentsScreen: React.FC<Props> = ({postId, currentUserId, onClose}) => {
 
   const handleToggleLike = async (commentId: number, liked: boolean) => {
     try {
-      liked
-        ? await unlikeComment(postId, commentId, currentUserId)
-        : await likeComment(postId, commentId, currentUserId);
+      // 댓글/대댓글 중 해당 id 찾기
+      const all = comments.flatMap(c => [c, ...c.replies]);
+      const target = all.find(c => c.id === commentId);
+      const receiverId = target?.userId;
+
+      if (!receiverId) return;
+
+      if (liked) {
+        await unlikeComment(postId, commentId);
+      } else {
+        await likeComment(postId, commentId);
+
+        // 🔔 본인이 작성한 댓글이 아니라면 알림 생성
+        if (receiverId !== currentUserId) {
+          await createNotification({
+            receiverId,
+            postId,
+            type: 'COMMENT_LIKE',
+          });
+        }
+      }
+
       await loadComments();
     } catch (error) {
       console.error('댓글 좋아요 처리 실패:', error);
     }
   };
 
+  const handleReplyTo = (commentId: number, username: string) => {
+    setReplyingTo(
+      replyingTo?.commentId === commentId ? null : {commentId, username},
+    );
+  };
+
   const renderReply = (reply: Reply) => (
-    <View key={reply.id} style={styles.replyItem}>
+    <View key={reply.id} style={[styles.commentContainer, styles.replyItem]}>
       <View style={styles.profileCircle} />
       <View style={styles.flex1}>
         <View style={styles.commentHeader}>
@@ -123,7 +144,7 @@ const CommentsScreen: React.FC<Props> = ({postId, currentUserId, onClose}) => {
     <SafeAreaView style={styles.safeContainer}>
       <KeyboardAvoidingView
         style={styles.flexContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}>
         <View
           style={[styles.modalContainer, {paddingBottom: insets.bottom + 10}]}>
@@ -137,40 +158,13 @@ const CommentsScreen: React.FC<Props> = ({postId, currentUserId, onClose}) => {
             data={comments}
             keyExtractor={item => item.id.toString()}
             renderItem={({item}) => (
-              <View style={styles.commentItem}>
-                <View style={styles.profileCircle} />
-                <View style={styles.flex1}>
-                  <View style={styles.commentHeader}>
-                    <Text style={styles.username}>{item.username}</Text>
-                    <View style={styles.row}>
-                      <TouchableOpacity
-                        onPress={() => handleToggleLike(item.id, item.liked)}>
-                        <Text style={styles.likeButton}>
-                          {item.liked ? '❤️' : '🤍'}
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => handleDeleteComment(item.id)}>
-                        <Text style={styles.likeButton}>🗑</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <Text style={styles.commentText}>{item.content}</Text>
-
-                  {item.replies.map(renderReply)}
-
-                  <TouchableOpacity
-                    onPress={() =>
-                      setReplyingTo(
-                        replyingTo?.commentId === item.id
-                          ? null
-                          : {commentId: item.id, username: item.username},
-                      )
-                    }>
-                    <Text style={styles.replyButton}>답글 달기</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <CommentItem
+                item={item}
+                onToggleLike={handleToggleLike}
+                onDelete={handleDeleteComment}
+                onReplyTo={handleReplyTo}
+                renderReply={renderReply}
+              />
             )}
           />
 

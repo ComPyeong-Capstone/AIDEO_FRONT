@@ -14,7 +14,7 @@ import {styles} from '../../styles/bottomtab/5000-profileStyles';
 import {useUser} from '../../context/UserContext';
 import {defaultProfileImages} from '../../utils/defaultProfile';
 import {userApi} from '../../api/userApi';
-import {getPostsByUser, PostResponse} from '../../api/postApi';
+import {getMyPosts, PostResponse} from '../../api/postApi';
 import {scaleFont} from '../../styles/responsive';
 
 const getProfileImageByName = (fileName: string | null | undefined) => {
@@ -35,7 +35,9 @@ const ProfileScreen: React.FC = () => {
   const [userPosts, setUserPosts] = useState<PostResponse[]>([]);
 
   const handleSaveProfile = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     const nicknameUnchanged = newNickname === user.userName;
     const imageUnchanged = selectedImage === user.profileImage;
@@ -46,17 +48,13 @@ const ProfileScreen: React.FC = () => {
     }
 
     try {
-      // 닉네임 변경
       if (!nicknameUnchanged) {
         await userApi.updateNickname(newNickname);
       }
-
-      // 프로필 이미지 변경
       if (!imageUnchanged) {
         await userApi.updateProfileImage(selectedImage);
       }
 
-      // 전역 상태 업데이트
       setUser({
         ...user,
         userName: newNickname,
@@ -69,21 +67,6 @@ const ProfileScreen: React.FC = () => {
       const errorMessage =
         err?.response?.data?.message || '프로필 수정에 실패했습니다.';
 
-      // 닉네임 중복 에러지만 이미지 변경은 허용
-      if (errorMessage.includes('중복') && nicknameUnchanged === true) {
-        if (!imageUnchanged) {
-          await userApi.updateProfileImage(selectedImage);
-          setUser({
-            ...user,
-            profileImage: selectedImage,
-          });
-
-          Alert.alert('성공', '프로필 이미지가 변경되었습니다.');
-          setModalVisible(false);
-          return;
-        }
-      }
-
       Alert.alert('오류', errorMessage);
     }
   };
@@ -94,19 +77,15 @@ const ProfileScreen: React.FC = () => {
       {
         text: '로그아웃',
         style: 'destructive',
-        onPress: () => {
-          setUser(null);
-        },
+        onPress: () => setUser(null),
       },
     ]);
   };
 
   useEffect(() => {
     const fetchUserPosts = async () => {
-      if (!user) return;
-
       try {
-        const posts = await getPostsByUser(user.userId);
+        const posts = await getMyPosts();
         setUserPosts(posts);
       } catch (error) {
         console.error('❌ 사용자 쇼츠 불러오기 실패:', error);
@@ -114,39 +93,25 @@ const ProfileScreen: React.FC = () => {
     };
 
     fetchUserPosts();
-  }, [user]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       {/* 프로필 영역 */}
       <View style={styles.profileSection}>
-        <View style={styles.profileTopRow}>
+        <View style={styles.profileCenteredRow}>
           <Image
             source={getProfileImageByName(user?.profileImage)}
             style={styles.profileImage}
           />
-          <View style={styles.statsContainer}>
-            {['게시물', '팔로워', '팔로잉'].map((label, index) => (
-              <View key={index} style={styles.statItem}>
-                <Text style={[styles.statNumber, {fontSize: scaleFont(16)}]}>
-                  0
-                </Text>
-                <Text style={[styles.statLabel, {fontSize: scaleFont(12)}]}>
-                  {label}
-                </Text>
-              </View>
-            ))}
-          </View>
+          <Text style={[styles.username, {fontSize: scaleFont(20)}]}>
+            {user?.userName ?? ''}
+          </Text>
         </View>
-
-        <Text
-          style={[styles.username, {fontSize: scaleFont(20), marginLeft: -20}]}>
-          {user?.userName ?? ''}
-        </Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.button}
+            style={styles.longButton}
             onPress={() => setModalVisible(true)}>
             <Text style={[styles.buttonText, {fontSize: scaleFont(14)}]}>
               프로필 편집
@@ -163,28 +128,6 @@ const ProfileScreen: React.FC = () => {
           </Text>
           <Text style={styles.postCountText}>{userPosts.length}</Text>
         </View>
-      </View>
-
-      <View style={styles.historyContainer}>
-        <FlatList
-          data={userPosts}
-          numColumns={2}
-          keyExtractor={item => item.postId.toString()}
-          renderItem={({item}) => (
-            <View style={styles.historyCard}>
-              <Image
-                source={{uri: item.videoURL}}
-                style={styles.historyThumbnail}
-              />
-              <Text
-                style={styles.historyCardTitle}
-                numberOfLines={1}
-                ellipsizeMode="tail">
-                {item.title}
-              </Text>
-            </View>
-          )}
-        />
       </View>
 
       {/* 모달 - 프로필 편집 */}
@@ -215,10 +158,7 @@ const ProfileScreen: React.FC = () => {
                       source={item}
                       style={[
                         styles.modalImage,
-                        isSelected && {
-                          borderWidth: 2,
-                          borderColor: '#51BCB4',
-                        },
+                        isSelected && styles.selectedImageBorder,
                       ]}
                     />
                   </TouchableOpacity>

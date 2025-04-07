@@ -1,33 +1,32 @@
 // src/api/generateApi.ts
-import axios from 'axios';
-import {BASE_URL} from '../config/baseUrl';
+import axiosInstance from './axiosInstance';
 
-interface GenerateMaterialRequest {
+export interface GenerateMaterialRequest {
   title: string;
   duration: number;
 }
 
-interface GenerateMaterialResponse {
+export interface GenerateMaterialResponse {
   subtitles: string[];
   image_urls: string[];
 }
 
-interface GeneratePartialVideoRequest {
+export interface GeneratePartialVideoRequest {
   image_urls: string[];
   subtitles: string[];
 }
 
-interface GeneratePartialVideoResponse {
+export interface GeneratePartialVideoResponse {
   video_urls: string[];
 }
 
-interface GenerateFinalVideoRequest {
+export interface GenerateFinalVideoRequest {
   videos: string[];
   subtitles: string[];
   music_url: string;
 }
 
-interface GenerateFinalVideoResponse {
+export interface GenerateFinalVideoResponse {
   final_video_url: string;
 }
 
@@ -35,7 +34,7 @@ interface GenerateFinalVideoResponse {
 export const generateMaterial = async (
   payload: GenerateMaterialRequest,
 ): Promise<GenerateMaterialResponse> => {
-  const response = await axios.post(`${BASE_URL}/generate/material`, payload);
+  const response = await axiosInstance.post('/generate/material', payload);
   return response.data;
 };
 
@@ -43,10 +42,7 @@ export const generateMaterial = async (
 export const generatePartialVideo = async (
   payload: GeneratePartialVideoRequest,
 ): Promise<GeneratePartialVideoResponse> => {
-  const response = await axios.post(
-    `${BASE_URL}/generate/video/partial`,
-    payload,
-  );
+  const response = await axiosInstance.post('/generate/video/partial', payload);
   return response.data;
 };
 
@@ -54,9 +50,6 @@ export const generatePartialVideo = async (
 export const generateFinalVideo = async (
   payload: GenerateFinalVideoRequest,
 ): Promise<GenerateFinalVideoResponse> => {
-  const response = await axios.post(
-    `${BASE_URL}/generate/video/final`,
-    payload,
-  );
+  const response = await axiosInstance.post('/generate/video/final', payload);
   return response.data;
 };

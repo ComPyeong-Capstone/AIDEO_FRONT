@@ -40,10 +40,8 @@ const AuthScreen = () => {
         password,
       );
 
-      // 🔐 토큰 저장
       await saveAuthTokens(accessToken, refreshToken);
 
-      // 🖼️ 프로필 이미지 없으면 기본 이미지 지정
       if (!user.profileImage) {
         const randomImage = getRandomProfileImageFileName();
         await userApi.updateProfileImage(randomImage);
@@ -52,15 +50,15 @@ const AuthScreen = () => {
 
       setUser(user);
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-
-      // 🔁 AppNavigator에서 user 값에 따라 화면이 바뀌므로 따로 replace 불필요
     } catch (error: any) {
-      const status = error?.response?.status;
-      const data = error?.response?.data;
-      const message = error?.message;
-      const request = error?.request;
+      const status = error?.response?.status ?? null;
+      const data = error?.response?.data ?? null;
+      const message = error?.message ?? '';
+      const request = error?.request ?? null;
 
-      console.error('❌ 로그인 실패 상세 로그:', {
+      // 👇 이모지를 분리하고 객체는 따로 출력
+      console.error('로그인 실패 ❌');
+      console.error('상세 로그:', {
         status,
         responseData: data,
         request,

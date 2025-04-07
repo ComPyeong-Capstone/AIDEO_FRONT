@@ -2,7 +2,7 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../../styles/colors';
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -19,10 +19,9 @@ export const styles = StyleSheet.create({
     padding: scaleSize(20),
   },
 
-  profileTopRow: {
-    flexDirection: 'row',
+  profileCenteredRow: {
     alignItems: 'center',
-    alignSelf: 'flex-start',
+    justifyContent: 'center',
     marginBottom: scaleSize(10),
   },
 
@@ -31,28 +30,7 @@ export const styles = StyleSheet.create({
     height: scaleSize(80),
     borderRadius: scaleSize(40),
     backgroundColor: '#aaa',
-  },
-
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '80%',
-    marginLeft: scaleSize(20),
-  },
-
-  statItem: {
-    alignItems: 'center',
-  },
-
-  statNumber: {
-    fontWeight: 'bold',
-    fontSize: scaleFont(16),
-    textAlign: 'center',
-  },
-
-  statLabel: {
-    fontSize: scaleFont(12),
-    color: '#444',
+    marginBottom: scaleSize(10),
   },
 
   username: {
@@ -66,28 +44,16 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    flexWrap: 'wrap',
     marginTop: scaleSize(20),
   },
 
-  button: {
+  longButton: {
     backgroundColor: '#51BCB4',
     borderRadius: scaleSize(8),
     alignItems: 'center',
     justifyContent: 'center',
-    margin: scaleSize(8),
-    paddingVertical: scaleSize(8),
-    paddingHorizontal: width * 0.1,
-  },
-
-  fullWidthButton: {
-    backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(8),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: scaleSize(20),
     paddingVertical: scaleSize(12),
-    width: width * 0.9,
+    width: width * 0.8,
   },
 
   buttonText: {
@@ -149,11 +115,6 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  centered: {
-    alignItems: 'center',
-  },
-
-  // 🔷 Modal 관련
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -182,6 +143,11 @@ export const styles = StyleSheet.create({
     margin: scaleSize(6),
   },
 
+  selectedImageBorder: {
+    borderWidth: 2,
+    borderColor: '#51BCB4',
+  },
+
   modalSaveButton: {
     backgroundColor: '#51BCB4',
     borderRadius: scaleSize(8),
@@ -206,7 +172,6 @@ export const styles = StyleSheet.create({
     fontSize: scaleFont(14),
   },
 
-  // 🔥 로그아웃 버튼
   logoutButton: {
     position: 'absolute',
     bottom: scaleSize(30),

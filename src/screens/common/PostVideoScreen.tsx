@@ -12,11 +12,8 @@ import styles from '../../styles/common/PostScreenStyles';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {createPost} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
-
-// ✅ AppStackParamList import
 import {AppStackParamList} from '../../navigator/types';
 
-// ✅ navigation props 타입 변경
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'PostVideoScreen'>;
 }
@@ -38,8 +35,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
     try {
       const payload = {
         title,
-        userId: user.userId,
-        videoURL: 'https://example.com/test.mp4',
+        videoURL: 'https://example.com/test.mp4', // 실제 업로드 URL로 교체 가능
         hashtags: tags
           .split('#')
           .map(tag => tag.trim())
@@ -50,12 +46,11 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
 
       Alert.alert('게시 완료', '게시물이 성공적으로 등록되었습니다.');
 
-      // ✅ Home 탭으로 이동 + 새 게시물 전달
       navigation.navigate('Main', {
         screen: 'Home',
         params: {
           newPost: {
-            id: String(Date.now()),
+            id: String(Date.now()), // 임시 ID
             title: payload.title,
             creator: user.userName,
             thumbnail: 'https://via.placeholder.com/150',
@@ -70,6 +65,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={[styles.container, {paddingTop: insets.top}]}>
+      {/* 제목 입력 */}
       <TextInput
         style={[styles.input, {width: width * 0.9}]}
         placeholder="제목을 입력하세요"
@@ -78,6 +74,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
         onChangeText={setTitle}
       />
 
+      {/* 영상 결과물 (미리보기) */}
       <View
         style={[
           styles.videoContainer,
@@ -86,6 +83,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
         <Text style={styles.videoText}>최종결과물</Text>
       </View>
 
+      {/* 해시태그 입력 */}
       <TextInput
         style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
         placeholder="태그 텍스트 (Ex. #캡스톤, #컴펑)"
@@ -95,6 +93,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
         multiline
       />
 
+      {/* 버튼 영역 */}
       <View style={[styles.buttonContainer, {width: width * 0.9}]}>
         <TouchableOpacity
           style={styles.exitButton}

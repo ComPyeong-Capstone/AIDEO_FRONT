@@ -1,86 +1,138 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 
-const {width, height} = Dimensions.get('window'); // 📌 전체 화면 크기 가져오기
-
 export const styles = StyleSheet.create({
+  // 📌 전체 화면 배경
   safeContainer: {
     flex: 1,
-    backgroundColor: 'black', // ✅ SafeAreaView용 스타일 추가
+    backgroundColor: 'black',
   },
   container: {
     flex: 1,
-    backgroundColor: 'black', // 📌 배경을 검은색으로 설정하여 대비 향상
+    backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
   },
   videoPlaceholder: {
-    flex: 1, // ✅ 화면 전체를 차지하도록 설정
-    width: '100%', // ✅ 가로 전체 채우기
-    height: '100%', // ✅ 세로 전체 채우기
-    backgroundColor: 'black', // 📌 실제 영상 대신 검은 배경
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
   },
   videoText: {
     fontSize: scaleFont(22),
     fontWeight: 'bold',
-    color: 'white', // ✅ 텍스트 색상 흰색으로 변경
+    color: 'white',
   },
-  /* 📌 좋아요 및 댓글 UI (오른쪽 하단 고정) */
+
+  // 📌 좋아요 & 댓글 메뉴
   sideMenu: {
     position: 'absolute',
-    right: scaleSize(20), // ✅ 화면 오른쪽 정렬
-    bottom: scaleSize(100), // ✅ 화면 하단 기준으로 위치 조정
+    right: scaleSize(20),
+    bottom: scaleSize(100),
     alignItems: 'center',
   },
   icon: {
-    fontSize: scaleFont(28), // ✅ 아이콘 크기 증가
+    fontSize: scaleFont(28),
     marginBottom: scaleSize(12),
-    color: 'white', // ✅ 아이콘 색상 흰색
+    color: 'white',
   },
   count: {
     fontSize: scaleFont(14),
     fontWeight: 'bold',
-    color: 'white', // ✅ 숫자 색상 흰색
+    color: 'white',
     marginBottom: scaleSize(18),
   },
-  /* 📌 영상 정보 (좌측 하단 고정) */
+
+  // 📌 영상 정보
   videoInfo: {
     position: 'absolute',
-    bottom: scaleSize(40), // ✅ 하단 위치 조정
+    bottom: scaleSize(40),
     left: scaleSize(20),
-    flexDirection: 'row', // ✅ 제작자와 제목 가로 정렬
+    flexDirection: 'row',
     alignItems: 'center',
   },
   creatorProfile: {
-    width: scaleSize(30), // ✅ 프로필 크기 증가
+    width: scaleSize(30),
     height: scaleSize(30),
     backgroundColor: '#D3D3D3',
     borderRadius: scaleSize(15),
-    marginRight: scaleSize(10), // ✅ 오른쪽 여백 추가
+    marginRight: scaleSize(10),
   },
   creator: {
     fontSize: scaleFont(14),
-    color: 'white', // ✅ 제작자 정보 색상을 흰색으로 변경
+    color: 'white',
   },
   title: {
     fontSize: scaleFont(18),
     fontWeight: 'bold',
-    color: 'white', // ✅ 제목 색상을 흰색으로 변경
+    color: 'white',
   },
-  /* 📌 뒤로 가기 버튼 (상단 왼쪽 고정) */
+
+  // 📌 뒤로 가기 버튼
   backButton: {
     position: 'absolute',
-    top: scaleSize(50), // ✅ 화면 상단에 배치
+    top: scaleSize(50),
     left: scaleSize(20),
-    backgroundColor: 'rgba(0,0,0,0.6)', // ✅ 더 진한 투명 배경 적용
+    backgroundColor: 'rgba(0,0,0,0.6)',
     padding: scaleSize(14),
     borderRadius: scaleSize(50),
   },
   backText: {
     color: 'white',
-    fontSize: scaleFont(22), // ✅ 버튼 크기 증가
+    fontSize: scaleFont(22),
     fontWeight: 'bold',
+  },
+
+  // ✅ 좋아요 유저 보기 버튼 (내 게시물일 경우)
+  likeUserButton: {
+    position: 'absolute',
+    bottom: scaleSize(160),
+    left: scaleSize(20),
+    backgroundColor: 'white',
+    paddingVertical: scaleSize(8),
+    paddingHorizontal: scaleSize(14),
+    borderRadius: scaleSize(10),
+  },
+  likeUserButtonText: {
+    fontSize: scaleFont(13),
+    fontWeight: 'bold',
+    color: '#333',
+  },
+
+  // ✅ 좋아요 유저 목록 모달
+  likedUsersContainer: {
+    flex: 1,
+    padding: scaleSize(20),
+    backgroundColor: 'white',
+  },
+  likedUsersTitle: {
+    fontSize: scaleFont(18),
+    fontWeight: 'bold',
+    marginBottom: scaleSize(10),
+  },
+  likedUserItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: scaleSize(8),
+  },
+  likedUserText: {
+    fontSize: scaleFont(16),
+    marginLeft: scaleSize(10),
+  },
+  profileCircle: {
+    width: scaleSize(30),
+    height: scaleSize(30),
+    backgroundColor: '#D3D3D3',
+    borderRadius: scaleSize(15),
+  },
+  cancelReply: {
+    fontSize: scaleFont(15),
+    color: '#FF6B6B',
+    fontWeight: 'bold',
+    marginTop: scaleSize(20),
+    textAlign: 'center',
   },
 });

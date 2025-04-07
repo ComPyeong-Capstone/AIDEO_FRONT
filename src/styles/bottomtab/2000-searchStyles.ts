@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
-import {scaleSize} from '../responsive'; // ✅ 반응형 함수 가져오기
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {scaleSize} from '../responsive';
+import {COLORS} from '../../styles/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: scaleSize(12),
     paddingVertical: scaleSize(10),
     marginBottom: scaleSize(18),
-    width: '100%', // ✅ 모든 기기에서 동일한 너비 유지
+    width: '100%',
   },
   searchIcon: {
     marginRight: scaleSize(8),
@@ -29,21 +29,29 @@ export const styles = StyleSheet.create({
   },
   videoItem: {
     backgroundColor: COLORS.imagebox,
-    padding: scaleSize(18),
     borderRadius: scaleSize(12),
     marginBottom: scaleSize(12),
-    width: '100%', // ✅ 모든 기기에서 동일한 너비 유지
+    overflow: 'hidden',
+    paddingBottom: scaleSize(8), // ✅ 하단 여백 추가
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: scaleSize(150),
+    backgroundColor: '#ccc',
+  },
+  videoInfoContainer: {
+    paddingHorizontal: scaleSize(10),
+    paddingTop: scaleSize(10),
+    alignItems: 'flex-start', // ✅ 왼쪽 정렬
   },
   videoTitle: {
-    fontSize: scaleSize(18),
+    fontSize: scaleSize(16),
     fontWeight: 'bold',
     color: '#51BCB4',
-    textAlign: 'center', // ✅ 텍스트 중앙 정렬
   },
   videoCreator: {
     fontSize: scaleSize(14),
     color: '#A9BCD0',
-    marginTop: scaleSize(6),
-    textAlign: 'center',
+    marginTop: scaleSize(4),
   },
 });

@@ -1,6 +1,5 @@
 // src/api/notificationApi.ts
-import axios from 'axios';
-import {BASE_URL} from '../config/baseUrl';
+import axiosInstance from './axiosInstance';
 
 export type NotificationType = 'LIKE' | 'COMMENT' | 'COMMENT_LIKE';
 
@@ -16,25 +15,22 @@ export interface Notification {
 
 // 알림 생성
 export const createNotification = async (payload: {
-  senderId: number;
   receiverId: number;
   postId: number;
   type: NotificationType;
 }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/notifications`, payload);
-    return response.data; // 메시지: 성공 또는 에러
+    const response = await axiosInstance.post('/notifications', payload);
+    return response.data;
   } catch (error) {
     throw error;
   }
 };
 
 // 알림 목록 조회
-export const getNotifications = async (userId: number) => {
+export const getNotifications = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/notifications`, {
-      params: {userId},
-    });
+    const response = await axiosInstance.get('/notifications');
     return response.data as Notification[];
   } catch (error) {
     throw error;
@@ -44,10 +40,8 @@ export const getNotifications = async (userId: number) => {
 // 알림 읽음 처리
 export const markNotificationAsRead = async (notiId: number) => {
   try {
-    const response = await axios.put(
-      `${BASE_URL}/notifications/${notiId}/read`,
-    );
-    return response.data; // 메시지: 성공 또는 알림 없음
+    const response = await axiosInstance.put(`/notifications/${notiId}/read`);
+    return response.data;
   } catch (error) {
     throw error;
   }

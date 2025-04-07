@@ -45,12 +45,23 @@ export const styles = StyleSheet.create({
     marginBottom: scaleSize(15),
   },
 
-  // 댓글 아이템
-  commentItem: {
+  // 공통: 댓글 아이템 (댓글 + 대댓글)
+  commentContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+  },
+
+  // 댓글
+  commentItem: {
     marginBottom: scaleSize(15),
   },
+
+  // 대댓글
+  replyItem: {
+    marginTop: scaleSize(8),
+    marginLeft: scaleSize(40),
+  },
+
   profileCircle: {
     width: scaleSize(30),
     height: scaleSize(30),
@@ -62,6 +73,7 @@ export const styles = StyleSheet.create({
   flex1: {
     flex: 1,
   },
+
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -84,13 +96,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: scaleSize(6),
   },
 
-  // 대댓글
-  replyItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: scaleSize(8),
-    marginLeft: scaleSize(40),
-  },
+  // 답글 버튼
   replyButton: {
     color: '#51BCB4',
     fontSize: scaleFont(13),
@@ -139,6 +145,8 @@ export const styles = StyleSheet.create({
     fontSize: scaleFont(20),
     color: 'black',
   },
+
+  // 공통 row
   row: {
     flexDirection: 'row',
     alignItems: 'center',
