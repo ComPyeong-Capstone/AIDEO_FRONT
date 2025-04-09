@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -11,36 +11,58 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {styles} from '../../styles/shortsPlayer/ShortsPlayerScreenStyles';
 import CommentsScreen from './CommentsScreen';
 import {postLike, cancelLike, getLikedUsers} from '../../api/postLikeApi';
+import {getComments} from '../../api/commentsApi';
 import {createNotification} from '../../api/notificationApi';
 
 const ShortsPlayerScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {postId, title, creator, currentUserId, creatorUserId} =
+  const {postId, title, creator, currentUserId, creatorUserId, showComments} =
     route.params as {
       postId: number;
       title: string;
       creator: string;
       currentUserId: number;
       creatorUserId: number;
+      showComments?: boolean; // ✅ 선택적 파라미터 추가
     };
 
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(109); // 임시 값
+  const [likeCount, setLikeCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(0);
   const [likedUsers, setLikedUsers] = useState<any[]>([]);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [isLikedUsersVisible, setIsLikedUsersVisible] = useState(false);
+
+  const loadCounts = useCallback(async () => {
+    try {
+      const comments = await getComments(postId);
+      setCommentCount(comments.length);
+
+      const users = await getLikedUsers(postId);
+      setLikedUsers(users);
+      setLikeCount(users.length);
+      setIsLiked(users.some(user => user.userId === currentUserId));
+    } catch (error) {
+      console.error('댓글/좋아요 수 불러오기 실패:', error);
+    }
+  }, [postId, currentUserId]);
+
+  useEffect(() => {
+    loadCounts();
+
+    if (showComments) {
+      setIsCommentsVisible(true); // ✅ 댓글창 자동 열기
+    }
+  }, [loadCounts, showComments]);
 
   const handleToggleLike = async () => {
     try {
       if (isLiked) {
         await cancelLike(postId);
-        setLikeCount(prev => prev - 1);
       } else {
         await postLike(postId);
-        setLikeCount(prev => prev + 1);
 
-        // 🔔 게시물 좋아요 알림
         if (currentUserId !== creatorUserId) {
           await createNotification({
             receiverId: creatorUserId,
@@ -49,7 +71,8 @@ const ShortsPlayerScreen: React.FC = () => {
           });
         }
       }
-      setIsLiked(prev => !prev);
+
+      await loadCounts(); // 좋아요 변경 후 다시 불러오기
     } catch (error) {
       console.error('게시물 좋아요 실패:', error);
     }
@@ -84,7 +107,7 @@ const ShortsPlayerScreen: React.FC = () => {
             <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
               <Text style={styles.icon}>💬</Text>
             </TouchableOpacity>
-            <Text style={styles.count}>20</Text>
+            <Text style={styles.count}>{commentCount}</Text>
           </View>
 
           {/* 📌 내 게시물일 때만 좋아요 유저 목록 보기 */}
@@ -125,7 +148,10 @@ const ShortsPlayerScreen: React.FC = () => {
           postId={postId}
           currentUserId={currentUserId}
           creatorUserId={creatorUserId}
-          onClose={() => setIsCommentsVisible(false)}
+          onClose={() => {
+            setIsCommentsVisible(false);
+            loadCounts(); // 댓글 작성 후 다시 카운트 로드
+          }}
         />
       </Modal>
 

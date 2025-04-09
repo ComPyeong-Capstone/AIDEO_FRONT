@@ -11,10 +11,12 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Feather from 'react-native-vector-icons/Feather';
+
 import {styles} from '../../styles/bottomtab/1000-homeStyles';
 import {scaleSize, scaleFont} from '../../styles/responsive';
-import Feather from 'react-native-vector-icons/Feather';
 import {getAllPosts, PostResponse} from '../../api/postApi';
+import {useUser} from '../../context/UserContext'; // ✅ 추가
 
 type RootStackParamList = {
   ShortsPlayerScreen: {
@@ -32,6 +34,7 @@ type NavigationProps = StackNavigationProp<RootStackParamList>;
 const HomeScreen: React.FC = () => {
   const {width} = useWindowDimensions();
   const navigation = useNavigation<NavigationProps>();
+  const {user} = useUser(); // ✅ 현재 로그인된 유저
 
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,13 +65,15 @@ const HomeScreen: React.FC = () => {
         navigation.navigate('ShortsPlayerScreen', {
           postId: item.postId,
           title: item.title,
-          creator: item.userId.toString(), // 이름 있으면 교체
-          currentUserId: item.userId, // Context에 있으면 교체
+          creator: item.userName ?? '알 수 없음',
+          currentUserId: user?.userId ?? 0, // ✅ context에서 가져온 ID
           creatorUserId: item.userId,
         })
       }>
       <Image
-        source={{uri: 'https://via.placeholder.com/150'}} // thumbnail 나중에 반영 가능
+        source={{
+          uri: item.thumbnail ?? 'https://via.placeholder.com/150',
+        }}
         style={[
           styles.thumbnail,
           {height: itemHeight, borderRadius: scaleSize(8)},
@@ -91,7 +96,7 @@ const HomeScreen: React.FC = () => {
             ]}
           />
           <Text style={[styles.creator, {fontSize: scaleFont(14)}]}>
-            사용자 {item.userId}
+            {item.userName ?? `사용자 ${item.userId}`}
           </Text>
         </View>
       </View>

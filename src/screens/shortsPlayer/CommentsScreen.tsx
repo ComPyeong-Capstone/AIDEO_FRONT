@@ -92,19 +92,23 @@ const CommentsScreen: React.FC<Props> = ({
 
       if (!receiverId) return;
 
+      // ✅ 본인 댓글은 좋아요 금지
+      if (receiverId === currentUserId) {
+        console.warn('자신의 댓글에는 좋아요를 누를 수 없습니다.');
+        return;
+      }
+
       if (liked) {
         await unlikeComment(postId, commentId);
       } else {
         await likeComment(postId, commentId);
 
         // 🔔 본인이 작성한 댓글이 아니라면 알림 생성
-        if (receiverId !== currentUserId) {
-          await createNotification({
-            receiverId,
-            postId,
-            type: 'COMMENT_LIKE',
-          });
-        }
+        await createNotification({
+          receiverId,
+          postId,
+          type: 'COMMENT_LIKE',
+        });
       }
 
       await loadComments();

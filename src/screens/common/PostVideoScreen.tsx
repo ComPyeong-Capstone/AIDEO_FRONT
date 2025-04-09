@@ -13,6 +13,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {createPost} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 import {AppStackParamList} from '../../navigator/types';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'PostVideoScreen'>;
@@ -25,6 +26,25 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
 
   const [title, setTitle] = useState<string>('');
   const [tags, setTags] = useState<string>('');
+  const [videoURI, setVideoURI] = useState<string | null>(null);
+
+  const handlePickVideo = async () => {
+    try {
+      const result = await launchImageLibrary({
+        mediaType: 'mixed', // ✅ 영상 + 사진 모두 가능
+        selectionLimit: 1,
+      });
+
+      if (result.assets && result.assets.length > 0) {
+        const selected = result.assets[0];
+        if (selected.uri) {
+          setVideoURI(selected.uri); // 사진 URI도 테스트용으로 사용
+        }
+      }
+    } catch (error) {
+      console.error('미디어 선택 오류:', error);
+    }
+  };
 
   const handlePost = async () => {
     if (!user) {
@@ -32,12 +52,22 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
       return;
     }
 
+    if (!title.trim()) {
+      Alert.alert('입력 오류', '제목을 입력해주세요.');
+      return;
+    }
+
+    if (!videoURI) {
+      Alert.alert('입력 오류', '영상을 선택해주세요.');
+      return;
+    }
+
     try {
       const payload = {
-        title,
-        videoURL: 'https://example.com/test.mp4', // 실제 업로드 URL로 교체 가능
+        title: title.trim(),
+        videoURL: videoURI, // ✅ 실제 선택한 영상 URI 사용
         hashtags: tags
-          .split('#')
+          .split(/[#,\s]+/)
           .map(tag => tag.trim())
           .filter(tag => tag !== ''),
       };
@@ -50,7 +80,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
         screen: 'Home',
         params: {
           newPost: {
-            id: String(Date.now()), // 임시 ID
+            id: String(Date.now()),
             title: payload.title,
             creator: user.userName,
             thumbnail: 'https://via.placeholder.com/150',
@@ -58,7 +88,7 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
         },
       });
     } catch (error) {
-      console.error(error);
+      console.error('게시물 등록 실패:', error);
       Alert.alert('에러', '게시물 등록에 실패했습니다.');
     }
   };
@@ -74,14 +104,25 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
         onChangeText={setTitle}
       />
 
-      {/* 영상 결과물 (미리보기) */}
+      {/* 영상 미리보기 영역 */}
       <View
         style={[
           styles.videoContainer,
           {width: width * 0.8, height: height * 0.35},
         ]}>
-        <Text style={styles.videoText}>최종결과물</Text>
+        {videoURI ? (
+          <Text style={styles.videoText} numberOfLines={2}>
+            {videoURI}
+          </Text>
+        ) : (
+          <Text style={styles.videoText}>선택된 영상 없음</Text>
+        )}
       </View>
+
+      {/* 영상 선택 버튼 */}
+      <TouchableOpacity style={styles.postButton} onPress={handlePickVideo}>
+        <Text style={styles.buttonText}>📁 영상 선택</Text>
+      </TouchableOpacity>
 
       {/* 해시태그 입력 */}
       <TextInput

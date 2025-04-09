@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from '@react-navigation/native';
 import {styles} from '../../styles/bottomtab/4000-notificationsStyles';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 import {
@@ -15,10 +16,13 @@ import {
   markNotificationAsRead,
   Notification,
 } from '../../api/notificationApi';
+import {useUser} from '../../context/UserContext';
 
 const NotificationsScreen: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+  const {user} = useUser();
 
   const fetchNotifications = async () => {
     try {
@@ -36,7 +40,6 @@ const NotificationsScreen: React.FC = () => {
     fetchNotifications();
   }, []);
 
-  // 아이콘 매핑 함수
   const getIconName = (type: string) => {
     switch (type) {
       case 'LIKE':
@@ -45,38 +48,62 @@ const NotificationsScreen: React.FC = () => {
         return 'chatbubble-outline';
       case 'COMMENT_LIKE':
         return 'heart-outline';
+      case 'REPLY':
+        return 'return-down-forward-outline';
       default:
         return 'notifications-outline';
     }
   };
 
-  const handlePressNotification = async (notiId: number) => {
+  const getNotificationText = (type: string) => {
+    switch (type) {
+      case 'LIKE':
+        return '누군가 게시물을 좋아요 했습니다.';
+      case 'COMMENT':
+        return '누군가 댓글을 달았습니다.';
+      case 'COMMENT_LIKE':
+        return '누군가 댓글을 좋아요 했습니다.';
+      case 'REPLY':
+        return '누군가 내 댓글에 답글을 달았습니다.';
+      default:
+        return '새로운 알림이 있습니다.';
+    }
+  };
+
+  const handlePressNotification = async (noti: Notification) => {
     try {
-      await markNotificationAsRead(notiId);
-      // UI 갱신
+      await markNotificationAsRead(noti.notiId);
       setNotifications(prev =>
-        prev.map(n => (n.notiId === notiId ? {...n, notiRead: true} : n)),
+        prev.map(n => (n.notiId === noti.notiId ? {...n, notiRead: true} : n)),
       );
+
+      // 공통 파라미터 정의
+      const navigateParams = {
+        postId: noti.postId,
+        title: noti.postTitle ?? '',
+        creator: noti.creatorUserName ?? '',
+        currentUserId: user?.userId ?? 0,
+        creatorUserId: noti.creatorUserId,
+        showComments: ['COMMENT', 'COMMENT_LIKE', 'REPLY'].includes(
+          noti.notiType,
+        ),
+      };
+
+      navigation.navigate('ShortsPlayerScreen', navigateParams);
     } catch (error) {
       console.error('알림 읽음 처리 실패:', error);
     }
   };
 
   const renderItem = ({item}: {item: Notification}) => (
-    <TouchableOpacity onPress={() => handlePressNotification(item.notiId)}>
+    <TouchableOpacity onPress={() => handlePressNotification(item)}>
       <View
         style={[
           styles.notificationContainer,
-          {
-            backgroundColor: item.notiRead ? '#f5f5f5' : 'white',
-          },
+          item.notiRead ? styles.readBackground : styles.unreadBackground,
         ]}>
-        <Text style={[styles.notificationText, {fontSize: scaleFont(16)}]}>
-          {item.notiType === 'LIKE'
-            ? '누군가 게시물을 좋아요 했습니다.'
-            : item.notiType === 'COMMENT'
-            ? '누군가 댓글을 달았습니다.'
-            : '누군가 댓글을 좋아요 했습니다.'}
+        <Text style={styles.notificationText}>
+          {getNotificationText(item.notiType)}
         </Text>
         <Ionicons
           name={getIconName(item.notiType)}
@@ -89,13 +116,7 @@ const NotificationsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text
-        style={[
-          styles.header,
-          {fontSize: scaleFont(20), marginBottom: scaleSize(15)},
-        ]}>
-        알림
-      </Text>
+      <Text style={styles.header}>알림</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#51BCB4" />
@@ -104,7 +125,7 @@ const NotificationsScreen: React.FC = () => {
           data={notifications}
           renderItem={renderItem}
           keyExtractor={item => item.notiId.toString()}
-          contentContainerStyle={{paddingBottom: scaleSize(30)}}
+          contentContainerStyle={styles.contentContainer}
         />
       )}
     </SafeAreaView>

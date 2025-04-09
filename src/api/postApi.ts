@@ -13,11 +13,13 @@ export interface PostResponse {
   postId: number;
   title: string;
   userId: number;
+  userName: string;
   updateTime: string;
   videoURL: string;
   likeCount: number;
   commentCount: number;
   hashtags: string[];
+  thumbnail?: string;
 }
 
 // 게시물 등록

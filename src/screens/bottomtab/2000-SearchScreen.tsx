@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -9,43 +9,55 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {styles} from '../../styles/bottomtab/2000-searchStyles';
 import {scaleSize} from '../../styles/responsive';
-import {getAllPosts, PostResponse} from '../../api/postApi';
+import {getPostsByHashtag, getMyPosts, PostResponse} from '../../api/postApi';
+import {useUser} from '../../context/UserContext';
+
+// 🔧 네비게이션 타입 정의
+type RootStackParamList = {
+  ShortsPlayerScreen: {
+    postId: number;
+    title: string;
+    creator: string;
+    currentUserId: number;
+    creatorUserId: number;
+  };
+};
 
 const SearchScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [allPosts, setAllPosts] = useState<PostResponse[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<PostResponse[]>([]);
+  const {user} = useUser();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const posts = await getAllPosts();
-        setAllPosts(posts);
-        setFilteredPosts(posts);
-      } catch (error) {
-        console.error('📛 게시물 불러오기 실패:', error);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
+
     if (!query.trim()) {
-      setFilteredPosts(allPosts);
+      setFilteredPosts([]);
       return;
     }
 
-    const lower = query.toLowerCase();
-    const filtered = allPosts.filter(
-      post =>
-        post.hashtags.some(tag => tag.toLowerCase().includes(lower)) ||
-        post.title.toLowerCase().includes(lower), // 원하면 title 포함해도 됨
-    );
-    setFilteredPosts(filtered);
+    try {
+      if (query.startsWith('#')) {
+        // 해시태그 검색
+        const hashtag = query.replace('#', '').trim();
+        const posts = await getPostsByHashtag(hashtag);
+        setFilteredPosts(posts);
+      } else if (query === user?.userName) {
+        // 본인 이름 검색 시 내 게시물 조회
+        const posts = await getMyPosts();
+        setFilteredPosts(posts);
+      } else {
+        // 사용자 이름 검색은 서버에서 지원 안 하므로 필터 불가 (서버 수정 필요)
+        setFilteredPosts([]);
+      }
+    } catch (error) {
+      console.error('검색 실패:', error);
+    }
   };
 
   return (
@@ -60,7 +72,7 @@ const SearchScreen: React.FC = () => {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="사용자명 또는 해시태그로 검색"
+          placeholder="해시태그(#태그) 또는 사용자명을 입력"
           placeholderTextColor="#1F2C3D"
           value={searchQuery}
           onChangeText={handleSearch}
@@ -72,15 +84,25 @@ const SearchScreen: React.FC = () => {
         data={filteredPosts}
         keyExtractor={item => item.postId.toString()}
         renderItem={({item}) => (
-          <TouchableOpacity style={styles.videoItem}>
+          <TouchableOpacity
+            style={styles.videoItem}
+            onPress={() =>
+              navigation.navigate('ShortsPlayerScreen', {
+                postId: item.postId,
+                title: item.title,
+                creator: item.userName ?? '알 수 없음',
+                currentUserId: user?.userId ?? 0,
+                creatorUserId: item.userId,
+              })
+            }>
             <Image
-              source={{uri: item.videoURL}}
+              source={{uri: item.thumbnail ?? item.videoURL}}
               style={styles.videoThumbnail}
               resizeMode="cover"
             />
             <View style={styles.videoInfoContainer}>
               <Text style={styles.videoTitle}>{item.title}</Text>
-              <Text style={styles.videoCreator}>👤 사용자 {item.userId}</Text>
+              <Text style={styles.videoCreator}>👤 {item.userName}</Text>
             </View>
           </TouchableOpacity>
         )}
