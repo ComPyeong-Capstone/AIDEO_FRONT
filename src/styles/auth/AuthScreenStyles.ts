@@ -13,22 +13,22 @@ export const authStyles = StyleSheet.create({
   },
   title: {
     fontSize: scaleFont(28),
-    //color: '#fff',
     fontWeight: 'bold',
     marginBottom: scaleSize(30),
   },
-  input: {
-    width: '100%',
-    backgroundColor: '#fff',
-    padding: scaleSize(15),
-    borderRadius: scaleSize(8),
-    marginBottom: scaleSize(15),
-  },
-  button: {
+input: {
+  width: '90%',
+  backgroundColor: '#fff',
+  padding: scaleSize(15),
+  borderRadius: scaleSize(8),
+  marginBottom: scaleSize(20),
+},
+
+    button: {
     backgroundColor: '#51BCB4',
     padding: scaleSize(15),
     borderRadius: scaleSize(8),
-    width: '100%',
+    width: '90%',
     alignItems: 'center',
     marginTop: scaleSize(10),
   },
@@ -41,4 +41,30 @@ export const authStyles = StyleSheet.create({
     color: '#ccc',
     marginTop: scaleSize(20),
   },
+  googleButton: {
+    backgroundColor: '#DB4437', // Google 빨간색
+    padding: scaleSize(15),
+    borderRadius: scaleSize(8),
+    width: '90%',
+    alignItems: 'center',
+    marginTop: scaleSize(10),
+  },
+orContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  width: '90%',
+  marginVertical: scaleSize(20),
+  justifyContent: 'center',
+},
+line: {
+  flex: 1,
+  height: 1,
+  backgroundColor: '#ccc',
+},
+orText: {
+  marginHorizontal: scaleSize(10),
+  color: '#999',
+  fontSize: scaleFont(14),
+},
+
 });

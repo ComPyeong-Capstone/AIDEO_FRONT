@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -13,6 +14,8 @@ import {userApi} from '../../api/userApi';
 import {useUser} from '../../context/UserContext';
 import {getRandomProfileImageFileName} from '../../utils/defaultProfile';
 import {saveAuthTokens} from '../../utils/storage';
+import Icon from 'react-native-vector-icons/FontAwesome'; // 또는 MaterialCommunityIcons 등
+
 
 type RootStackParamList = {
   Login: undefined;
@@ -120,15 +123,34 @@ const AuthScreen = () => {
         secureTextEntry
       />
 
-      <TouchableOpacity style={authStyles.button} onPress={handleLogin}>
-        <Text style={authStyles.buttonText}>로그인</Text>
-      </TouchableOpacity>
+     <TouchableOpacity style={authStyles.button} onPress={handleLogin}>
+       <Text style={authStyles.buttonText}>로그인</Text>
+     </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={authStyles.switchText}>
-          계정이 없으신가요? 회원가입 하기
-        </Text>
-      </TouchableOpacity>
+     <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+       <Text style={authStyles.switchText}>
+         계정이 없으신가요? 회원가입 하기
+       </Text>
+     </TouchableOpacity>
+
+     {/* 👉 or + 선 구역 */}
+     <View style={authStyles.orContainer}>
+       <View style={authStyles.line} />
+       <Text style={authStyles.orText}>or</Text>
+       <View style={authStyles.line} />
+     </View>
+
+     <TouchableOpacity
+       style={authStyles.googleButton}
+       onPress={() => Alert.alert('Google 로그인', '아직 연결되지 않았습니다.')}
+     >
+       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+         <Icon name="google" size={20} color="#fff" style={{ marginRight: 10 }} />
+         <Text style={authStyles.buttonText}>Google로 로그인</Text>
+       </View>
+     </TouchableOpacity>
+
+
     </SafeAreaView>
   );
 };

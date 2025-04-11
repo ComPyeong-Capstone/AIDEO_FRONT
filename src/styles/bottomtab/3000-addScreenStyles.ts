@@ -14,7 +14,6 @@ export const styles = StyleSheet.create({
   },
   modalContent: {
     width: '80%',
-    //backgroundColor: 'rgba(255, 255, 255, 0.9)', // ✅ 반투명한 배경색
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
