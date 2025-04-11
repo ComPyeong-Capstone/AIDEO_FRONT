@@ -42,7 +42,7 @@ input: {
     marginTop: scaleSize(20),
   },
   googleButton: {
-    backgroundColor: '#DB4437', // Google 빨간색
+    backgroundColor: COLORS.textPrimary, // Google 빨간색
     padding: scaleSize(15),
     borderRadius: scaleSize(8),
     width: '90%',
