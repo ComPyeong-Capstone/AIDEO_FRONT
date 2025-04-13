@@ -13,12 +13,11 @@ export const signupStyles = StyleSheet.create({
   },
   title: {
     fontSize: scaleFont(28),
-    color: '#6A48E6', // 진보라 텍스트
     fontWeight: 'bold',
     marginBottom: scaleSize(30),
   },
   input: {
-    width: '100%',
+    width: '90%',
     backgroundColor: '#fff',
     padding: scaleSize(14),
     borderRadius: scaleSize(10),
@@ -27,10 +26,10 @@ export const signupStyles = StyleSheet.create({
     borderColor: '#ccc',
   },
   button: {
-    backgroundColor: '#6A48E6',
+    backgroundColor: COLORS.primary,
     padding: scaleSize(14),
     borderRadius: scaleSize(10),
-    width: '100%',
+    width: '90%',
     alignItems: 'center',
     marginTop: scaleSize(10),
   },
@@ -50,6 +49,5 @@ export const signupStyles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: scaleFont(14),
-    color: '#6A48E6',
   },
 });
