@@ -13,6 +13,13 @@ export type AppStackParamList = {
   Auth: undefined;
   ShortsStack: undefined;
   PhotoStack: undefined;
-  ShortsPlayerScreen: {title: string; creator: string};
+  ShortsPlayerScreen: {
+    postId: number;
+    title: string;
+    creator: string;
+    currentUserId: number;
+    creatorUserId: number;
+    showComments: boolean;
+  };
   PostVideoScreen: undefined;
 };

@@ -10,11 +10,17 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {getComments, createComment, deleteComment} from '../../api/commentsApi';
+
+import {
+  getComments,
+  createComment,
+  deleteComment,
+  Comment,
+} from '../../api/commentsApi';
 import {likeComment, unlikeComment} from '../../api/commentLikeApi';
 import {createNotification} from '../../api/notificationApi';
 import {styles} from '../../styles/shortsPlayer/CommentsScreenStyles';
-import CommentItem, {Comment, Reply} from '../../components/CommentItem';
+import CommentItem from '../../components/CommentItem';
 
 interface Props {
   postId: number;
@@ -57,7 +63,6 @@ const CommentsScreen: React.FC<Props> = ({
     try {
       await createComment(postId, newComment, replyingTo?.commentId || null);
 
-      // 🔔 알림: 본인 글이 아닐 경우만
       if (currentUserId !== creatorUserId) {
         await createNotification({
           receiverId: creatorUserId,
@@ -85,14 +90,12 @@ const CommentsScreen: React.FC<Props> = ({
 
   const handleToggleLike = async (commentId: number, liked: boolean) => {
     try {
-      // 댓글/대댓글 중 해당 id 찾기
-      const all = comments.flatMap(c => [c, ...c.replies]);
-      const target = all.find(c => c.id === commentId);
-      const receiverId = target?.userId;
+      const all = comments.flatMap(c => [c, ...(c.replies ?? [])]);
+      const target = all.find(c => c.commentId === commentId);
+      const receiverId = target?.author.userId;
 
       if (!receiverId) return;
 
-      // ✅ 본인 댓글은 좋아요 금지
       if (receiverId === currentUserId) {
         console.warn('자신의 댓글에는 좋아요를 누를 수 없습니다.');
         return;
@@ -102,8 +105,6 @@ const CommentsScreen: React.FC<Props> = ({
         await unlikeComment(postId, commentId);
       } else {
         await likeComment(postId, commentId);
-
-        // 🔔 본인이 작성한 댓글이 아니라면 알림 생성
         await createNotification({
           receiverId,
           postId,
@@ -123,18 +124,25 @@ const CommentsScreen: React.FC<Props> = ({
     );
   };
 
-  const renderReply = (reply: Reply) => (
-    <View key={reply.id} style={[styles.commentContainer, styles.replyItem]}>
+  const renderReply = (reply: Comment) => (
+    <View
+      key={reply.commentId}
+      style={[styles.commentContainer, styles.replyItem]}>
       <View style={styles.profileCircle} />
       <View style={styles.flex1}>
         <View style={styles.commentHeader}>
-          <Text style={styles.username}>{reply.username}</Text>
+          <Text style={styles.username}>{reply.author.userName}</Text>
           <View style={styles.row}>
             <TouchableOpacity
-              onPress={() => handleToggleLike(reply.id, reply.liked)}>
-              <Text style={styles.likeButton}>{reply.liked ? '❤️' : '🤍'}</Text>
+              onPress={() =>
+                handleToggleLike(reply.commentId, reply.likedByMe)
+              }>
+              <Text style={styles.likeButton}>
+                {reply.likedByMe ? '❤️' : '🤍'}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDeleteComment(reply.id)}>
+            <TouchableOpacity
+              onPress={() => handleDeleteComment(reply.commentId)}>
               <Text style={styles.likeButton}>🗑</Text>
             </TouchableOpacity>
           </View>
@@ -160,7 +168,7 @@ const CommentsScreen: React.FC<Props> = ({
 
           <FlatList
             data={comments}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item.commentId.toString()}
             renderItem={({item}) => (
               <CommentItem
                 item={item}

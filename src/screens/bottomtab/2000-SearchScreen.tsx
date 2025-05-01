@@ -52,7 +52,7 @@ const SearchScreen: React.FC = () => {
         const posts = await getMyPosts();
         setFilteredPosts(posts);
       } else {
-        // 사용자 이름 검색은 서버에서 지원 안 하므로 필터 불가 (서버 수정 필요)
+        // 사용자 이름 검색은 서버에서 지원하지 않음
         setFilteredPosts([]);
       }
     } catch (error) {
@@ -90,19 +90,19 @@ const SearchScreen: React.FC = () => {
               navigation.navigate('ShortsPlayerScreen', {
                 postId: item.postId,
                 title: item.title,
-                creator: item.userName ?? '알 수 없음',
+                creator: item.author.userName ?? '알 수 없음',
                 currentUserId: user?.userId ?? 0,
-                creatorUserId: item.userId,
+                creatorUserId: item.author.userId,
               })
             }>
             <Image
-              source={{uri: item.thumbnail ?? item.videoURL}}
+              source={{uri: item.videoURL}}
               style={styles.videoThumbnail}
               resizeMode="cover"
             />
             <View style={styles.videoInfoContainer}>
               <Text style={styles.videoTitle}>{item.title}</Text>
-              <Text style={styles.videoCreator}>👤 {item.userName}</Text>
+              <Text style={styles.videoCreator}>👤 {item.author.userName}</Text>
             </View>
           </TouchableOpacity>
         )}

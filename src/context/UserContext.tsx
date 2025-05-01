@@ -1,27 +1,29 @@
+// src/context/UserContext.tsx
+
 import React, {createContext, useContext, useState} from 'react';
 
-// ✅ 사용자 정보 타입
+// ✅ 사용자 정보 타입 (email은 optional로 변경)
 export interface User {
   userId: number;
   userName: string;
-  email: string;
   profileImage: string | null;
+  email?: string; // ✅ 로그인 응답에 email이 없기 때문에 optional 처리
 }
 
-// ✅ Context에 사용할 타입
+// ✅ Context에서 사용할 타입
 interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
 }
 
-// ✅ Context 생성 (초기값 undefined로 사용 금지)
+// ✅ Context 생성 (초기값 undefined → 타입 강제 체크 유도)
 export const UserContext = createContext<UserContextType | undefined>(
   undefined,
 );
 
 // ✅ Provider 컴포넌트
 export const UserProvider = ({children}: {children: React.ReactNode}) => {
-  const [user, setUser] = useState<User | null>(null); // 👉 로그인 안 된 기본 상태
+  const [user, setUser] = useState<User | null>(null); // 🔒 로그인 전엔 null
 
   return (
     <UserContext.Provider value={{user, setUser}}>
@@ -30,7 +32,7 @@ export const UserProvider = ({children}: {children: React.ReactNode}) => {
   );
 };
 
-// ✅ 커스텀 훅
+// ✅ Context 접근을 위한 커스텀 훅
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {

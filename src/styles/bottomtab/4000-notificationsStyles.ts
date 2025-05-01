@@ -39,4 +39,12 @@ export const styles = StyleSheet.create({
   contentContainer: {
     paddingBottom: scaleSize(30),
   },
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: scaleSize(50),
+  },
+  emptyText: {
+    color: '#999',
+    fontSize: scaleFont(16),
+  },
 });

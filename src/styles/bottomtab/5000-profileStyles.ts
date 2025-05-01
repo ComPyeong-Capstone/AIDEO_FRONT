@@ -1,8 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../../styles/colors';
-
-const {width} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -11,11 +9,15 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  scrollContent: {
+    alignItems: 'center',
+  },
+
   profileSection: {
     alignItems: 'center',
     backgroundColor: COLORS.background,
     borderRadius: scaleSize(10),
-    width: width * 0.9,
+    width: '90%',
     padding: scaleSize(20),
   },
 
@@ -45,6 +47,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: scaleSize(20),
+    width: '100%',
   },
 
   longButton: {
@@ -53,7 +56,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: scaleSize(12),
-    width: width * 0.8,
+    width: '100%',
+    maxWidth: scaleSize(280),
   },
 
   buttonText: {
@@ -62,8 +66,14 @@ export const styles = StyleSheet.create({
     fontSize: scaleFont(14),
   },
 
+  editButtonText: {
+    color: '#1F2C3D',
+    fontWeight: 'bold',
+    fontSize: scaleFont(14),
+  },
+
   historyHeader: {
-    width: width * 0.85,
+    width: '90%',
     marginTop: scaleSize(20),
     marginBottom: scaleSize(10),
   },
@@ -80,6 +90,7 @@ export const styles = StyleSheet.create({
 
   historyTitleLarge: {
     fontSize: scaleFont(16),
+    fontWeight: 'bold',
   },
 
   postCountText: {
@@ -89,30 +100,39 @@ export const styles = StyleSheet.create({
     color: '#888',
   },
 
-  historyContainer: {
-    width: width * 0.9,
-    flexGrow: 1,
-  },
-
-  historyCard: {
-    width: width * 0.42,
-    margin: scaleSize(6),
-    borderRadius: scaleSize(10),
-    backgroundColor: COLORS.imagebox,
+  videoContainer: {
+    backgroundColor: '#D0D0D0',
+    borderRadius: scaleSize(16),
+    aspectRatio: 1.15, // ✅ 세로 여유
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: scaleSize(16),
+    marginHorizontal: scaleSize(4), // ✅ 양 옆 간격
   },
 
-  historyThumbnail: {
+  thumbnailPlaceholder: {
     width: '100%',
-    height: scaleSize(120),
-    backgroundColor: '#ddd',
+    aspectRatio: 1,
+    borderRadius: scaleSize(16),
+    backgroundColor: '#4F637D',
   },
 
-  historyCardTitle: {
-    padding: scaleSize(8),
-    fontSize: scaleFont(12),
-    textAlign: 'center',
-    fontWeight: '500',
+  thumbnailImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: scaleSize(16),
+  },
+
+  textContainer: {
+    alignItems: 'center',
+    marginTop: scaleSize(8),
+  },
+
+  title: {
+    fontSize: scaleFont(14),
+    fontWeight: 'bold',
+    color: '#333',
   },
 
   modalOverlay: {
@@ -123,7 +143,7 @@ export const styles = StyleSheet.create({
   },
 
   modalContent: {
-    width: width * 0.9,
+    width: '90%',
     backgroundColor: 'white',
     borderRadius: scaleSize(10),
     padding: scaleSize(20),
@@ -141,6 +161,12 @@ export const styles = StyleSheet.create({
     height: scaleSize(60),
     borderRadius: scaleSize(30),
     margin: scaleSize(6),
+  },
+
+  profileImageList: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    marginVertical: scaleSize(10),
   },
 
   selectedImageBorder: {
@@ -191,5 +217,20 @@ export const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: scaleFont(14),
+  },
+
+  profileImageRow: {
+    flexDirection: 'row',
+  },
+
+  columnWrapper: {
+    justifyContent: 'space-between',
+    marginBottom: scaleSize(16),
+    paddingHorizontal: scaleSize(4), // ✅ 열 전체 padding
+  },
+
+  postsContainer: {
+    width: '90%',
+    paddingBottom: scaleSize(40),
   },
 });

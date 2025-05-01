@@ -6,3 +6,9 @@
 ```bash
 cp .env.example .env
 ```
+
+#### BASE_URL = 백엔드 API 서버 주소
+
+#### IOS_CLIENT_ID = Google Cloud Console에서 생성한 iOS용 OAuth Client ID
+
+#### WEB_CLIENT_ID = Google Cloud Console에서 생성한 Web용 OAuth Client ID

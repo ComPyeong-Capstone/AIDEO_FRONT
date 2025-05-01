@@ -1,30 +1,14 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {styles} from '../styles/shortsPlayer/CommentsScreenStyles';
-
-export interface Reply {
-  id: number;
-  userId: number;
-  username: string;
-  content: string;
-  liked: boolean;
-}
-
-export interface Comment {
-  id: number;
-  userId: number;
-  username: string;
-  content: string;
-  liked: boolean;
-  replies: Reply[];
-}
+import {Comment} from '../api/commentsApi'; // ✅ 통일된 타입 사용
 
 interface Props {
   item: Comment;
   onToggleLike: (commentId: number, liked: boolean) => void;
   onDelete: (commentId: number) => void;
   onReplyTo: (commentId: number, username: string) => void;
-  renderReply: (reply: Reply) => React.ReactNode; // ✅ JSX.Element → React.ReactNode
+  renderReply: (reply: Comment) => React.ReactNode; // ✅ 대댓글도 Comment 타입 사용
 }
 
 const CommentItem: React.FC<Props> = ({
@@ -39,12 +23,15 @@ const CommentItem: React.FC<Props> = ({
       <View style={styles.profileCircle} />
       <View style={styles.flex1}>
         <View style={styles.commentHeader}>
-          <Text style={styles.username}>{item.username}</Text>
+          <Text style={styles.username}>{item.author.userName}</Text>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => onToggleLike(item.id, item.liked)}>
-              <Text style={styles.likeButton}>{item.liked ? '❤️' : '🤍'}</Text>
+            <TouchableOpacity
+              onPress={() => onToggleLike(item.commentId, item.likedByMe)}>
+              <Text style={styles.likeButton}>
+                {item.likedByMe ? '❤️' : '🤍'}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => onDelete(item.id)}>
+            <TouchableOpacity onPress={() => onDelete(item.commentId)}>
               <Text style={styles.likeButton}>🗑</Text>
             </TouchableOpacity>
           </View>
@@ -52,9 +39,10 @@ const CommentItem: React.FC<Props> = ({
 
         <Text style={styles.commentText}>{item.content}</Text>
 
-        {item.replies.map(renderReply)}
+        {item.replies?.map(renderReply)}
 
-        <TouchableOpacity onPress={() => onReplyTo(item.id, item.username)}>
+        <TouchableOpacity
+          onPress={() => onReplyTo(item.commentId, item.author.userName)}>
           <Text style={styles.replyButton}>답글 달기</Text>
         </TouchableOpacity>
       </View>

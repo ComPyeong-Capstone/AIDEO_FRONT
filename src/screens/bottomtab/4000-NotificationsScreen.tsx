@@ -10,33 +10,36 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {styles} from '../../styles/bottomtab/4000-notificationsStyles';
-import {scaleSize, scaleFont} from '../../styles/responsive';
+import {scaleSize} from '../../styles/responsive';
 import {
   getNotifications,
   markNotificationAsRead,
   Notification,
 } from '../../api/notificationApi';
 import {useUser} from '../../context/UserContext';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {AppStackParamList} from '../../types/navigation';
 
 const NotificationsScreen: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<AppStackParamList>>();
   const {user} = useUser();
 
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      const data = await getNotifications();
-      setNotifications(data);
-    } catch (error) {
-      console.error('알림 목록 불러오기 실패:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const data = await getNotifications();
+        setNotifications(data);
+      } catch (error) {
+        console.error('알림 목록 불러오기 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchNotifications();
   }, []);
 
@@ -77,19 +80,16 @@ const NotificationsScreen: React.FC = () => {
         prev.map(n => (n.notiId === noti.notiId ? {...n, notiRead: true} : n)),
       );
 
-      // 공통 파라미터 정의
-      const navigateParams = {
+      navigation.navigate('ShortsPlayerScreen', {
         postId: noti.postId,
-        title: noti.postTitle ?? '',
-        creator: noti.creatorUserName ?? '',
+        title: '',
+        creator: noti.sender?.userName ?? '',
         currentUserId: user?.userId ?? 0,
-        creatorUserId: noti.creatorUserId,
+        creatorUserId: noti.sender?.userId ?? 0,
         showComments: ['COMMENT', 'COMMENT_LIKE', 'REPLY'].includes(
           noti.notiType,
         ),
-      };
-
-      navigation.navigate('ShortsPlayerScreen', navigateParams);
+      });
     } catch (error) {
       console.error('알림 읽음 처리 실패:', error);
     }
@@ -120,6 +120,10 @@ const NotificationsScreen: React.FC = () => {
 
       {loading ? (
         <ActivityIndicator size="large" color="#51BCB4" />
+      ) : notifications.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>새로운 알림이 없습니다.</Text>
+        </View>
       ) : (
         <FlatList
           data={notifications}

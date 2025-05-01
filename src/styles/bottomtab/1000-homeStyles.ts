@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // ✅ 타이틀 & 업로드 아이콘 배치용
   headerWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -35,42 +34,52 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: scaleSize(12),
     marginBottom: scaleSize(15),
-    width: '45%',
   },
-  thumbnail: {
+
+  thumbnailPlaceholder: {
     width: '100%',
-    aspectRatio: 16 / 9,
-    borderRadius: scaleSize(8),
+    aspectRatio: 1,
+    backgroundColor: '#4F637D',
+    borderTopLeftRadius: scaleSize(12),
+    borderTopRightRadius: scaleSize(12),
   },
+
   textContainer: {
     alignItems: 'center',
     marginTop: scaleSize(10),
   },
+
   title: {
     fontWeight: 'bold',
     color: '#51BCB4',
     textAlign: 'center',
     fontSize: scaleFont(16),
   },
+
   creatorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: scaleSize(5),
   },
-  profileCircle: {
-    backgroundColor: '#51BCB4',
+
+  profileImage: {
     width: scaleSize(24),
     height: scaleSize(24),
     borderRadius: scaleSize(12),
+    backgroundColor: '#51BCB4',
+    marginRight: scaleSize(8),
   },
+
   creator: {
     color: '#51BCB4',
     fontSize: scaleFont(14),
   },
+
   columnWrapper: {
     justifyContent: 'space-between',
   },
+
   contentContainer: {
     paddingBottom: scaleSize(20),
     paddingHorizontal: scaleSize(16),

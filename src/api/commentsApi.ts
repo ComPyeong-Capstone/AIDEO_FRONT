@@ -1,37 +1,58 @@
 import axiosInstance from './axiosInstance';
 
-export interface Reply {
-  id: number;
+// 👤 작성자 정보
+export interface Author {
   userId: number;
-  username: string;
-  content: string;
-  liked: boolean;
+  userName: string;
+  profileImage: string;
 }
 
+// 💬 댓글 타입 (대댓글도 포함)
 export interface Comment {
-  id: number;
-  userId: number;
-  username: string;
+  commentId: number;
+  postId: number;
   content: string;
-  liked: boolean;
-  replies: Reply[];
+  parentCommentID: number | null;
+  createdAt: string;
+  likeCount: number;
+  likedByMe: boolean;
+  author: Author;
+  replies: Comment[]; // ✅ 항상 배열로 보장
 }
 
-// ✅ 댓글 조회
+// 📝 댓글 작성 요청용
+export interface CommentPayload {
+  content: string;
+  parentCommentId: number | null;
+}
+
+// ✅ 댓글 목록 조회 (대댓글 포함 구조로 반환)
 export const getComments = async (postId: number): Promise<Comment[]> => {
   const response = await axiosInstance.get(`/posts/${postId}/comments`);
-  const rawData = response.data;
+  const rawData = response.data as Comment[];
 
-  const comments: Comment[] = rawData.map((item: any) => ({
-    id: item.commentId, // 🔄 변환
-    userId: item.userId,
-    username: item.username ?? '알 수 없음',
-    content: item.content,
-    liked: item.likedByMe,
-    replies: [], // 🔁 replies 데이터가 있을 경우 여기서 변환
+  const rootComments: Comment[] = [];
+  const repliesMap: Record<number, Comment[]> = {};
+
+  // 1단계: 부모/대댓글 분류
+  for (const comment of rawData) {
+    if (comment.parentCommentID === null) {
+      rootComments.push({...comment, replies: []});
+    } else {
+      if (!repliesMap[comment.parentCommentID]) {
+        repliesMap[comment.parentCommentID] = [];
+      }
+      repliesMap[comment.parentCommentID].push(comment);
+    }
+  }
+
+  // 2단계: replies 정리해서 부모에 붙이기
+  const structured = rootComments.map(comment => ({
+    ...comment,
+    replies: repliesMap[comment.commentId] ?? [],
   }));
 
-  return comments;
+  return structured;
 };
 
 // ✅ 댓글 작성
@@ -39,7 +60,7 @@ export const createComment = async (
   postId: number,
   content: string,
   parentCommentId: number | null = null,
-) => {
+): Promise<Comment> => {
   const response = await axiosInstance.post(`/posts/${postId}/comments`, {
     content,
     parentCommentId,
@@ -48,7 +69,10 @@ export const createComment = async (
 };
 
 // ✅ 댓글 삭제
-export const deleteComment = async (postId: number, commentId: number) => {
+export const deleteComment = async (
+  postId: number,
+  commentId: number,
+): Promise<string> => {
   const response = await axiosInstance.delete(
     `/posts/${postId}/comments/${commentId}`,
   );
