@@ -16,6 +16,7 @@ import {scaleSize, scaleFont} from '../../styles/responsive';
 type RootStackParamList = {
   ShortsStack: {screen: string};
   PhotoStack: {screen: string};
+  PostVideoStack: {screen: string};
 };
 
 type AddScreenModalProps = {
@@ -41,6 +42,7 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
         duration: visible ? 300 : 200,
         useNativeDriver: true,
       }),
+
     ]).start();
   }, [visible, opacityAnim, translateYAnim]);
 
@@ -83,12 +85,22 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
 
             {/* 내 사진 영상 */}
             <TouchableOpacity
-              style={[styles.button, {height: scaleSize(60)}]}
+              style={[styles.button, {height: scaleSize(60),marginBottom: scaleSize(15)}]}
               onPress={() => handleNavigate('PhotoStack', 'PhotoPromptScreen')}>
               <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
                 내 사진 영상
               </Text>
             </TouchableOpacity>
+
+            {/*내 영상 업로드 */}
+            <TouchableOpacity
+              style={[styles.button, {height: scaleSize(60)}]}
+              onPress={() => handleNavigate('PostVideoScreen')}>
+              <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
+                영상 업로드
+              </Text>
+            </TouchableOpacity>
+
           </Animated.View>
         </View>
       </TouchableWithoutFeedback>
