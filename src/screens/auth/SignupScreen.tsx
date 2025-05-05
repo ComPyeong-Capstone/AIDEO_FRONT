@@ -28,10 +28,13 @@ const SignupScreen = () => {
       return;
     }
 
+    const cleanedEmail = email.trim().toLowerCase(); // ✅ 소문자 + 공백 제거
+    const cleanedUserName = userName.trim(); // ✅ 공백 제거
+
     try {
-      await userApi.signup(userName, email, pw);
+      await userApi.signup(cleanedUserName, cleanedEmail, pw);
       Alert.alert('회원가입 성공 🎉', '이제 로그인 해주세요!');
-      navigation.goBack();
+      navigation.goBack(); // 로그인 화면으로 이동
     } catch (error: any) {
       const status = error?.response?.status;
       const data = error?.response?.data;

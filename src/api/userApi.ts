@@ -1,7 +1,6 @@
 // src/api/userApi.ts
 
 import axiosInstance from './axiosInstance';
-import {getRandomProfileImageFileName} from '../utils/defaultProfile';
 
 /** 로그인 응답 타입 */
 export interface LoginResponse {
@@ -21,12 +20,10 @@ export const userApi = {
     email: string,
     password: string,
   ): Promise<void> => {
-    const profileImage = getRandomProfileImageFileName();
     await axiosInstance.post('/users', {
       userName,
       email,
       password,
-      profileImage,
     });
   },
 
@@ -39,9 +36,9 @@ export const userApi = {
     return response.data;
   },
 
-  /** 🔹 프로필 이미지 파일명만 전송 */
+  /** 🔹 프로필 이미지 파일명만 서버에 전송 */
   updateProfileImageByName: async (fileName: string): Promise<void> => {
-    await axiosInstance.put('/users/profile-image-filename', {
+    await axiosInstance.put('/users/profile-image', {
       profileImage: fileName,
     });
   },

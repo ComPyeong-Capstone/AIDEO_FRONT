@@ -14,8 +14,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {authStyles} from '../../styles/auth/AuthScreenStyles';
 import {userApi} from '../../api/userApi';
 import {useUser} from '../../context/UserContext';
-import {saveAuthTokens} from '../../utils/storage';
-import {getRandomProfileImageFileName} from '../../utils/defaultProfile';
+import {saveAuthTokens, getAccessToken} from '../../utils/storage';
 import {RootStackParamList} from '../../types/navigation';
 
 const AuthScreen = () => {
@@ -31,32 +30,53 @@ const AuthScreen = () => {
       return;
     }
 
-    try {
-      const {token, user} = await userApi.login(email, password);
-      await saveAuthTokens(token);
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
 
-      if (!user.profileImage) {
-        const randomImage = getRandomProfileImageFileName();
-        await userApi.updateProfileImageByName(randomImage);
-        user.profileImage = randomImage;
-      }
+    console.group('📌 로그인 요청 로그');
+    console.log('🧪 입력값:', {
+      email,
+      password,
+      normalizedEmail,
+      normalizedPassword,
+    });
+
+    try {
+      const {token, user} = await userApi.login(
+        normalizedEmail,
+        normalizedPassword,
+      );
+
+      console.log('✅ 로그인 성공:', {token, user});
+
+      await saveAuthTokens(token);
+      console.log('🔐 저장된 토큰:', getAccessToken());
 
       setUser(user);
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
+      navigation.navigate('Main');
     } catch (error: any) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message ?? error?.message;
 
+      console.error('❌ 로그인 실패:', {
+        status,
+        message,
+        error,
+      });
+
       let errorMsg = '로그인 중 오류가 발생했습니다.';
-      if (status === 403) {
-        errorMsg = message.includes('비밀번호')
+      if (status === 403 || status === 404) {
+        errorMsg = message?.includes('비밀번호')
           ? '비밀번호가 올바르지 않습니다.'
           : '존재하지 않는 이메일입니다.';
-      } else if (!status && message.includes('Network')) {
+      } else if (!status && message?.includes('Network')) {
         errorMsg = '서버에 연결할 수 없습니다.';
       }
 
       Alert.alert('로그인 실패', errorMsg);
+    } finally {
+      console.groupEnd();
     }
   };
 
@@ -67,7 +87,7 @@ const AuthScreen = () => {
       <TextInput
         placeholder="이메일"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={text => setEmail(text.replace(/\s/g, ''))}
         style={authStyles.input}
         keyboardType="email-address"
         autoCapitalize="none"
@@ -75,7 +95,7 @@ const AuthScreen = () => {
       <TextInput
         placeholder="비밀번호"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={text => setPassword(text.replace(/\s/g, ''))}
         style={authStyles.input}
         secureTextEntry
       />
@@ -96,7 +116,6 @@ const AuthScreen = () => {
         <View style={authStyles.line} />
       </View>
 
-      {/* Google 로그인 UI만 남김 */}
       <TouchableOpacity style={authStyles.googleButton}>
         <View style={authStyles.googleButtonContent}>
           <Icon
@@ -109,7 +128,6 @@ const AuthScreen = () => {
         </View>
       </TouchableOpacity>
 
-      {/* Kakao 로그인 UI만 남김 */}
       <TouchableOpacity style={authStyles.kakaoButton}>
         <View style={authStyles.kakaoButtonContent}>
           <Icon
