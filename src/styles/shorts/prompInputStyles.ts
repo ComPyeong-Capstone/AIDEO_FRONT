@@ -1,73 +1,66 @@
-import {StyleSheet} from 'react-native';
-import {scaleSize} from '../responsive'; // ✅ 반응형 함수 가져오기
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {StyleSheet, Dimensions} from 'react-native';
+import {scaleSize, scaleFont} from '../responsive';
+import {COLORS} from '../../styles/colors';
+
+const {width, height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-backgroundColor: COLORS.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
+    backgroundColor: COLORS.background,
   },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+
+  // ✅ 공통 진행바 Wrapper (노치 아래 고정)
+  progressBarWrapper: {
     position: 'absolute',
+    top: 0,
     width: '100%',
-    paddingHorizontal: '10%',
+    alignItems: 'center',
+    paddingTop: scaleSize(10),
+    paddingHorizontal: width * 0.05,
+    backgroundColor: COLORS.background,
+    zIndex: 10,
   },
-  progressLine: {
-    height: 2,
-    backgroundColor: '#51BCB4',
+
+  // ✅ 콘텐츠 전체 정렬 + 양옆 패딩
+  contentWrapper: {
     flex: 1,
-    marginHorizontal: '2%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: width * 0.05,
+    width: '100%',
   },
-  progressDotActive: {
-    color: '#51BCB4',
-  },
-  progressDotInactive: {
-    color: '#888',
-  },
+
+  // ✅ 프롬프트 입력 박스
   inputContainer: {
     borderWidth: 2,
     borderColor: '#51BCB4',
     borderRadius: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    width: scaleSize(300),
-    height: scaleSize(150),
-    marginTop: scaleSize(80),
+    width: '100%',
+    height: height * 0.25,
+    marginTop: height * 0.1,
+    paddingHorizontal: scaleSize(12),
   },
+
   input: {
     color: '#51BCB4',
     textAlign: 'center',
     width: '100%',
     height: '100%',
+    padding: scaleSize(10),
+    fontSize: scaleFont(16),
+    textAlignVertical: 'top',
   },
+
+  // ✅ 버튼 컨테이너 (가로 정렬 + 양옆 여백)
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
     marginTop: scaleSize(30),
-    position: 'absolute',
-    bottom: scaleSize(50),
-  },
-  button: {
-    alignItems: 'center',
-    paddingVertical: scaleSize(12),
-    borderRadius: scaleSize(20),
-    width: scaleSize(140),
-  },
-  prevButton: {
-    backgroundColor: '#ccc',
-    marginRight: '2%',
-  },
-  nextButton: {
-    backgroundColor: '#51BCB4',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
+    marginBottom: scaleSize(40),
+    paddingHorizontal: width * 0.05,
+    width: '100%',
   },
 });

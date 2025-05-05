@@ -1,21 +1,44 @@
-import {StyleSheet} from 'react-native';
-import {scaleSize} from '../responsive'; // ✅ 반응형 함수 가져오기
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {StyleSheet, Dimensions} from 'react-native';
+import {scaleFont, scaleSize} from '../responsive';
+import {COLORS} from '../colors';
+
+const {width, height} = Dimensions.get('window');
+
+// ✅ 이미지 박스 크기 조금 축소
+const IMAGE_WIDTH = width * 0.55;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
   },
+
+  progressBarWrapper: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    zIndex: 10,
+    paddingTop: scaleSize(10),
+    paddingHorizontal: '5%',
+    backgroundColor: COLORS.background,
+  },
+
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
+    justifyContent: 'center',
     width: '100%',
-    paddingHorizontal: '10%',
+  },
+
+  progressDotActive: {
+    fontSize: scaleFont(18),
+    color: '#51BCB4',
+  },
+  progressDotInactive: {
+    fontSize: scaleFont(18),
+    color: '#888',
   },
   progressLine: {
     height: 2,
@@ -23,76 +46,62 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: '2%',
   },
-  progressDotActive: {
-    color: '#51BCB4',
-  },
-  progressDotInactive: {
-    color: '#888',
-  },
-  sliderContainer: {
-    flexDirection: 'row',
+
+  sliderWrapper: {
+    marginTop: height * 0.14,
+    height: IMAGE_HEIGHT + scaleSize(60), // ✅ 여유 공간 확보 (pagination 아래 여백 포함)
+    width: '100%',
     alignItems: 'center',
-    marginTop: scaleSize(80),
   },
-  imageItem: {
-    width: scaleSize(200),
-    height: scaleSize(250),
-    justifyContent: 'center',
-    alignItems: 'center',
+
+  swiperContainer: {
+    width: '100%',
+  },
+
+  imageBox: {
+    width: IMAGE_WIDTH,
+    height: IMAGE_HEIGHT,
     backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(10),
-    borderWidth: 2,
-    borderColor: '#51BCB4',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
+
   imageText: {
+    fontSize: scaleFont(18),
+    color: '#fff',
     fontWeight: 'bold',
-    color: '#1F2C3D',
   },
-  arrowButton: {
-    padding: scaleSize(20),
+
+  pagination: {
+    marginTop: scaleSize(20), // ✅ 이미지와 점 사이 여백 추가
   },
-  arrowText: {
-    fontSize: scaleSize(24),
-    color: '#51BCB4',
-  },
+
   captionBox: {
     width: '90%',
-    height: scaleSize(50),
+    height: scaleSize(120), // ✅ 자막 박스 확대
     borderColor: '#51BCB4',
     borderWidth: 2,
-    borderRadius: scaleSize(10),
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(20),
+    marginTop: scaleSize(24),
+    paddingHorizontal: scaleSize(10),
   },
+
   captionText: {
-    fontSize: scaleSize(16),
-    fontWeight: 'bold',
     color: '#51BCB4',
+    fontSize: scaleFont(16),
+    fontWeight: 'bold',
     textAlign: 'center',
   },
+
   buttonContainer: {
+    position: 'absolute',
+    bottom: scaleSize(40),
+    width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
-    marginTop: scaleSize(30),
-    position: 'absolute',
-    bottom: scaleSize(50),
-  },
-  button: {
-    alignItems: 'center',
-    paddingVertical: scaleSize(12),
-    borderRadius: scaleSize(20),
-    width: '45%',
-  },
-  prevButton: {
-    backgroundColor: '#ccc',
-  },
-  nextButton: {
-    backgroundColor: '#51BCB4',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
   },
 });
