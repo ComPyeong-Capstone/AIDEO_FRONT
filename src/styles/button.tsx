@@ -6,7 +6,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import {COLORS} from './colors';
+import {COLORS} from './colors'; // 🎨 프로젝트의 컬러 시스템 사용
 
 interface Props {
   title: string;
