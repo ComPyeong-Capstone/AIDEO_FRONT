@@ -12,6 +12,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import styles from '../../styles/photo/PhotoPromptStyles'; // ✅ 스타일 import
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const {width} = Dimensions.get('window');
 const IMAGE_WIDTH = width * 0.7; // 살짝 보이도록 크기 줄이기
@@ -68,9 +69,10 @@ const PhotoPromptScreen = ({navigation}) => {
                 resizeMode="cover"
               />
             ) : (
-              <TouchableOpacity style={styles.addButton} onPress={pickImage}>
-                <Text style={styles.addButtonText}>+</Text>
-              </TouchableOpacity>
+             <TouchableOpacity style={styles.addButton} onPress={pickImage}>
+               <Ionicons name="cloud-upload-outline" size={48} color="#aaa" />
+             </TouchableOpacity>
+
             )}
           </View>
         ))}
