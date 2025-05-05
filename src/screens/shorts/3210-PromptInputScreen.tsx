@@ -2,26 +2,22 @@ import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {styles} from '../../styles/shorts/prompInputStyles'; // ✅ styles/shorts 폴더의 스타일 파일
-import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
-import {COLORS} from '../../styles/colors'; // 🎨 색상 파일 가져오기
+
+import {styles} from '../../styles/shorts/prompInputStyles';
+import {scaleSize, scaleFont} from '../../styles/responsive';
 import CustomButton from '../../styles/button';
+import {ShortsStackParamList} from '../../navigator/ShortsNavigator'; // ✅ 네비게이션 타입 가져오기
 
-// ✅ 네비게이션 타입 정의
-type RootStackParamList = {
-  PromptInputScreen: undefined;
-  ImageSelectionScreen: undefined;
-};
+type Props = NativeStackScreenProps<ShortsStackParamList, 'PromptInputScreen'>;
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PromptInputScreen'>;
-
-const PromptInputScreen: React.FC<Props> = ({navigation}) => {
-  const insets = useSafeAreaInsets(); // ✅ 노치 대응
+const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
+  const insets = useSafeAreaInsets();
   const [prompt, setPrompt] = useState<string>('');
+  const {duration} = route.params; // ✅ 전달받은 영상 길이
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 최상단 4단계 진행바 (노치 대응) */}
+      {/* ✅ 진행바 */}
       <View
         style={[styles.progressContainer, {top: insets.top + scaleSize(10)}]}>
         <Text style={[styles.progressDotInactive, {fontSize: scaleFont(18)}]}>
@@ -52,6 +48,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation}) => {
           value={prompt}
         />
       </View>
+
       {/* ✅ 버튼 컨트롤 */}
       <View style={styles.buttonContainer}>
         <CustomButton
@@ -62,7 +59,9 @@ const PromptInputScreen: React.FC<Props> = ({navigation}) => {
         />
         <CustomButton
           title="영상 생성"
-          onPress={() => navigation.navigate('ImageSelectionScreen')}
+          onPress={
+            () => navigation.navigate('ImageSelectionScreen') // 필요하면 prompt, duration 같이 넘기기
+          }
           type="primary"
           style={{marginHorizontal: 8}}
         />

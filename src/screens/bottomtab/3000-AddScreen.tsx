@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {BlurView} from '@react-native-community/blur'; // ✅ Blur 효과 추가
+import {BlurView} from '@react-native-community/blur';
 import {styles} from '../../styles/bottomtab/3000-addScreenStyles';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 
@@ -26,39 +26,28 @@ type AddScreenModalProps = {
 const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  // ✅ 애니메이션 값 useRef로 관리
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const translateYAnim = useRef(new Animated.Value(100)).current;
 
   useEffect(() => {
-    if (visible) {
-      Animated.parallel([
-        Animated.timing(opacityAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateYAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.timing(opacityAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateYAnim, {
-          toValue: 100,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-  }, [visible]);
+    Animated.parallel([
+      Animated.timing(opacityAnim, {
+        toValue: visible ? 1 : 0,
+        duration: visible ? 300 : 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateYAnim, {
+        toValue: visible ? 0 : 100,
+        duration: visible ? 300 : 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [visible, opacityAnim, translateYAnim]);
+
+  const handleNavigate = (stack: keyof RootStackParamList, screen: string) => {
+    navigation.navigate(stack, {screen});
+    onClose();
+  };
 
   return (
     <Modal
@@ -68,44 +57,34 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
       onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalContainer}>
-          {/* ✅ 흐린 배경 추가 */}
           <BlurView
             style={styles.blurBackground}
             blurType="dark"
             blurAmount={10}
           />
-
           <Animated.View
             style={[
               styles.modalContent,
               {opacity: opacityAnim, transform: [{translateY: translateYAnim}]},
             ]}>
-            {/* 쇼츠 영상 버튼 */}
+            {/* 쇼츠용 영상 */}
             <TouchableOpacity
               style={[
                 styles.button,
                 {height: scaleSize(60), marginBottom: scaleSize(15)},
               ]}
-              onPress={() => {
-                navigation.navigate('ShortsStack', {
-                  screen: 'PromptInputScreen',
-                });
-                onClose();
-              }}>
+              onPress={() =>
+                handleNavigate('ShortsStack', 'SelectDurationScreen')
+              }>
               <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
                 쇼츠용 영상
               </Text>
             </TouchableOpacity>
 
-            {/* 내 사진 영상 버튼 */}
+            {/* 내 사진 영상 */}
             <TouchableOpacity
               style={[styles.button, {height: scaleSize(60)}]}
-              onPress={() => {
-                navigation.navigate('PhotoStack', {
-                  screen: 'PhotoPromptScreen',
-                });
-                onClose();
-              }}>
+              onPress={() => handleNavigate('PhotoStack', 'PhotoPromptScreen')}>
               <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
                 내 사진 영상
               </Text>
