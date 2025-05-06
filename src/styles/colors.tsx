@@ -2,7 +2,7 @@ export const COLORS = {
  primary: '#51BCB4',
   primary2: '#66D2CE',
   maincolor: '#51BCB4',
-  background: '#FFFFFF',
+  background: '#212426',
   textPrimary: 'black',
   textSecondary: '#111111',
   secondary: '#273647',
@@ -12,6 +12,7 @@ export const COLORS = {
   black: '#000000',
   thumbnail: '#4F637D',
   videocontainer: '#273647',
+  textcolor:'#FFFFFF'
 };
 
 export const DarkColors = {
