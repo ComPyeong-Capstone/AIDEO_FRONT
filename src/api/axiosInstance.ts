@@ -16,7 +16,7 @@ baseURL: `${BASE_URL}${BASE_URL.endsWith(':8080') ? '' : ':8080'}`,
 
 // ✅ 영상 생성 API (8000 포트)
 export const videoAxiosInstance = axios.create({
-  baseURL: `${BASE_URL}:8000`,
+baseURL: `${BASE_URL}${BASE_URL.endsWith(':8000') ? '' : ':8000'}`,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
