@@ -8,4 +8,5 @@ export const COLORS = {
   buttonBackground: '#51BCB4',
   buttonText: '#1F2C3D',
   imagebox: '#0D1B2A',
+  black: '#000000',
 };

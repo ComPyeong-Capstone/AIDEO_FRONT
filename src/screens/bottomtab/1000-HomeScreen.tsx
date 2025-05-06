@@ -12,6 +12,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Feather from 'react-native-vector-icons/Feather';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {styles} from '../../styles/bottomtab/1000-homeStyles';
 import {getAllPosts, PostResponse} from '../../api/postApi';
@@ -34,6 +35,7 @@ const HomeScreen: React.FC = () => {
   const {width} = useWindowDimensions();
   const navigation = useNavigation<NavigationProps>();
   const {user} = useUser();
+  const insets = useSafeAreaInsets();
 
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,16 +90,10 @@ const HomeScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {paddingBottom: 0}]}>
       <View style={styles.headerWrapper}>
         <Text style={styles.header}>VideoAI</Text>
-        <TouchableOpacity
-          style={styles.headerIconButton}
-          onPress={() => navigation.navigate('PostVideoScreen')}>
-          <Feather name="upload" size={20} color="#fff" />
-        </TouchableOpacity>
       </View>
-
       {loading ? (
         <ActivityIndicator size="large" color="#51BCB4" />
       ) : (
@@ -107,11 +103,15 @@ const HomeScreen: React.FC = () => {
           keyExtractor={item => item.postId.toString()}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={{
+            paddingBottom: 0, // ✅ 핵심 변경
+            paddingHorizontal: 15,
+          }}
         />
       )}
     </SafeAreaView>
   );
+
 };
 
 export default HomeScreen;

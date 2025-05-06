@@ -24,15 +24,15 @@ export const styles = StyleSheet.create({
 
   headerIconButton: {
     backgroundColor: '#51BCB4',
-    padding: scaleSize(8),
+    padding: scaleSize(10),
     borderRadius: scaleSize(8),
   },
 
   videoContainer: {
     backgroundColor: '#273647',
-    borderRadius: scaleSize(12),
+    borderRadius: scaleSize(25),
     alignItems: 'center',
-    paddingBottom: scaleSize(12),
+    paddingBottom: scaleSize(10),
     marginBottom: scaleSize(15),
   },
 
@@ -81,7 +81,7 @@ export const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    paddingBottom: scaleSize(20),
-    paddingHorizontal: scaleSize(16),
+    //paddingBottom: scaleSize(0),
+    paddingHorizontal: scaleSize(15),
   },
 });
