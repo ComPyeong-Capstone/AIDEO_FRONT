@@ -1,5 +1,5 @@
 // src/api/generateApi.ts
-import axiosInstance from './axiosInstance';
+import {videoAxiosInstance} from './axiosInstance';
 
 export interface GenerateMaterialRequest {
   title: string;
@@ -24,6 +24,10 @@ export interface GenerateFinalVideoRequest {
   videos: string[];
   subtitles: string[];
   music_url: string;
+  font_path: string;
+  font_effect: string;
+  font_color: string;
+  subtitle_y_positiong: number;
 }
 
 export interface GenerateFinalVideoResponse {
@@ -34,7 +38,7 @@ export interface GenerateFinalVideoResponse {
 export const generateMaterial = async (
   payload: GenerateMaterialRequest,
 ): Promise<GenerateMaterialResponse> => {
-  const response = await axiosInstance.post('/generate/material', payload);
+  const response = await videoAxiosInstance.post('/generate/material', payload);
   return response.data;
 };
 
@@ -42,7 +46,10 @@ export const generateMaterial = async (
 export const generatePartialVideo = async (
   payload: GeneratePartialVideoRequest,
 ): Promise<GeneratePartialVideoResponse> => {
-  const response = await axiosInstance.post('/generate/video/partial', payload);
+  const response = await videoAxiosInstance.post(
+    '/generate/video/partial',
+    payload,
+  );
   return response.data;
 };
 
@@ -50,6 +57,9 @@ export const generatePartialVideo = async (
 export const generateFinalVideo = async (
   payload: GenerateFinalVideoRequest,
 ): Promise<GenerateFinalVideoResponse> => {
-  const response = await axiosInstance.post('/generate/video/final', payload);
+  const response = await videoAxiosInstance.post(
+    '/generate/video/final',
+    payload,
+  );
   return response.data;
 };

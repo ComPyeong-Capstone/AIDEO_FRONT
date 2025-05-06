@@ -1,40 +1,40 @@
 import React, {useState} from 'react';
-import {View, Text, SafeAreaView} from 'react-native';
+import {View, Text, SafeAreaView, Image, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/Entypo';
 
 import {styles} from '../../styles/shorts/imageSelectionStyles';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
-
-const images = ['사진', '사진', '사진', '사진 2', '사진 3'];
+import ProgressBar from '../../components/ProgressBar';
 
 type Props = NativeStackScreenProps<
   ShortsStackParamList,
   'ImageSelectionScreen'
 >;
 
-const ImageSelectionScreen: React.FC<Props> = ({navigation}) => {
+const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
-  const [_, setSelectedImage] = useState(0);
+  const {imageUrls, subtitles, duration, prompt} = route.params;
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* 🔙 왼쪽 상단 뒤로가기 */}
+      <TouchableOpacity
+        style={[styles.backButton, {top: insets.top + 10}]}
+        onPress={() => navigation.goBack()}>
+        <Icon name="chevron-left" size={28} color="#333" />
+      </TouchableOpacity>
+
       {/* ✅ 진행바 */}
-      <View style={[styles.progressBarWrapper, {marginTop: insets.top}]}>
-        <View style={styles.progressContainer}>
-          <Text style={styles.progressDotInactive}>○</Text>
-          <View style={styles.progressLine} />
-          <Text style={styles.progressDotInactive}>○</Text>
-          <View style={styles.progressLine} />
-          <Text style={styles.progressDotActive}>●</Text>
-          <View style={styles.progressLine} />
-          <Text style={styles.progressDotInactive}>○</Text>
-        </View>
+      <View style={styles.progressBarWrapper}>
+        <ProgressBar currentStep={3} />
       </View>
 
-      {/* ✅ 슬라이더 */}
+      {/* ✅ 이미지 슬라이더 */}
       <View style={styles.sliderWrapper}>
         <Swiper
           loop={false}
@@ -42,19 +42,21 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation}) => {
           activeDotColor="#00A6FB"
           dotColor="#D9D9D9"
           paginationStyle={styles.pagination}
-          onIndexChanged={index => setSelectedImage(index)}
+          onIndexChanged={index => setSelectedIndex(index)}
           containerStyle={styles.swiperContainer}>
-          {images.map((item, index) => (
+          {imageUrls.map((uri, index) => (
             <View key={index} style={styles.imageBox}>
-              <Text style={styles.imageText}>{item}</Text>
+              <Image source={{uri}} style={styles.image} resizeMode="cover" />
             </View>
           ))}
         </Swiper>
       </View>
 
-      {/* ✅ 자막 */}
+      {/* ✅ 자막 박스 */}
       <View style={styles.captionBox}>
-        <Text style={styles.captionText}>생성된 자막</Text>
+        <Text style={styles.captionText} numberOfLines={2}>
+          {subtitles[selectedIndex] || '자막 없음'}
+        </Text>
       </View>
 
       {/* ✅ 버튼 */}
@@ -66,7 +68,14 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation}) => {
         />
         <CustomButton
           title="영상 생성"
-          onPress={() => navigation.navigate('FinalVideoScreen')}
+          onPress={() =>
+            navigation.navigate('FinalVideoScreen', {
+              duration,
+              prompt,
+              imageUrls,
+              subtitles,
+            })
+          }
           type="primary"
         />
       </View>

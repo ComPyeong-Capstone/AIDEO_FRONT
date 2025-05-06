@@ -13,10 +13,19 @@ import ResultScreen from '../screens/common/ResultScreen';
 export type ShortsStackParamList = {
   SelectDurationScreen: undefined;
   PromptInputScreen: {duration: number};
-  ImageSelectionScreen: {duration: number; prompt: string};
-  FinalVideoScreen: undefined;
+  ImageSelectionScreen: {
+    duration: number;
+    prompt: string;
+    imageUrls: string[];
+    subtitles: string[];
+  };
+  FinalVideoScreen: {
+    duration: number;
+    prompt: string;
+    imageUrls: string[];
+    subtitles: string[];
+  };
   MusicSelectionScreen: undefined;
-  PostVideoScreen: undefined;
   ResultScreen: undefined;
 };
 

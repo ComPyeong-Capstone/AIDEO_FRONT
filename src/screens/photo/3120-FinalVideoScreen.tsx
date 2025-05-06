@@ -3,6 +3,7 @@ import {View, Text, TouchableOpacity, useWindowDimensions} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
 
 import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
 import styles from '../../styles/photo/FinalVideoStyles';
@@ -15,16 +16,22 @@ type FinalVideoScreenNavigationProp = StackNavigationProp<
   'FinalVideoScreen'
 >;
 
+type FinalVideoScreenRouteProp = RouteProp<
+  PhotoStackParamList,
+  'FinalVideoScreen'
+>;
+
 interface Props {
   navigation: FinalVideoScreenNavigationProp;
+  route: FinalVideoScreenRouteProp;
 }
 
-const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
+const FinalVideoScreen: React.FC<Props> = ({navigation, route}) => {
+  const {prompt, images} = route.params;
   const {width} = useWindowDimensions();
   const VIDEO_WIDTH = width * 0.6;
   const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9);
 
-  const videos = ['생성된 동영상 1', '생성된 동영상 2', '생성된 동영상 3'];
   const [selectedVideo, setSelectedVideo] = useState<number>(0);
 
   // ✅ 반응형 videoItem 스타일 동적 생성
@@ -39,7 +46,7 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   });
 
   const handleNext = () => {
-    if (selectedVideo < videos.length - 1) {
+    if (selectedVideo < images.length - 1) {
       setSelectedVideo(selectedVideo + 1);
     }
   };
@@ -70,14 +77,16 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
             paginationStyle={styles.pagination}
             onIndexChanged={index => setSelectedVideo(index)}
             containerStyle={styles.swiperContainer}>
-            {videos.map((item, index) => (
+            {images.map((item, index) => (
               <View
                 key={index}
                 style={[
                   styles.videoItem,
                   getVideoSizeStyle(VIDEO_WIDTH, VIDEO_HEIGHT, width),
                 ]}>
-                <Text style={styles.videoText}>{item}</Text>
+                <Text style={styles.videoText}>
+                  {item.uri ? `이미지 ${index + 1}` : '불러오기 실패'}
+                </Text>
               </View>
             ))}
           </Swiper>

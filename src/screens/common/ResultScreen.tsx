@@ -3,6 +3,8 @@ import {View, Text, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../styles/common/ResultScreenStyles'; // ✅ 스타일 가져오기
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import {scaleSize} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -44,8 +46,17 @@ const ResultScreen: React.FC = () => {
 
         <View style={styles.smallButtonContainer}>
           <TouchableOpacity style={styles.saveButton}>
-            <Text style={styles.smallButtonText}>저장</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Ionicons
+                name="save-outline"
+                size={18}
+                color="#fff"
+                style={{marginRight: 6}}
+              />
+              <Text style={styles.smallButtonText}>저장</Text>
+            </View>
           </TouchableOpacity>
+
           <TouchableOpacity style={styles.exitButton} onPress={handleExit}>
             <Text style={styles.smallButtonText}>나가기</Text>
           </TouchableOpacity>

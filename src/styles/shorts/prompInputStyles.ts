@@ -2,7 +2,7 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../../styles/colors';
 
-const {width, height} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -10,57 +10,78 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // ✅ 공통 진행바 Wrapper (노치 아래 고정)
+  // 진행바 위치 설정
   progressBarWrapper: {
     position: 'absolute',
     top: 0,
     width: '100%',
-    alignItems: 'center',
     paddingTop: scaleSize(10),
-    paddingHorizontal: width * 0.05,
     backgroundColor: COLORS.background,
+    alignItems: 'center',
     zIndex: 10,
   },
 
-  // ✅ 콘텐츠 전체 정렬 + 양옆 패딩
+  // 프롬프트 입력 필드 포함하는 영역
   contentWrapper: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: width * 0.05,
-    width: '100%',
+    paddingHorizontal: scaleSize(20),
   },
 
-  // ✅ 프롬프트 입력 박스
   inputContainer: {
-    borderWidth: 2,
-    borderColor: '#51BCB4',
+    borderWidth: scaleSize(2),
+    borderColor: COLORS.primary,
     borderRadius: scaleSize(10),
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',
     height: height * 0.25,
-    marginTop: height * 0.1,
     paddingHorizontal: scaleSize(12),
+    justifyContent: 'center',
   },
 
   input: {
-    color: '#51BCB4',
-    textAlign: 'center',
     width: '100%',
     height: '100%',
-    padding: scaleSize(10),
+    color: COLORS.primary,
     fontSize: scaleFont(16),
     textAlignVertical: 'top',
+    padding: scaleSize(10),
   },
 
-  // ✅ 버튼 컨테이너 (가로 정렬 + 양옆 여백)
+  // 하단 버튼 컨테이너
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: scaleSize(30),
-    marginBottom: scaleSize(40),
-    paddingHorizontal: width * 0.05,
-    width: '100%',
+    marginVertical: scaleSize(30),
+    paddingHorizontal: scaleSize(20),
+  },
+
+  // 로딩 오버레이
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+
+  // 로딩 박스
+  loadingBox: {
+    backgroundColor: '#333',
+    padding: scaleSize(20),
+    borderRadius: scaleSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scaleSize(10),
+  },
+
+  // 로딩 텍스트
+  loadingText: {
+    marginTop: scaleSize(5),
+    color: '#fff',
+    fontSize: scaleFont(14),
   },
 });

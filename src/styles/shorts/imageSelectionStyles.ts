@@ -4,8 +4,8 @@ import {COLORS} from '../colors';
 
 const {width, height} = Dimensions.get('window');
 
-// ✅ 이미지 박스 크기 조금 축소
-const IMAGE_WIDTH = width * 0.55;
+// 이미지 크기 비율
+const IMAGE_WIDTH = width * 0.75;
 const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export const styles = StyleSheet.create({
@@ -15,12 +15,17 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  progressBarWrapper: {
+  backButton: {
     position: 'absolute',
-    top: 0,
+    top: scaleSize(12),
+    left: scaleSize(16),
+    zIndex: 20,
+  },
+
+  progressBarWrapper: {
+    marginTop: scaleSize(40), // 🔽 SafeArea 위로부터 더 여유
     width: '100%',
     zIndex: 10,
-    paddingTop: scaleSize(10),
     paddingHorizontal: '5%',
     backgroundColor: COLORS.background,
   },
@@ -34,22 +39,24 @@ export const styles = StyleSheet.create({
 
   progressDotActive: {
     fontSize: scaleFont(18),
-    color: '#51BCB4',
+    color: COLORS.primary,
   },
+
   progressDotInactive: {
     fontSize: scaleFont(18),
-    color: '#888',
+    color: COLORS.textSecondary,
   },
+
   progressLine: {
     height: 2,
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.primary,
     flex: 1,
     marginHorizontal: '2%',
   },
 
   sliderWrapper: {
-    marginTop: height * 0.14,
-    height: IMAGE_HEIGHT + scaleSize(60), // ✅ 여유 공간 확보 (pagination 아래 여백 포함)
+    marginTop: height * 0.07,
+    height: IMAGE_HEIGHT + scaleSize(30),
     width: '100%',
     alignItems: 'center',
   },
@@ -61,37 +68,43 @@ export const styles = StyleSheet.create({
   imageBox: {
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
-    backgroundColor: '#51BCB4',
-    borderRadius: 10,
+    backgroundColor: COLORS.primary,
+    borderRadius: scaleSize(10),
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
+    overflow: 'hidden',
+  },
+
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 
   imageText: {
     fontSize: scaleFont(18),
-    color: '#fff',
     fontWeight: 'bold',
   },
 
   pagination: {
-    marginTop: scaleSize(20), // ✅ 이미지와 점 사이 여백 추가
+    marginTop: scaleSize(20),
   },
 
   captionBox: {
     width: '90%',
-    height: scaleSize(120), // ✅ 자막 박스 확대
-    borderColor: '#51BCB4',
-    borderWidth: 2,
-    borderRadius: 10,
+    height: scaleSize(60), // ✅ 두 줄까지만 보이도록
+    borderColor: COLORS.primary,
+    borderWidth: scaleSize(2),
+    borderRadius: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(24),
     paddingHorizontal: scaleSize(10),
+    marginTop: scaleSize(8),
   },
 
   captionText: {
-    color: '#51BCB4',
+    color: COLORS.primary,
     fontSize: scaleFont(16),
     fontWeight: 'bold',
     textAlign: 'center',

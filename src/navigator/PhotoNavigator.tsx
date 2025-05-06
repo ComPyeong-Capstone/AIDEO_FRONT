@@ -8,7 +8,10 @@ import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {
   PhotoPromptScreen: undefined;
-  FinalVideoScreen: undefined;
+  FinalVideoScreen: {
+    prompt: string;
+    images: {id: string; uri: string | null}[];
+  };
   MusicSelectionScreen: undefined;
   ResultScreen: undefined;
 };

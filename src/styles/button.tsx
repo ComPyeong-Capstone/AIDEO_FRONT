@@ -14,6 +14,7 @@ interface Props {
   type?: 'primary' | 'secondary' | 'gray';
   style?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean; // ✅ 추가
 }
 
 const CommonButton: React.FC<Props> = ({
@@ -22,12 +23,20 @@ const CommonButton: React.FC<Props> = ({
   type = 'primary',
   style,
   textStyle,
+  disabled = false, // ✅ 기본값 설정
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.base, styles[type], style]}
+      style={[
+        styles.base,
+        styles[type],
+        disabled && styles.disabled, // ✅ 비활성화 스타일 적용
+        style,
+      ]}
       onPress={onPress}
-      activeOpacity={0.8}>
+      activeOpacity={0.8}
+      disabled={disabled} // ✅ 터치 비활성화
+    >
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
@@ -55,5 +64,8 @@ const styles = StyleSheet.create({
   },
   gray: {
     backgroundColor: '#E5E5E5',
+  },
+  disabled: {
+    opacity: 0.5, // ✅ 비활성화 시 흐릿하게
   },
 });

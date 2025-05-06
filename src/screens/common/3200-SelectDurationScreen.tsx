@@ -14,7 +14,7 @@ type Props = NativeStackScreenProps<
 >;
 
 const SelectDurationScreen: React.FC<Props> = ({navigation}) => {
-  const [duration, setDuration] = useState<number>(30);
+  const [duration, setDuration] = useState<number>(5);
   const insets = useSafeAreaInsets();
 
   const handleNext = () => {
@@ -41,7 +41,7 @@ const SelectDurationScreen: React.FC<Props> = ({navigation}) => {
 
           <Slider
             style={styles.slider}
-            minimumValue={30}
+            minimumValue={5}
             maximumValue={60}
             step={5}
             value={duration}

@@ -1,8 +1,9 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import {COLORS} from '../../styles/colors';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 
-const IMAGE_WIDTH = scaleSize(270); // 기준 너비의 70%
+const {width} = Dimensions.get('window');
+const IMAGE_WIDTH = width * 0.7;
 const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export default StyleSheet.create({
@@ -11,13 +12,12 @@ export default StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // ✅ 전체 콘텐츠 가운데 정렬을 위한 wrapper
   contentWrapper: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    paddingTop: scaleSize(50), // 진행바와의 간격 확보 (SafeArea 위에 있으므로)
+    paddingTop: scaleSize(60), // 진행바 아래 여백
   },
 
   wrapper: {},
@@ -39,7 +39,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.imagebox,
-    marginHorizontal: (scaleSize(390) - IMAGE_WIDTH) / 2,
+    marginHorizontal: (width - IMAGE_WIDTH) / 2,
     marginTop: scaleSize(20),
   },
 
@@ -79,7 +79,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     marginTop: scaleSize(60),
     justifyContent: 'center',
-    columnGap: scaleSize(90),
+    gap: scaleSize(20),
   },
 
   buttonSpacing: {
