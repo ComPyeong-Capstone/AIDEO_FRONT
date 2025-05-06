@@ -52,9 +52,8 @@ const AuthScreen = () => {
       await saveAuthTokens(token);
       console.log('🔐 저장된 토큰:', getAccessToken());
 
-      setUser(user);
+      setUser(user); // 이걸로 자동 라우팅됨
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-      navigation.navigate('Main');
     } catch (error: any) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message ?? error?.message;
