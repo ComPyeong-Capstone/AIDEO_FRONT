@@ -11,10 +11,10 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import Feather from 'react-native-vector-icons/Feather';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Feather from 'react-native-vector-icons/Feather';
 
-import {styles} from '../../styles/bottomtab/1000-homeStyles';
+import {styles} from '../../styles/bottomtab/1000-homeStyles'; // ✅ 고정 스타일 사용
 import {getAllPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 
@@ -75,9 +75,8 @@ const HomeScreen: React.FC = () => {
         <View style={styles.creatorContainer}>
           <Image
             source={{
-              uri:
-                item.author.profileImage ??
-                'https://via.placeholder.com/100.png?text=User',
+              uri: item.author.profileImage ??
+                   'https://via.placeholder.com/100.png?text=User',
             }}
             style={styles.profileImage}
           />
@@ -89,12 +88,7 @@ const HomeScreen: React.FC = () => {
     </TouchableOpacity>
   );
 
-
-
-
-
-
-return (
+  return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
         <Text style={styles.header}>VideoAI</Text>
