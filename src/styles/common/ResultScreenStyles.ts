@@ -1,6 +1,6 @@
 import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {COLORS} from '../colors'; // 🎨 색상 파일 가져오기
 
 const {width, height} = Dimensions.get('window');
 

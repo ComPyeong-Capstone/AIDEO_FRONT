@@ -3,17 +3,22 @@ import {View, Text} from 'react-native';
 import {styles} from '../styles/common/progressBarStyles';
 
 interface ProgressBarProps {
-  currentStep: number; // 1 ~ 4
-  totalSteps?: number;
+  currentStep: number; // 현재 단계 (1부터 시작)
+  totalSteps?: number; // 전체 단계 수 (선택)
+  mode?: 'photo' | 'ai'; // 선택: 모드에 따라 자동 단계 설정
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   currentStep,
-  totalSteps = 4,
+  totalSteps,
+  mode,
 }) => {
+  // 모드 기반 자동 단계 설정
+  const resolvedSteps = totalSteps ?? (mode === 'photo' ? 3 : 4); // 기본은 4
+
   return (
     <View style={styles.progressContainer}>
-      {Array.from({length: totalSteps}, (_, index) => (
+      {Array.from({length: resolvedSteps}, (_, index) => (
         <React.Fragment key={index}>
           <Text
             style={
@@ -21,7 +26,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
             }>
             {index + 1 === currentStep ? '●' : '○'}
           </Text>
-          {index < totalSteps - 1 && <View style={styles.line} />}
+          {index < resolvedSteps - 1 && <View style={styles.line} />}
         </React.Fragment>
       ))}
     </View>

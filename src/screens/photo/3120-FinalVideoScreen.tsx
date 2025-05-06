@@ -1,22 +1,17 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-  useWindowDimensions,
-} from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
-import styles from '../../styles/photo/FinalVideoStyles'; // 스타일 파일 분리
-import {COLORS} from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {View, Text, TouchableOpacity, useWindowDimensions} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
-import CustomButton from '../../styles/button';
+import {StackNavigationProp} from '@react-navigation/stack';
 
-// ✅ 네비게이션 타입 정의
+import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
+import styles from '../../styles/photo/FinalVideoStyles';
+import {COLORS} from '../../styles/colors';
+import CustomButton from '../../styles/button';
+import ProgressBar from '../../components/ProgressBar';
+
 type FinalVideoScreenNavigationProp = StackNavigationProp<
-  ShortsStackParamList,
+  PhotoStackParamList,
   'FinalVideoScreen'
 >;
 
@@ -25,90 +20,69 @@ interface Props {
 }
 
 const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
-  const {width, height} = useWindowDimensions();
-  const insets = useSafeAreaInsets();
-  // 기준 너비 설정
-  const VIDEO_WIDTH = width * 0.6; // 적당한 너비 (화면의 60%)
-  const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9); // 세로가 더 길게: 9:16 비율
+  const {width} = useWindowDimensions();
+  const VIDEO_WIDTH = width * 0.6;
+  const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9);
 
-  // ✅ 더미 데이터 (생성된 동영상 목록)
   const videos = ['생성된 동영상 1', '생성된 동영상 2', '생성된 동영상 3'];
   const [selectedVideo, setSelectedVideo] = useState<number>(0);
-  const translateX = new Animated.Value(0);
+
+  // ✅ 반응형 videoItem 스타일 동적 생성
+  const getVideoSizeStyle = (
+    videoWidth: number,
+    videoHeight: number,
+    screenWidth: number,
+  ) => ({
+    width: videoWidth,
+    height: videoHeight,
+    marginHorizontal: (screenWidth - videoWidth) / 2,
+  });
 
   const handleNext = () => {
     if (selectedVideo < videos.length - 1) {
-      Animated.timing(translateX, {
-        toValue: -width * (selectedVideo + 1),
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setSelectedVideo(selectedVideo + 1));
+      setSelectedVideo(selectedVideo + 1);
     }
   };
 
   const handlePrev = () => {
     if (selectedVideo > 0) {
-      Animated.timing(translateX, {
-        toValue: -width * (selectedVideo - 1),
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setSelectedVideo(selectedVideo - 1));
+      setSelectedVideo(selectedVideo - 1);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 최상단 진행 상태 점 */}
-      <View style={[styles.progressContainer, {top: insets.top + 10}]}>
-        {['○', '●', '○', '○'].map((dot, index) => (
-          <React.Fragment key={index}>
-            <Text
-              style={
-                index === 1
-                  ? styles.progressDotActive
-                  : styles.progressDotInactive
-              }>
-              {dot}
-            </Text>
-            {index < 3 && <View style={styles.progressLine} />}
-          </React.Fragment>
-        ))}
-      </View>
+      {/* ✅ 진행바 (3단계 중 2단계) */}
+      <ProgressBar currentStep={2} mode="photo" />
 
       {/* 📌 동영상 슬라이드 */}
-      <View
-        style={[
-          styles.sliderContainer,
-          {width: width * 0.9, height: VIDEO_HEIGHT + 40}, // padding 여유 추가
-        ]}>
+      <View style={styles.sliderWrapper}>
         <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
           <Text style={styles.arrowText}>{'<'}</Text>
         </TouchableOpacity>
-        <View style={{height: VIDEO_HEIGHT, justifyContent: 'center'}}>
+
+        <View style={styles.swiperBox}>
           <Swiper
             loop={false}
             showsButtons={false}
-            activeDotColor="#00A6FB"
-            dotColor="#D9D9D9"
-            paginationStyle={{bottom: -20}}
+            activeDotColor={COLORS.primary}
+            dotColor={COLORS.dotInactive}
+            paginationStyle={styles.pagination}
             onIndexChanged={index => setSelectedVideo(index)}
-            containerStyle={{width: width, alignSelf: 'center'}}>
+            containerStyle={styles.swiperContainer}>
             {videos.map((item, index) => (
               <View
                 key={index}
                 style={[
                   styles.videoItem,
-                  {
-                    width: VIDEO_WIDTH,
-                    height: VIDEO_HEIGHT,
-                    marginHorizontal: (width - VIDEO_WIDTH) / 2,
-                  },
+                  getVideoSizeStyle(VIDEO_WIDTH, VIDEO_HEIGHT, width),
                 ]}>
                 <Text style={styles.videoText}>{item}</Text>
               </View>
             ))}
           </Swiper>
         </View>
+
         <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
           <Text style={styles.arrowText}>{'>'}</Text>
         </TouchableOpacity>
@@ -116,7 +90,7 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
 
       {/* 📌 배경 음악 선택 버튼 */}
       <TouchableOpacity
-        style={[styles.musicButton, {width: width * 0.7, height: 40}]}
+        style={styles.musicButton}
         onPress={() => navigation.navigate('MusicSelectionScreen')}>
         <Text style={styles.buttonText}>배경 음악</Text>
       </TouchableOpacity>
@@ -127,13 +101,13 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
           title="이전"
           onPress={() => navigation.goBack()}
           type="secondary"
-          style={{marginHorizontal: 8}}
+          style={styles.buttonSpacing}
         />
         <CustomButton
           title="영상 생성"
           onPress={() => navigation.navigate('ResultScreen')}
           type="primary"
-          style={{marginHorizontal: 8}}
+          style={styles.buttonSpacing}
         />
       </View>
     </SafeAreaView>

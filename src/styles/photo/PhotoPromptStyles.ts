@@ -1,30 +1,46 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {StyleSheet} from 'react-native';
+import {COLORS} from '../../styles/colors';
+import {scaleSize, scaleFont} from '../../styles/responsive';
 
-const { width } = Dimensions.get('window');
-const IMAGE_WIDTH = width * 0.7;
+const IMAGE_WIDTH = scaleSize(270); // 기준 너비의 70%
 const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    alignItems: 'center',
+  },
+
+  // ✅ 전체 콘텐츠 가운데 정렬을 위한 wrapper
+  contentWrapper: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: scaleSize(50), // 진행바와의 간격 확보 (SafeArea 위에 있으므로)
   },
 
   wrapper: {},
 
+  swiperContainer: {
+    width: '100%',
+    alignSelf: 'center',
+  },
+
+  pagination: {
+    bottom: scaleSize(10),
+  },
+
   slide: {
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
-    borderRadius: 10,
+    borderRadius: scaleSize(10),
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.imagebox,
-    marginHorizontal: (width - IMAGE_WIDTH) / 2,
-    marginTop: 30,
+    marginHorizontal: (scaleSize(390) - IMAGE_WIDTH) / 2,
+    marginTop: scaleSize(20),
   },
 
   image: {
@@ -33,35 +49,40 @@ export default StyleSheet.create({
   },
 
   addButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
+    width: scaleSize(50),
+    height: scaleSize(50),
+    borderRadius: scaleSize(10),
     backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   addButtonText: {
-    fontSize: 28,
-    color: '#00A6FB',
+    fontSize: scaleFont(28),
+    color: COLORS.primary,
     fontWeight: 'bold',
   },
 
   promptInput: {
-    width: width * 0.8,
-    height: 40,
-    borderColor: '#00A6FB',
-    borderWidth: 1.5,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    marginTop: 40,
-    fontSize: 16,
-    color: '#1F2C3D',
+    width: '80%',
+    height: scaleSize(40),
+    borderColor: COLORS.primary,
+    borderWidth: scaleSize(1.5),
+    borderRadius: scaleSize(8),
+    paddingHorizontal: scaleSize(12),
+    marginTop: scaleSize(30),
+    fontSize: scaleFont(16),
+    color: COLORS.textPrimary,
   },
 
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: 80,
-    gap: 90,
+    marginTop: scaleSize(60),
+    justifyContent: 'center',
+    columnGap: scaleSize(90),
+  },
+
+  buttonSpacing: {
+    marginHorizontal: scaleSize(8),
   },
 });

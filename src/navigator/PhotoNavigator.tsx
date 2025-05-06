@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import ResultScreen from '../screens/photo/ResultScreen';
+import ResultScreen from '../screens/common/ResultScreen';
 import PhotoPromptScreen from '../screens/photo/3110-PhotoPromptScreen';
 import FinalVideoScreen from '../screens/photo/3120-FinalVideoScreen';
 import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
