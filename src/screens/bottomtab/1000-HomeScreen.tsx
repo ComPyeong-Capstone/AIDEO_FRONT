@@ -89,11 +89,17 @@ const HomeScreen: React.FC = () => {
     </TouchableOpacity>
   );
 
-  return (
-    <SafeAreaView style={[styles.container, {paddingBottom: 0}]}>
+
+
+
+
+
+return (
+    <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
         <Text style={styles.header}>VideoAI</Text>
       </View>
+
       {loading ? (
         <ActivityIndicator size="large" color="#51BCB4" />
       ) : (
@@ -103,15 +109,11 @@ const HomeScreen: React.FC = () => {
           keyExtractor={item => item.postId.toString()}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={{
-            paddingBottom: 0, // ✅ 핵심 변경
-            paddingHorizontal: 15,
-          }}
+          contentContainerStyle={styles.contentContainer}
         />
       )}
     </SafeAreaView>
   );
-
 };
 
 export default HomeScreen;

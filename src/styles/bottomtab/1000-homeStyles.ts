@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
 
   header: {
     fontWeight: 'bold',
-    color: COLORS.background,
+    color: COLORS.black,
     fontSize: scaleFont(20),
   },
 
@@ -81,7 +81,7 @@ export const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    //paddingBottom: scaleSize(0),
+    paddingBottom: scaleSize(10),
     paddingHorizontal: scaleSize(15),
   },
 });
