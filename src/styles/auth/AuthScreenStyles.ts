@@ -22,6 +22,9 @@ export const authStyles = StyleSheet.create({
     padding: scaleSize(15),
     borderRadius: scaleSize(8),
     marginBottom: scaleSize(20),
+    borderWidth: 1,
+    borderColor: '#ccc',
+
   },
   button: {
     backgroundColor: '#51BCB4',

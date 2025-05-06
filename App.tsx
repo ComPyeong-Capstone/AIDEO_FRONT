@@ -6,6 +6,8 @@ import AppNavigator from './src/navigator/AppNavigator';
 import {UserProvider} from './src/context/UserContext';
 import SplashScreen from 'react-native-splash-screen';
 import {configureGoogleSignin} from './src/config/googleSignin';
+import { useThemeColors } from '../styles/useThemeColors';
+import {ThemeProvider} from './src/context/ThemeContext';
 
 const App = () => {
   useEffect(() => {
@@ -22,9 +24,13 @@ const App = () => {
 
   return (
     <UserProvider>
+        <ThemeProvider>
       <SafeAreaProvider>
         <AppNavigator />
       </SafeAreaProvider>
+
+          </ThemeProvider>
+
     </UserProvider>
   );
 };

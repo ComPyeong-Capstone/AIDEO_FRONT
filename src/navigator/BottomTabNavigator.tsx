@@ -83,6 +83,7 @@ const BottomTabNavigator: React.FC = () => {
           name="Add"
           component={() => <></>}
           options={{
+
             tabBarButton: () => (
               <AddTabBarButton onPress={() => setModalVisible(true)} />
             ),
@@ -111,20 +112,20 @@ const styles = StyleSheet.create({
     height: scaleSize(70),
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.35,
     shadowRadius: 4,
   },
   innerButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: scaleSize(60),
-    height: scaleSize(60),
+    width: scaleSize(70),
+    height: scaleSize(70),
     backgroundColor: COLORS.primary,
-    borderRadius: scaleSize(30),
+    borderRadius: scaleSize(100),
   },
   tabBarStyle: {
-    height: scaleSize(60),
+    height: scaleSize(80),
     paddingBottom: Platform.OS === 'ios' ? scaleSize(10) : scaleSize(5),
   },
 });

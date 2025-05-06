@@ -1,87 +1,79 @@
+// src/styles/bottomtab/1000-homeStyles.ts
+
 import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
+import {ThemeColorsType} from '../../types/theme'; // 타입 정의
 import {COLORS} from '../../styles/colors';
 
+// COLORS를 파라미터로 받아야 다크모드 반영 가능!
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-
-  headerWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: scaleSize(16),
-    marginBottom: scaleSize(12),
-  },
-
-  header: {
-    fontWeight: 'bold',
-    color: COLORS.background,
-    fontSize: scaleFont(20),
-  },
-
-  headerIconButton: {
-    backgroundColor: '#51BCB4',
-    padding: scaleSize(8),
-    borderRadius: scaleSize(8),
-  },
-
-  videoContainer: {
-    backgroundColor: '#273647',
-    borderRadius: scaleSize(12),
-    alignItems: 'center',
-    paddingBottom: scaleSize(12),
-    marginBottom: scaleSize(15),
-  },
-
-  thumbnailPlaceholder: {
-    width: '100%',
-    aspectRatio: 1,
-    backgroundColor: '#4F637D',
-    borderTopLeftRadius: scaleSize(12),
-    borderTopRightRadius: scaleSize(12),
-  },
-
-  textContainer: {
-    alignItems: 'center',
-    marginTop: scaleSize(10),
-  },
-
-  title: {
-    fontWeight: 'bold',
-    color: '#51BCB4',
-    textAlign: 'center',
-    fontSize: scaleFont(16),
-  },
-
-  creatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: scaleSize(5),
-  },
-
-  profileImage: {
-    width: scaleSize(24),
-    height: scaleSize(24),
-    borderRadius: scaleSize(12),
-    backgroundColor: '#51BCB4',
-    marginRight: scaleSize(8),
-  },
-
-  creator: {
-    color: '#51BCB4',
-    fontSize: scaleFont(14),
-  },
-
-  columnWrapper: {
-    justifyContent: 'space-between',
-  },
-
-  contentContainer: {
-    paddingBottom: scaleSize(20),
-    paddingHorizontal: scaleSize(16),
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: COLORS.background,
+    },
+    headerWrapper: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: scaleSize(16),
+      marginBottom: scaleSize(12),
+    },
+    header: {
+      fontWeight: 'bold',
+      color: COLORS.black,
+      fontSize: scaleFont(20),
+    },
+    headerIconButton: {
+      backgroundColor: COLORS.background,
+      padding: scaleSize(10),
+      borderRadius: scaleSize(8),
+    },
+    videoContainer: {
+      backgroundColor: COLORS.videocontainer,
+      borderRadius: scaleSize(25),
+      alignItems: 'center',
+      paddingBottom: scaleSize(10),
+      marginBottom: scaleSize(15),
+    },
+    thumbnailPlaceholder: {
+      width: '100%',
+      aspectRatio: 1,
+      backgroundColor: COLORS.thumbnail,
+      borderTopLeftRadius: scaleSize(12),
+      borderTopRightRadius: scaleSize(12),
+    },
+    textContainer: {
+      alignItems: 'center',
+      marginTop: scaleSize(10),
+    },
+    title: {
+      fontWeight: 'bold',
+      color: COLORS.maincolor,
+      textAlign: 'center',
+      fontSize: scaleFont(16),
+    },
+    creatorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: scaleSize(5),
+    },
+    profileImage: {
+      width: scaleSize(24),
+      height: scaleSize(24),
+      borderRadius: scaleSize(12),
+      backgroundColor: COLORS.maincolor,
+      marginRight: scaleSize(8),
+    },
+    creator: {
+      color: COLORS.maincolor,
+      fontSize: scaleFont(14),
+    },
+    columnWrapper: {
+      justifyContent: 'space-between',
+    },
+    contentContainer: {
+      paddingBottom: scaleSize(10),
+      paddingHorizontal: scaleSize(15),
+    },
+  });
