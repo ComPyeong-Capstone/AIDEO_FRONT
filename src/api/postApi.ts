@@ -1,18 +1,19 @@
 import axiosInstance from './axiosInstance';
 
-// 게시물 등록 시 사용하는 요청 타입 (실제 요청은 FormData 사용)
+// 📌 게시물 업로드용 Payload
 export interface PostPayload {
   title: string;
   hashtags: string[];
   videoFile: File | Blob;
 }
 
-// 게시물 응답 타입
+// 📌 게시물 응답 타입
 export interface PostResponse {
   postId: number;
   title: string;
   updateTime: string;
-  videoURL: string;
+  videoURL?: string;
+  thumbnailURL?: string;
   likeCount: number;
   commentCount: number;
   hashtags: string[];
@@ -23,73 +24,63 @@ export interface PostResponse {
   };
 }
 
-// 🔹 게시물 등록 (multipart/form-data)
-export const createPost = async (payload: PostPayload): Promise<string> => {
-  try {
-    const formData = new FormData();
-    formData.append(
-      'postDTO',
-      JSON.stringify({
-        title: payload.title,
-        hashtags: payload.hashtags,
-      }),
-    );
-    formData.append('videoFile', payload.videoFile);
+// 🔹 게시물 등록 (FormData)
+export const createPost = async (
+  payload: PostPayload,
+): Promise<{message: string}> => {
+  const formData = new FormData();
+  formData.append(
+    'postDTO',
+    JSON.stringify({
+      title: payload.title,
+      hashtags: payload.hashtags,
+    }),
+  );
+  formData.append('videoFile', payload.videoFile);
 
-    const response = await axiosInstance.post('/posts', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  const response = await axiosInstance.post('/posts', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  return response.data;
 };
 
 // 🔹 전체 게시물 조회
 export const getAllPosts = async (): Promise<PostResponse[]> => {
-  try {
-    const response = await axiosInstance.get('/posts');
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.get('/posts');
+  return response.data;
+};
+
+// 🔹 게시물 재생 (상세 조회)
+export const getPostById = async (postId: number): Promise<PostResponse> => {
+  const response = await axiosInstance.get(`/posts/${postId}`);
+  return response.data;
 };
 
 // 🔹 내 게시물 조회
 export const getMyPosts = async (): Promise<PostResponse[]> => {
-  try {
-    const response = await axiosInstance.get('/posts/mine');
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.get('/posts/mine');
+  return response.data;
 };
 
-// 🔹 해시태그로 게시물 조회
+// 🔹 특정 해시태그 게시물 조회
 export const getPostsByHashtag = async (
   hashtag: string,
 ): Promise<PostResponse[]> => {
-  try {
-    const response = await axiosInstance.get('/posts', {
-      params: {hashtag},
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.get('/posts', {
+    params: {hashtag},
+  });
+  return response.data;
 };
 
 // 🔹 게시물 삭제
-export const deletePost = async (postId: number): Promise<string> => {
-  try {
-    const response = await axiosInstance.delete(`/posts/${postId}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const deletePost = async (
+  postId: number,
+): Promise<{message: string}> => {
+  const response = await axiosInstance.delete(`/posts/${postId}`);
+  return response.data;
 };
 
 // 🔹 게시물 수정
@@ -101,10 +92,6 @@ export const updatePost = async (
     hashtags: string[];
   },
 ): Promise<PostResponse> => {
-  try {
-    const response = await axiosInstance.put(`/posts/${postId}`, payload);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.put(`/posts/${postId}`, payload);
+  return response.data;
 };

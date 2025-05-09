@@ -1,17 +1,17 @@
 import {StyleSheet, Dimensions} from 'react-native';
 import {scaleFont, scaleSize} from '../responsive';
-import {COLORS} from '../colors'; // 🎯 공통 색상 정의
+import {COLORS} from '../colors';
 
 const {width, height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
-  // 📌 전체 화면 배경 및 패딩
+  // 전체 배경
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  // 📌 진행바 위치 (노치 아래 최상단에 고정)
+  // 진행바
   progressBarWrapper: {
     position: 'absolute',
     top: 0,
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
 
-  // 📌 콘텐츠는 가운데 정렬, 좌우 패딩
+  // 콘텐츠
   contentWrapper: {
     flex: 1,
     justifyContent: 'center',
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: width * 0.05,
   },
 
-  // 📌 제목 텍스트
+  // 제목
   title: {
     fontSize: scaleFont(20),
     marginTop: height * 0.04,
@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // 📌 슬라이더 영역
+  // 슬라이더
   sliderWrapper: {
     width: '100%',
     alignItems: 'center',
@@ -60,14 +60,19 @@ export const styles = StyleSheet.create({
     color: '#333',
   },
 
-  // 📌 버튼 그룹: 가로 정렬 + 여백
-  buttonGroup: {
+  // ✅ 하단 고정 버튼 래퍼
+  fixedButtonWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: height * 0.04,
-    width: '100%',
+    paddingHorizontal: width * 0.05,
+    paddingTop: scaleSize(12),
+    paddingBottom: scaleSize(12),
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: COLORS.background,
   },
 
+  // 버튼
   backButton: {
     backgroundColor: '#ccc',
     paddingVertical: scaleSize(14),

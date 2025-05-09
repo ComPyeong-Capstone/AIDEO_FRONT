@@ -7,7 +7,7 @@ console.log('🧪 BASE_URL from .env:', BASE_URL);
 
 // ✅ 기본 API (8080 포트)
 const axiosInstance = axios.create({
-  baseURL: `${BASE_URL}`,
+  baseURL: `${BASE_URL}:8080`,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',

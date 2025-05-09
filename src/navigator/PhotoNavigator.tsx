@@ -1,13 +1,15 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import ResultScreen from '../screens/common/ResultScreen';
+import SelectDurationScreen from '../screens/common/3200-SelectDurationScreen';
 import PhotoPromptScreen from '../screens/photo/3110-PhotoPromptScreen';
 import FinalVideoScreen from '../screens/photo/3120-FinalVideoScreen';
 import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
 
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {
-  PhotoPromptScreen: undefined;
+  SelectDurationScreen: {mode: 'photo'}; // ✅ 추가
+  PhotoPromptScreen: {duration: number};
   FinalVideoScreen: {
     prompt: string;
     images: {id: string; uri: string | null}[];
@@ -22,6 +24,10 @@ const Stack = createStackNavigator<PhotoStackParamList>();
 const PhotoNavigator: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen
+        name="SelectDurationScreen"
+        component={SelectDurationScreen}
+      />
       <Stack.Screen name="PhotoPromptScreen" component={PhotoPromptScreen} />
       <Stack.Screen name="FinalVideoScreen" component={FinalVideoScreen} />
       <Stack.Screen

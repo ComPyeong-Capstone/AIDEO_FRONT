@@ -1,10 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {COLORS} from '../../styles/colors';
 import {scaleSize, scaleFont} from '../../styles/responsive';
-
-const {width} = Dimensions.get('window');
-const IMAGE_WIDTH = width * 0.7;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export default StyleSheet.create({
   container: {
@@ -12,35 +8,49 @@ export default StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  contentWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: scaleSize(60), // 진행바 아래 여백
+  progressBarWrapper: {
+    position: 'absolute',
+    top: scaleSize(60), // 또는 insets.top + 2
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingHorizontal: scaleSize(16),
   },
 
-  wrapper: {},
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingBottom: scaleSize(40), // 스크롤 끝 여백
+  },
+
+  contentWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: scaleSize(16),
+    paddingTop: scaleSize(10),
+  },
 
   swiperContainer: {
     width: '100%',
+    height: scaleSize(240),
     alignSelf: 'center',
+    marginBottom: scaleSize(24),
   },
 
   pagination: {
-    bottom: scaleSize(10),
+    bottom: scaleSize(6),
   },
 
   slide: {
-    width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
-    borderRadius: scaleSize(10),
+    width: '80%',
+    aspectRatio: 9 / 16,
+    borderRadius: scaleSize(12),
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.imagebox,
-    marginHorizontal: (width - IMAGE_WIDTH) / 2,
-    marginTop: scaleSize(20),
+    alignSelf: 'center',
   },
 
   image: {
@@ -49,40 +59,48 @@ export default StyleSheet.create({
   },
 
   addButton: {
-    width: scaleSize(50),
-    height: scaleSize(50),
-    borderRadius: scaleSize(10),
-    backgroundColor: COLORS.background,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f0f0f0',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: scaleSize(1.5),
+    borderColor: COLORS.primary,
   },
 
   addButtonText: {
-    fontSize: scaleFont(28),
+    fontSize: scaleFont(48),
     color: COLORS.primary,
     fontWeight: 'bold',
   },
 
   promptInput: {
-    width: '80%',
-    height: scaleSize(40),
+    width: '90%',
+    height: scaleSize(100),
     borderColor: COLORS.primary,
     borderWidth: scaleSize(1.5),
     borderRadius: scaleSize(8),
     paddingHorizontal: scaleSize(12),
-    marginTop: scaleSize(30),
+    paddingTop: scaleSize(12),
     fontSize: scaleFont(16),
     color: COLORS.textPrimary,
+    textAlignVertical: 'top',
+    marginBottom: scaleSize(24),
   },
 
-  buttonContainer: {
+  // ✅ 고정된 하단 버튼 Wrapper
+  fixedButtonWrapper: {
     flexDirection: 'row',
-    marginTop: scaleSize(60),
-    justifyContent: 'center',
-    gap: scaleSize(20),
+    justifyContent: 'space-between',
+    paddingHorizontal: scaleSize(16),
+    paddingTop: scaleSize(12),
+    paddingBottom: scaleSize(12),
+    backgroundColor: COLORS.background,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
   },
 
   buttonSpacing: {
-    marginHorizontal: scaleSize(8),
+    width: '48%',
   },
 });

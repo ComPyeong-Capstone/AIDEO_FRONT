@@ -1,6 +1,13 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  ScrollView,
+} from 'react-native';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {launchImageLibrary} from 'react-native-image-picker';
 
@@ -25,6 +32,7 @@ interface Props {
 const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
   const [images, setImages] = useState<ImageItem[]>([{id: 'add', uri: null}]);
   const [prompt, setPrompt] = useState('');
+  const insets = useSafeAreaInsets();
 
   const pickImage = () => {
     launchImageLibrary(
@@ -49,43 +57,57 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <ProgressBar currentStep={1} mode="photo" />
+    <SafeAreaView style={[styles.container, {paddingTop: insets.top + 30}]}>
+      <View style={styles.progressBarWrapper}>
+        <ProgressBar currentStep={1} mode="photo" />
+      </View>
 
-      <Swiper
-        key={images.length}
-        showsButtons={false}
-        loop={false}
-        activeDotColor={COLORS.primary}
-        dotColor={COLORS.dotInactive}
-        paginationStyle={styles.pagination}
-        containerStyle={styles.swiperContainer}>
-        {images.map(item => (
-          <View key={item.id} style={styles.slide}>
-            {item.uri ? (
-              <Image
-                source={{uri: item.uri}}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ) : (
-              <TouchableOpacity style={styles.addButton} onPress={pickImage}>
-                <Text style={styles.addButtonText}>+</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        ))}
-      </Swiper>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.contentWrapper}>
+          <Swiper
+            key={images.length}
+            showsButtons={false}
+            loop={false}
+            activeDotColor={COLORS.primary}
+            dotColor={COLORS.dotInactive}
+            paginationStyle={styles.pagination}
+            containerStyle={styles.swiperContainer}>
+            {images.map(item => (
+              <View key={item.id} style={styles.slide}>
+                {item.uri ? (
+                  <Image
+                    source={{uri: item.uri}}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={pickImage}>
+                    <Text style={styles.addButtonText}>+</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))}
+          </Swiper>
 
-      <TextInput
-        style={styles.promptInput}
-        placeholder="프롬프트를 입력하세요"
-        placeholderTextColor="#aaa"
-        value={prompt}
-        onChangeText={setPrompt}
-      />
+          <TextInput
+            style={styles.promptInput}
+            placeholder="프롬프트를 입력하세요"
+            placeholderTextColor="#aaa"
+            value={prompt}
+            onChangeText={setPrompt}
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+          />
+        </View>
+      </ScrollView>
 
-      <View style={styles.buttonContainer}>
+      {/* ✅ 고정된 하단 버튼 */}
+      <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
           title="이전"
           onPress={() => navigation.goBack()}

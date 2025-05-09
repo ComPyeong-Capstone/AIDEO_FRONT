@@ -1,6 +1,7 @@
 // src/api/generateApi.ts
 import {videoAxiosInstance} from './axiosInstance';
 
+// ✅ Request / Response 타입 정의
 export interface GenerateMaterialRequest {
   title: string;
   duration: number;
@@ -11,6 +12,15 @@ export interface GenerateMaterialResponse {
   image_urls: string[];
 }
 
+export interface RegenerateImageRequest {
+  text: string;
+  number: number;
+}
+
+export interface RegenerateImageResponse {
+  image_url: string;
+}
+
 export interface GeneratePartialVideoRequest {
   image_urls: string[];
   subtitles: string[];
@@ -18,6 +28,16 @@ export interface GeneratePartialVideoRequest {
 
 export interface GeneratePartialVideoResponse {
   video_urls: string[];
+}
+
+export interface RegenerateSinglePartialVideoRequest {
+  image: string;
+  subtitle: string;
+  number: number;
+}
+
+export interface RegenerateSinglePartialVideoResponse {
+  video_url: string;
 }
 
 export interface GenerateFinalVideoRequest {
@@ -42,12 +62,34 @@ export const generateMaterial = async (
   return response.data;
 };
 
+// ✅ 이미지 하나 재생성
+export const regenerateImage = async (
+  payload: RegenerateImageRequest,
+): Promise<RegenerateImageResponse> => {
+  const response = await videoAxiosInstance.post(
+    '/generate/material/image',
+    payload,
+  );
+  return response.data;
+};
+
 // ✅ 사진과 자막으로 부분 영상 생성
 export const generatePartialVideo = async (
   payload: GeneratePartialVideoRequest,
 ): Promise<GeneratePartialVideoResponse> => {
   const response = await videoAxiosInstance.post(
     '/generate/video/partial',
+    payload,
+  );
+  return response.data;
+};
+
+// ✅ 부분 영상 하나 재생성
+export const regenerateSinglePartialVideo = async (
+  payload: RegenerateSinglePartialVideoRequest,
+): Promise<RegenerateSinglePartialVideoResponse> => {
+  const response = await videoAxiosInstance.post(
+    '/generate/video/partial/single',
     payload,
   );
   return response.data;

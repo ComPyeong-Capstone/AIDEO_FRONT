@@ -76,7 +76,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
           type="secondary"
         />
         <CustomButton
-          title="영상 생성"
+          title="이미지 및 자막 생성"
           onPress={handleGenerate}
           type="primary"
           disabled={loading}

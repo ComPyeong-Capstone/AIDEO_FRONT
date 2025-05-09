@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   },
 
   progressBarWrapper: {
-    marginTop: scaleSize(40), // 🔽 SafeArea 위로부터 더 여유
+    marginTop: scaleSize(40),
     width: '100%',
     zIndex: 10,
     paddingHorizontal: '5%',
@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   },
 
   sliderWrapper: {
-    marginTop: height * 0.07,
+    marginTop: height * 0.045,
     height: IMAGE_HEIGHT + scaleSize(30),
     width: '100%',
     alignItems: 'center',
@@ -87,13 +87,27 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  // Swiper 기본 pagination 제거용 (안 쓰이지만 안전하게 유지)
   pagination: {
-    marginTop: scaleSize(20),
+    display: 'none',
+  },
+
+  // 커스텀 페이지 점 스타일
+  customPagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: scaleSize(12),
+  },
+
+  // 페이지 점에 간격 부여를 위한 래퍼
+  paginationDotWrapper: {
+    marginHorizontal: scaleSize(4),
   },
 
   captionBox: {
     width: '90%',
-    height: scaleSize(60), // ✅ 두 줄까지만 보이도록
+    height: scaleSize(60),
     borderColor: COLORS.primary,
     borderWidth: scaleSize(2),
     borderRadius: scaleSize(10),

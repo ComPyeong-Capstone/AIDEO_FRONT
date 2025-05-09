@@ -13,10 +13,19 @@ import {BlurView} from '@react-native-community/blur';
 import {styles} from '../../styles/bottomtab/3000-addScreenStyles';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 
+// 정확한 RootStackParamList 정의 (중첩 네비게이션 포함)
 type RootStackParamList = {
-  ShortsStack: {screen: string};
-  PhotoStack: {screen: string};
-  PostVideoStack: {screen: string};
+  ShortsStack: {
+    screen: 'SelectDurationScreen';
+    params: {mode: 'shorts'};
+  };
+  PhotoStack: {
+    screen: 'SelectDurationScreen';
+    params: {mode: 'photo'};
+  };
+  PostVideoStack: {
+    screen: 'PostVideoScreen';
+  };
 };
 
 type AddScreenModalProps = {
@@ -42,12 +51,30 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
         duration: visible ? 300 : 200,
         useNativeDriver: true,
       }),
-
     ]).start();
-  }, [visible, opacityAnim, translateYAnim]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
-  const handleNavigate = (stack: keyof RootStackParamList, screen: string) => {
-    navigation.navigate(stack, {screen});
+  const handleNavigate = (type: 'shorts' | 'photo' | 'upload') => {
+    switch (type) {
+      case 'shorts':
+        navigation.navigate('ShortsStack', {
+          screen: 'SelectDurationScreen',
+          params: {mode: 'shorts'},
+        });
+        break;
+      case 'photo':
+        navigation.navigate('PhotoStack', {
+          screen: 'SelectDurationScreen',
+          params: {mode: 'photo'},
+        });
+        break;
+      case 'upload':
+        navigation.navigate('PostVideoStack', {
+          screen: 'PostVideoScreen',
+        });
+        break;
+    }
     onClose();
   };
 
@@ -67,40 +94,40 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
           <Animated.View
             style={[
               styles.modalContent,
-              {opacity: opacityAnim, transform: [{translateY: translateYAnim}]},
+              {
+                opacity: opacityAnim,
+                transform: [{translateY: translateYAnim}],
+              },
             ]}>
-            {/* 쇼츠용 영상 */}
             <TouchableOpacity
               style={[
                 styles.button,
                 {height: scaleSize(60), marginBottom: scaleSize(15)},
               ]}
-              onPress={() =>
-                handleNavigate('ShortsStack', 'SelectDurationScreen')
-              }>
+              onPress={() => handleNavigate('shorts')}>
               <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
                 쇼츠용 영상
               </Text>
             </TouchableOpacity>
 
-            {/* 내 사진 영상 */}
             <TouchableOpacity
-              style={[styles.button, {height: scaleSize(60),marginBottom: scaleSize(15)}]}
-              onPress={() => handleNavigate('PhotoStack', 'PhotoPromptScreen')}>
+              style={[
+                styles.button,
+                {height: scaleSize(60), marginBottom: scaleSize(15)},
+              ]}
+              onPress={() => handleNavigate('photo')}>
               <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
                 내 사진 영상
               </Text>
             </TouchableOpacity>
 
-            {/*내 영상 업로드 */}
             <TouchableOpacity
               style={[styles.button, {height: scaleSize(60)}]}
-              onPress={() => handleNavigate('PostVideoScreen')}>
+              onPress={() => handleNavigate('upload')}>
               <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
                 영상 업로드
               </Text>
             </TouchableOpacity>
-
           </Animated.View>
         </View>
       </TouchableWithoutFeedback>

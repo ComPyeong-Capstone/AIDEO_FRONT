@@ -39,9 +39,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         <Swiper
           loop={false}
           showsButtons={false}
-          activeDotColor="#00A6FB"
-          dotColor="#D9D9D9"
-          paginationStyle={styles.pagination}
+          showsPagination={false} // 기본 점 숨김
           onIndexChanged={index => setSelectedIndex(index)}
           containerStyle={styles.swiperContainer}>
           {imageUrls.map((uri, index) => (
@@ -50,6 +48,21 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
             </View>
           ))}
         </Swiper>
+
+        {/* ✅ 커스텀 페이지 점 */}
+        <View style={styles.customPagination}>
+          {imageUrls.map((_, index) => (
+            <Text
+              key={index}
+              style={
+                index === selectedIndex
+                  ? styles.progressDotActive
+                  : styles.progressDotInactive
+              }>
+              ●
+            </Text>
+          ))}
+        </View>
       </View>
 
       {/* ✅ 자막 박스 */}
