@@ -13,13 +13,14 @@ export const COLORS = {
   thumbnail: '#4F637D',
   videocontainer: '#273647',
   dotInactive: '#CCCCCC',
+  textcolor: '#FFFFFF',
 };
 
 export const DarkColors = {
   primary: '#51BCB4',
   primary2: '#66D2CE',
   secondary: '#273647',
-  background: '#000100',
+  background: '#212426',
   textPrimary: '#FFFFFF',
   textSecondary: '#AAAAAA',
   buttonBackground: '#51BCB4',

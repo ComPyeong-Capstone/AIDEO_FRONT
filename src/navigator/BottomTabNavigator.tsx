@@ -125,6 +125,8 @@ const styles = StyleSheet.create({
     borderRadius: scaleSize(100),
   },
   tabBarStyle: {
+      backgroundColor: COLORS.background, // 예: 검정색 배경
+
     height: scaleSize(80),
     paddingBottom: Platform.OS === 'ios' ? scaleSize(10) : scaleSize(5),
   },

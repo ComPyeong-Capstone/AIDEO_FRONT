@@ -7,7 +7,7 @@ console.log('🧪 BASE_URL from .env:', BASE_URL);
 
 // ✅ 기본 API (8080 포트)
 const axiosInstance = axios.create({
-  baseURL: `${BASE_URL}:8080`,
+  baseURL: `${BASE_URL}${BASE_URL.endsWith(':8080') ? '' : ':8080'}`,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ const axiosInstance = axios.create({
 
 // ✅ 영상 생성 API (8000 포트)
 export const videoAxiosInstance = axios.create({
-  baseURL: `${BASE_URL}:8000`,
+  baseURL: `${BASE_URL}${BASE_URL.endsWith(':8000') ? '' : ':8000'}`,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
