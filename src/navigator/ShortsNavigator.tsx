@@ -5,8 +5,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PromptInputScreen from '../screens/shorts/3210-PromptInputScreen';
 import ImageSelectionScreen from '../screens/shorts/3220-ImageSelectionScreen';
-import FinalVideoScreen from '../screens/shorts/3230-FinalVideoScreen';
-import MusicSelectionScreen from '../screens/shorts/3231-MusicSelectionScreen';
+import FinalVideoScreen from '../screens/common/FinalVideoScreen';
+import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import ResultScreen from '../screens/common/ResultScreen';
 
 // ✅ Stack Navigator 타입 정의
