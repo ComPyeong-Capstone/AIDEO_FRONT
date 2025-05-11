@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import {getPostThumbnails} from '../../api/postApi'; // 또는 썸네일 전용 api 파일
+
 import {
   View,
   Text,
@@ -39,7 +41,22 @@ const HomeScreen: React.FC = () => {
 
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [thumbnails, setThumbnails] = useState<PostThumbnail[]>([]);
 
+  const fetchThumbnails = async () => {
+    try {
+      const data = await getPostThumbnails();
+      setThumbnails(data);
+    } catch (error) {
+      console.error('썸네일 불러오기 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchThumbnails();
+  }, []);
   const fetchPosts = async () => {
     try {
       const data = await getAllPosts();
@@ -54,8 +71,10 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
+const renderItem = ({item}: {item: PostThumbnail}) => {
+  console.log('썸네일 URL:', item.thumbnailURL); // ✅ OK
 
-  const renderItem = ({item}: {item: PostResponse}) => (
+  return (
     <TouchableOpacity
       style={[styles.videoContainer, {width: (width - 40) / 2}]}
       onPress={() =>
@@ -67,7 +86,12 @@ const HomeScreen: React.FC = () => {
           creatorUserId: item.author.userId,
         })
       }>
-      <View style={styles.thumbnailPlaceholder} />
+      <Image
+        source={{
+          uri: item.thumbnailURL || 'https://via.placeholder.com/200x300.png?text=No+Thumbnail',
+        }}
+        style={styles.thumbnailPlaceholder}
+      />
       <View style={styles.textContainer}>
         <Text numberOfLines={1} style={styles.title}>
           {item.title}
@@ -75,8 +99,7 @@ const HomeScreen: React.FC = () => {
         <View style={styles.creatorContainer}>
           <Image
             source={{
-              uri: item.author.profileImage ??
-                   'https://via.placeholder.com/100.png?text=User',
+              uri: item.author.profileImage || 'https://via.placeholder.com/100.png?text=User',
             }}
             style={styles.profileImage}
           />
@@ -87,6 +110,9 @@ const HomeScreen: React.FC = () => {
       </View>
     </TouchableOpacity>
   );
+};
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -98,7 +124,7 @@ const HomeScreen: React.FC = () => {
         <ActivityIndicator size="large" color="#51BCB4" />
       ) : (
         <FlatList
-          data={posts}
+          data={thumbnails}
           renderItem={renderItem}
           keyExtractor={item => item.postId.toString()}
           numColumns={2}
