@@ -26,6 +26,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: scaleSize(20),
+    paddingTop: scaleSize(60), // 진행바 공간 확보
   },
 
   inputContainer: {
@@ -47,12 +48,24 @@ export const styles = StyleSheet.create({
     padding: scaleSize(10),
   },
 
-  // 하단 버튼 컨테이너
-  buttonContainer: {
+  // ✅ 고정된 하단 버튼 컨테이너
+  fixedButtonWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: scaleSize(30),
+    backgroundColor: COLORS.background,
     paddingHorizontal: scaleSize(20),
+    paddingVertical: scaleSize(14),
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    zIndex: 10,
+  },
+
+  buttonSpacing: {
+    width: '48%',
   },
 
   // 로딩 오버레이

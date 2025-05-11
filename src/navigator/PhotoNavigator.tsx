@@ -1,10 +1,10 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import ResultScreen from '../screens/common/ResultScreen';
-import SelectDurationScreen from '../screens/common/3200-SelectDurationScreen';
+import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PhotoPromptScreen from '../screens/photo/3110-PhotoPromptScreen';
-import FinalVideoScreen from '../screens/photo/3120-FinalVideoScreen';
-import MusicSelectionScreen from '../screens/photo/3121-MusicSelectionScreen';
+import FinalVideoScreen from '../screens/common/FinalVideoScreen';
+import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {

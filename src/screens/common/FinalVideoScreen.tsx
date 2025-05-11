@@ -5,7 +5,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Swiper from 'react-native-swiper';
 
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
-import styles from '../../styles/shorts/finalVideoStyles';
+import styles from '../../styles/common/finalVideoStyles';
 import ProgressBar from '../../components/ProgressBar';
 import CustomButton from '../../styles/button';
 
@@ -44,7 +44,7 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
             showsButtons={false}
             activeDotColor="#00A6FB"
             dotColor="#D9D9D9"
-            paginationStyle={styles.pagination} // 👈 점 위치 스타일 지정
+            paginationStyle={styles.pagination}
             onIndexChanged={index => setSelectedVideo(index)}
             containerStyle={styles.swiperContainer}>
             {videos.map((item, index) => (
@@ -63,6 +63,9 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
           <Text style={styles.arrowText}>{'>'}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* ✅ dot과 배경음악 버튼 사이 여백 확보 */}
+      <View style={styles.musicSpacing} />
 
       {/* ✅ 배경 음악 버튼 */}
       <TouchableOpacity

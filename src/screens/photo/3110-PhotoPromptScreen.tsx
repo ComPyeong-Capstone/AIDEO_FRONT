@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -33,6 +33,7 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
   const [images, setImages] = useState<ImageItem[]>([{id: 'add', uri: null}]);
   const [prompt, setPrompt] = useState('');
   const insets = useSafeAreaInsets();
+  const swiperRef = useRef<Swiper>(null);
 
   const pickImage = () => {
     launchImageLibrary(
@@ -46,67 +47,84 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation}) => {
       response => {
         const uri = response.assets?.[0]?.uri ?? null;
         if (!response.didCancel && uri) {
-          setImages(prevImages => [
-            ...prevImages.filter(img => img.id !== 'add'),
+          const newImages = [
+            ...images.filter(img => img.id !== 'add'),
             {id: String(Date.now()), uri},
             {id: 'add', uri: null},
-          ]);
+          ];
+          setImages(newImages);
+
+          // ✅ 마지막 슬라이드로 이동
+          setTimeout(() => {
+            swiperRef.current?.scrollBy(newImages.length - images.length, true);
+          }, 100);
         }
       },
     );
   };
 
   return (
-    <SafeAreaView style={[styles.container, {paddingTop: insets.top + 30}]}>
-      <View style={styles.progressBarWrapper}>
-        <ProgressBar currentStep={1} mode="photo" />
+    <SafeAreaView style={styles.container}>
+      {/* ✅ 진행바 */}
+      <View style={[styles.progressBarWrapper, {top: insets.top + 10}]}>
+        <ProgressBar currentStep={2} mode="photo" />
       </View>
 
+      {/* ✅ 본문 */}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         <View style={styles.contentWrapper}>
-          <Swiper
-            key={images.length}
-            showsButtons={false}
-            loop={false}
-            activeDotColor={COLORS.primary}
-            dotColor={COLORS.dotInactive}
-            paginationStyle={styles.pagination}
-            containerStyle={styles.swiperContainer}>
-            {images.map(item => (
-              <View key={item.id} style={styles.slide}>
-                {item.uri ? (
-                  <Image
-                    source={{uri: item.uri}}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={pickImage}>
-                    <Text style={styles.addButtonText}>+</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            ))}
-          </Swiper>
+          {/* ✅ 이미지 선택 */}
+          <View style={styles.swiperContainer}>
+            <Swiper
+              ref={swiperRef}
+              key={images.length}
+              showsButtons={false}
+              loop={false}
+              activeDotColor={COLORS.primary}
+              dotColor={COLORS.dotInactive}
+              paginationStyle={styles.pagination}>
+              {images.map(item => (
+                <View key={item.id} style={styles.slide}>
+                  {item.uri ? (
+                    <Image
+                      source={{uri: item.uri}}
+                      style={styles.image}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={pickImage}>
+                      <Text style={styles.addButtonText}>+</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+            </Swiper>
+          </View>
 
-          <TextInput
-            style={styles.promptInput}
-            placeholder="프롬프트를 입력하세요"
-            placeholderTextColor="#aaa"
-            value={prompt}
-            onChangeText={setPrompt}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-          />
+          {/* ✅ 페이지네이션 아래 여백 */}
+          <View style={styles.paginationSpacing} />
+
+          {/* ✅ 프롬프트 입력 */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.promptInput}
+              placeholder="프롬프트를 입력하세요"
+              placeholderTextColor="#aaa"
+              value={prompt}
+              onChangeText={setPrompt}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          </View>
         </View>
       </ScrollView>
 
-      {/* ✅ 고정된 하단 버튼 */}
+      {/* ✅ 하단 버튼 */}
       <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
           title="이전"

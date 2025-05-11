@@ -2,7 +2,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
 // ✅ Shorts Screens
-import SelectDurationScreen from '../screens/common/3200-SelectDurationScreen';
+import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PromptInputScreen from '../screens/shorts/3210-PromptInputScreen';
 import ImageSelectionScreen from '../screens/shorts/3220-ImageSelectionScreen';
 import FinalVideoScreen from '../screens/shorts/3230-FinalVideoScreen';
@@ -11,7 +11,7 @@ import ResultScreen from '../screens/common/ResultScreen';
 
 // ✅ Stack Navigator 타입 정의
 export type ShortsStackParamList = {
-  SelectDurationScreen: undefined;
+  SelectDurationScreen: {mode: 'shorts' | 'photo'}; // ✅ 수정됨
   PromptInputScreen: {duration: number};
   ImageSelectionScreen: {
     duration: number;

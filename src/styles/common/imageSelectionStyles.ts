@@ -87,12 +87,10 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // Swiper 기본 pagination 제거용 (안 쓰이지만 안전하게 유지)
   pagination: {
     display: 'none',
   },
 
-  // 커스텀 페이지 점 스타일
   customPagination: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -100,7 +98,6 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(12),
   },
 
-  // 페이지 점에 간격 부여를 위한 래퍼
   paginationDotWrapper: {
     marginHorizontal: scaleSize(4),
   },
@@ -130,5 +127,35 @@ export const styles = StyleSheet.create({
     width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+
+  buttonSpacing: {
+    width: '48%',
+  },
+
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+
+  loadingBox: {
+    backgroundColor: '#333',
+    padding: scaleSize(20),
+    borderRadius: scaleSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  loadingText: {
+    marginTop: scaleSize(10),
+    color: '#fff',
+    fontSize: scaleFont(14),
   },
 });

@@ -23,9 +23,7 @@ type RootStackParamList = {
     screen: 'SelectDurationScreen';
     params: {mode: 'photo'};
   };
-  PostVideoStack: {
-    screen: 'PostVideoScreen';
-  };
+  PostVideoScreen: undefined; // ✅ 단일 화면으로 정의
 };
 
 type AddScreenModalProps = {
@@ -70,9 +68,7 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
         });
         break;
       case 'upload':
-        navigation.navigate('PostVideoStack', {
-          screen: 'PostVideoScreen',
-        });
+        navigation.navigate('PostVideoScreen'); // ✅ 단일 화면으로 바로 이동
         break;
     }
     onClose();

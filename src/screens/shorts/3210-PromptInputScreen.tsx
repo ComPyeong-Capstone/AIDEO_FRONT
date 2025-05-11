@@ -33,7 +33,8 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
     try {
       setLoading(true);
       const result = await generateMaterial({title: prompt, duration});
-      navigation.navigate('ImageSelectionScreen', {
+
+      navigation.push('ImageSelectionScreen', {
         duration,
         prompt,
         imageUrls: result.image_urls,
@@ -50,36 +51,39 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* ✅ 진행바 */}
-      <View style={[styles.progressBarWrapper, {marginTop: insets.top + 5}]}>
+      <View style={[styles.progressBarWrapper, {marginTop: insets.top + 10}]}>
         <ProgressBar currentStep={2} />
       </View>
 
-      {/* ✅ 입력 필드 */}
+      {/* ✅ 본문 */}
       <View style={styles.contentWrapper}>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="프롬프트 입력"
-            placeholderTextColor="#51BCB4"
+            placeholderTextColor="#aaa"
             multiline
+            textAlignVertical="top"
             onChangeText={setPrompt}
             value={prompt}
           />
         </View>
       </View>
 
-      {/* ✅ 버튼 */}
-      <View style={styles.buttonContainer}>
+      {/* ✅ 하단 버튼 */}
+      <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
           title="이전"
           onPress={() => navigation.goBack()}
           type="secondary"
+          style={styles.buttonSpacing}
         />
         <CustomButton
           title="이미지 및 자막 생성"
           onPress={handleGenerate}
           type="primary"
           disabled={loading}
+          style={styles.buttonSpacing}
         />
       </View>
 
