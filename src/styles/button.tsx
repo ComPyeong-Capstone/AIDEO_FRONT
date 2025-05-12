@@ -3,18 +3,20 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  StyleProp,
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import {COLORS} from './colors'; // 🎨 프로젝트의 컬러 시스템 사용
+import {COLORS} from './colors';
+import {scaleSize, scaleFont} from './responsive'; // ✅ 반응형 유틸리티
 
 interface Props {
   title: string;
   onPress: () => void;
   type?: 'primary' | 'secondary' | 'gray';
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  disabled?: boolean; // ✅ 추가
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  disabled?: boolean;
 }
 
 const CommonButton: React.FC<Props> = ({
@@ -23,20 +25,14 @@ const CommonButton: React.FC<Props> = ({
   type = 'primary',
   style,
   textStyle,
-  disabled = false, // ✅ 기본값 설정
+  disabled = false,
 }) => {
   return (
     <TouchableOpacity
-      style={[
-        styles.base,
-        styles[type],
-        disabled && styles.disabled, // ✅ 비활성화 스타일 적용
-        style,
-      ]}
+      style={[styles.base, styles[type], disabled && styles.disabled, style]}
       onPress={onPress}
       activeOpacity={0.8}
-      disabled={disabled} // ✅ 터치 비활성화
-    >
+      disabled={disabled}>
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
@@ -46,15 +42,16 @@ export default CommonButton;
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 20,
+    paddingVertical: scaleSize(12),
+    paddingHorizontal: scaleSize(25),
+    borderRadius: scaleSize(20),
     alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: 'bold',
-    color: '#fff',
+    color: COLORS.buttonText,
   },
   primary: {
     backgroundColor: COLORS.primary,
@@ -66,6 +63,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   disabled: {
-    opacity: 0.5, // ✅ 비활성화 시 흐릿하게
+    opacity: 0.5,
   },
 });

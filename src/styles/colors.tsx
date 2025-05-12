@@ -14,6 +14,8 @@ export const COLORS = {
   videocontainer: '#273647',
   dotInactive: '#CCCCCC',
   textcolor: '#FFFFFF',
+  textDark: '#1F2C3D',
+  borderStrong: '#3A9D96',
 };
 
 export const DarkColors = {

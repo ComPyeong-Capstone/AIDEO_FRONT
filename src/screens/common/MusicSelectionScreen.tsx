@@ -1,13 +1,12 @@
 import React, {useState} from 'react';
-import {Text, TouchableOpacity, useWindowDimensions} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {styles} from '../../styles/shorts/musicSelectionStyles'; // ✅ 스타일 가져오기
-import {scaleSize, scaleFont} from '../../styles/responsive'; // ✅ 반응형 함수 가져오기
+import {styles} from '../../styles/common/musicSelectionStyles';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
+import CustomButton from '../../styles/button';
 
-// 📌 네비게이션 타입 정의
 type RootStackParamList = {
   MusicSelectionScreen: undefined;
   PreviousScreen: {selectedMusic: string};
@@ -25,13 +24,10 @@ type Props = {
 };
 
 const MusicSelectionScreen: React.FC<Props> = ({navigation}) => {
-  const {width} = useWindowDimensions();
   const insets = useSafeAreaInsets();
-
   const musicList = ['음악 1', '음악 2', '음악 3'];
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
 
-  // ✅ 선택된 음악인지 확인 후 스타일 반환
   const getMusicItemStyle = (music: string) => [
     styles.musicItem,
     selectedMusic === music ? styles.selectedMusic : styles.unselectedMusic,
@@ -44,39 +40,35 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation}) => {
           key={index}
           style={getMusicItemStyle(music)}
           onPress={() => setSelectedMusic(music)}>
-          <Text style={[styles.musicText, {fontSize: scaleFont(18)}]}>
-            {music}
-          </Text>
+          <Text style={styles.musicText}>{music}</Text>
           <Ionicons
             name={selectedMusic === music ? 'pause' : 'play'}
-            size={scaleSize(24)}
+            size={24}
             color="#51BCB4"
           />
         </TouchableOpacity>
       ))}
 
-      {/* 📌 선택 버튼 */}
-      <TouchableOpacity
-        style={[
-          styles.selectButton,
-          {width: width * 0.5, height: scaleSize(45)},
-        ]}
-        onPress={() => {
-          if (selectedMusic) {
-            navigation.navigate('PreviousScreen', {selectedMusic});
-          }
-        }}>
-        <Text style={[styles.selectButtonText, {fontSize: scaleFont(16)}]}>
-          선택 완료
-        </Text>
-      </TouchableOpacity>
-
-      {/* 📌 하단 이전 버튼 */}
-      <TouchableOpacity
-        style={[styles.prevButton, {width: width * 0.5, height: scaleSize(45)}]}
-        onPress={() => navigation.goBack()}>
-        <Text style={[styles.buttonText, {fontSize: scaleFont(16)}]}>이전</Text>
-      </TouchableOpacity>
+      {/* ✅ 하단 버튼 그룹 */}
+      <View
+        style={[styles.buttonContainer, {paddingBottom: insets.bottom + 10}]}>
+        <CustomButton
+          title="이전"
+          onPress={() => navigation.goBack()}
+          type="secondary"
+          style={[styles.button, styles.prevButton]}
+        />
+        <CustomButton
+          title="선택 완료"
+          onPress={() => {
+            if (selectedMusic) {
+              navigation.navigate('PreviousScreen', {selectedMusic});
+            }
+          }}
+          type="primary"
+          style={[styles.button, styles.nextButton]}
+        />
+      </View>
     </SafeAreaView>
   );
 };

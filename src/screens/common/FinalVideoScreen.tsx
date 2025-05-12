@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Swiper from 'react-native-swiper';
 
@@ -20,24 +21,23 @@ interface Props {
 
 const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
-  const videos = ['생성된 동영상 1', '생성된 동영상 2', '생성된 동영상 3'];
-  const [_, setSelectedVideo] = useState(0);
+  const route = useRoute();
+  const {from = 'photo', videos = []} = route.params as {
+    from?: 'photo' | 'shorts';
+    videos?: string[];
+  };
+
+  const currentStep = from === 'photo' ? 3 : 4;
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 진행바 */}
+      {/* 진행바 */}
       <View style={[styles.progressBarWrapper, {marginTop: insets.top}]}>
-        <ProgressBar currentStep={4} />
+        <ProgressBar currentStep={currentStep} mode={from} />
       </View>
 
-      {/* ✅ 동영상 슬라이드 */}
+      {/* 영상 박스 */}
       <View style={styles.sliderContainer}>
-        <TouchableOpacity
-          onPress={() => setSelectedVideo(prev => Math.max(0, prev - 1))}
-          style={styles.arrowButton}>
-          <Text style={styles.arrowText}>{'<'}</Text>
-        </TouchableOpacity>
-
         <View style={styles.videoWrapper}>
           <Swiper
             loop={false}
@@ -45,46 +45,42 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
             activeDotColor="#00A6FB"
             dotColor="#D9D9D9"
             paginationStyle={styles.pagination}
-            onIndexChanged={index => setSelectedVideo(index)}
             containerStyle={styles.swiperContainer}>
-            {videos.map((item, index) => (
-              <View key={index} style={styles.videoItem}>
-                <Text style={styles.videoText}>{item}</Text>
-              </View>
-            ))}
+            {Array.isArray(videos) &&
+              videos.map((item, index) => (
+                <View key={index} style={styles.videoItem}>
+                  <Text style={styles.videoText}>
+                    {item?.trim() ? item : '영상 없음'}
+                  </Text>
+                </View>
+              ))}
           </Swiper>
         </View>
-
-        <TouchableOpacity
-          onPress={() =>
-            setSelectedVideo(prev => Math.min(videos.length - 1, prev + 1))
-          }
-          style={styles.arrowButton}>
-          <Text style={styles.arrowText}>{'>'}</Text>
-        </TouchableOpacity>
       </View>
 
-      {/* ✅ dot과 배경음악 버튼 사이 여백 확보 */}
+      {/* 배경 음악 버튼 */}
       <View style={styles.musicSpacing} />
-
-      {/* ✅ 배경 음악 버튼 */}
       <TouchableOpacity
         style={styles.musicButton}
         onPress={() => navigation.navigate('MusicSelectionScreen')}>
         <Text style={styles.buttonText}>배경 음악</Text>
       </TouchableOpacity>
 
-      {/* ✅ 하단 버튼 */}
-      <View style={styles.buttonContainer}>
+      {/* 하단 버튼 */}
+      <View style={[styles.buttonContainer, {bottom: insets.bottom + 10}]}>
         <CustomButton
           title="이전"
           onPress={() => navigation.goBack()}
           type="secondary"
+          style={[styles.button, styles.prevButton]}
+          textStyle={styles.buttonText}
         />
         <CustomButton
           title="영상 생성"
           onPress={() => navigation.navigate('ResultScreen')}
           type="primary"
+          style={[styles.button, styles.nextButton]}
+          textStyle={styles.buttonText}
         />
       </View>
     </SafeAreaView>

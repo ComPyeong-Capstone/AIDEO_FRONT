@@ -2,7 +2,7 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {COLORS} from '../../styles/colors';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 
-const {height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
@@ -10,14 +10,15 @@ export default StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // ✅ 상단 진행바
   progressBarWrapper: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    zIndex: 10,
+    top: 0,
+    width: '100%',
     alignItems: 'center',
-    paddingHorizontal: scaleSize(16),
+    paddingTop: scaleSize(10),
+    paddingHorizontal: width * 0.05,
+    backgroundColor: COLORS.background,
+    zIndex: 10,
   },
 
   // ✅ ScrollView 내부 콘텐츠
