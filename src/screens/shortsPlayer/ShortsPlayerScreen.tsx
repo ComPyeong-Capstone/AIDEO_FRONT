@@ -13,7 +13,8 @@ import CommentsScreen from './CommentsScreen';
 import {postLike, cancelLike, getLikedUsers} from '../../api/postLikeApi';
 import {getComments} from '../../api/commentsApi';
 import {createNotification} from '../../api/notificationApi';
-import {getPostDetail} from '../../api/postApi'; // 추가
+import {getPostDetail} from '../../api/playVideo'; // 추가
+import Video from 'react-native-video'; // 추가
 
 const ShortsPlayerScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -34,6 +35,7 @@ const ShortsPlayerScreen: React.FC = () => {
   const [likedUsers, setLikedUsers] = useState<any[]>([]);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [isLikedUsersVisible, setIsLikedUsersVisible] = useState(false);
+  const [videoURL, setVideoURL] = useState<string | null>(null);
 
   const loadCounts = useCallback(async () => {
     try {
@@ -56,6 +58,19 @@ const ShortsPlayerScreen: React.FC = () => {
       setIsCommentsVisible(true); // ✅ 댓글창 자동 열기
     }
   }, [loadCounts, showComments]);
+
+useEffect(() => {
+  const fetchPostDetail = async () => {
+    try {
+      const post = await getPostDetail(postId);
+      setVideoURL(post.videoURL ?? null);
+    } catch (error) {
+      console.error('게시물 상세 조회 실패:', error);
+    }
+  };
+
+  fetchPostDetail();
+}, [postId]);
 
   const handleToggleLike = async () => {
     try {
@@ -94,9 +109,20 @@ const ShortsPlayerScreen: React.FC = () => {
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
           {/* 📌 영상 플레이스홀더 */}
-          <View style={styles.videoPlaceholder}>
-            <Text style={styles.videoText}>영상 재생 중</Text>
-          </View>
+         <View style={styles.videoPlaceholder}>
+           {videoURL ? (
+             <Video
+               source={{ uri: videoURL }}
+               style={styles.videoPlayer}
+               resizeMode="cover"
+               repeat
+               muted={false}
+               controls
+             />
+           ) : (
+             <Text style={styles.videoText}>영상 불러오는 중...</Text>
+           )}
+         </View>
 
           {/* 📌 좋아요 및 댓글 버튼 */}
           <View style={styles.sideMenu}>

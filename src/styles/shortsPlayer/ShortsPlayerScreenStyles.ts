@@ -3,6 +3,12 @@ import {scaleSize, scaleFont} from '../responsive';
 
 export const styles = StyleSheet.create({
   // 📌 전체 화면 배경
+  videoPlayer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
+  },
+
   safeContainer: {
     flex: 1,
     backgroundColor: 'black',
