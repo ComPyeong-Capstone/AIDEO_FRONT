@@ -13,6 +13,7 @@ import CommentsScreen from './CommentsScreen';
 import {postLike, cancelLike, getLikedUsers} from '../../api/postLikeApi';
 import {getComments} from '../../api/commentsApi';
 import {createNotification} from '../../api/notificationApi';
+import {getPostDetail} from '../../api/postApi'; // 추가
 
 const ShortsPlayerScreen: React.FC = () => {
   const navigation = useNavigation();
