@@ -2,130 +2,135 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../colors';
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-const VIDEO_WIDTH = width * 0.55; // ✅ 슬라이더 비율 조정
+// ✅ 9:16 비율
+const VIDEO_WIDTH = width * 0.75;
 const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9);
 
 export default StyleSheet.create({
-  // ✅ 전체 화면
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
     alignItems: 'center',
   },
 
-  // ✅ 상단 진행바 Wrapper
+  // ✅ 진행바 (노치 바로 아래)
   progressBarWrapper: {
-    width: '100%',
-    paddingTop: scaleSize(10),
-    paddingHorizontal: scaleSize(20),
-    backgroundColor: COLORS.background,
-    alignItems: 'center',
-    zIndex: 10,
     position: 'absolute',
     top: 0,
+    width: '100%',
+    alignItems: 'center',
+    paddingTop: scaleSize(8),
+    paddingHorizontal: width * 0.05,
+    backgroundColor: COLORS.background,
+    zIndex: 10,
   },
 
-  // ✅ 진행 점과 선
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
+
   progressDotActive: {
     fontSize: scaleFont(18),
-    color: '#51BCB4',
+    color: COLORS.primary,
   },
+
   progressDotInactive: {
     fontSize: scaleFont(18),
     color: '#888',
   },
+
   progressLine: {
     height: scaleSize(2),
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.primary,
     flex: 1,
     marginHorizontal: scaleSize(6),
   },
 
-  // ✅ 슬라이더 영역
+  // ✅ 영상 슬라이더
   sliderContainer: {
-    flexDirection: 'row',
+    width: '100%',
+    marginTop: scaleSize(70), // ✅ 진행바와의 거리 조정
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    marginTop: height * 0.15,
   },
 
   videoWrapper: {
-    height: VIDEO_HEIGHT + scaleSize(30), // ✅ 점 포함 높이 여유 확보
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
+    borderWidth: scaleSize(2),
+    borderColor: COLORS.primary,
+    borderRadius: scaleSize(10),
+    overflow: 'hidden',
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
+    alignItems: 'center',
   },
 
   swiperContainer: {
     width: '100%',
+    height: '100%',
   },
 
   videoItem: {
-    width: VIDEO_WIDTH,
-    height: VIDEO_HEIGHT,
-    backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(10),
-    borderWidth: 2,
-    borderColor: '#51BCB4',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
   },
 
   videoText: {
     fontSize: scaleFont(16),
     fontWeight: 'bold',
-    color: '#1F2C3D',
+    color: COLORS.buttonText,
     textAlign: 'center',
   },
 
   arrowButton: {
     padding: scaleSize(15),
   },
+
   arrowText: {
     fontSize: scaleFont(20),
-    color: '#51BCB4',
+    color: COLORS.primary,
   },
 
-  // ✅ Swiper 페이지네이션 점 스타일 (비디오 외부에 위치)
   pagination: {
     position: 'absolute',
-    bottom: scaleSize(-20),
+    bottom: scaleSize(-16),
     alignSelf: 'center',
   },
 
-  // ✅ 배경 음악 선택 버튼
+  musicSpacing: {
+    height: scaleSize(10),
+  },
+
   musicButton: {
     height: scaleSize(40),
-    width: scaleSize(250),
+    width: '75%',
     borderRadius: scaleSize(10),
-    borderWidth: 2,
-    borderColor: '#51BCB4',
+    borderWidth: scaleSize(2),
+    borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(24),
+    marginTop: scaleSize(14), // ✅ 간격 줄임
   },
 
   buttonText: {
     fontSize: scaleFont(14),
     fontWeight: 'bold',
-    color: '#1F2C3D',
+    color: COLORS.buttonText,
   },
 
-  // ✅ 하단 버튼
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '90%',
     position: 'absolute',
-    bottom: scaleSize(30),
   },
 
   button: {
@@ -140,6 +145,6 @@ export default StyleSheet.create({
   },
 
   nextButton: {
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.primary,
   },
 });
