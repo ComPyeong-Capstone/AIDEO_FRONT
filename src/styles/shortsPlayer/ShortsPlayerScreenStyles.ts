@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
     fontSize: scaleFont(14),
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: scaleSize(18),
+    marginBottom: scaleSize(20),
   },
 
   // 📌 영상 정보
@@ -61,18 +61,18 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   creatorProfile: {
-    width: scaleSize(30),
-    height: scaleSize(30),
+    width: scaleSize(40),
+    height: scaleSize(40),
     backgroundColor: '#D3D3D3',
-    borderRadius: scaleSize(15),
-    marginRight: scaleSize(10),
+    borderRadius: scaleSize(100),
+    marginRight: scaleSize(5),
   },
   creator: {
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(22),
     color: 'white',
   },
   title: {
-    fontSize: scaleFont(18),
+    fontSize: scaleFont(26),
     fontWeight: 'bold',
     color: 'white',
   },
@@ -80,15 +80,14 @@ export const styles = StyleSheet.create({
   // 📌 뒤로 가기 버튼
   backButton: {
     position: 'absolute',
-    top: scaleSize(50),
-    left: scaleSize(20),
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: scaleSize(14),
-    borderRadius: scaleSize(50),
+    top: scaleSize(30),
+    left: scaleSize(15),
+    padding: scaleSize(5),
+    borderRadius: scaleSize(100),
   },
   backText: {
     color: 'white',
-    fontSize: scaleFont(22),
+    fontSize: scaleFont(15),
     fontWeight: 'bold',
   },
 

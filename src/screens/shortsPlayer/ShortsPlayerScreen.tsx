@@ -15,6 +15,7 @@ import {getComments} from '../../api/commentsApi';
 import {createNotification} from '../../api/notificationApi';
 import {getPostDetail} from '../../api/playVideo'; // 추가
 import Video from 'react-native-video'; // 추가
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ShortsPlayerScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -124,18 +125,29 @@ useEffect(() => {
            )}
          </View>
 
-          {/* 📌 좋아요 및 댓글 버튼 */}
-          <View style={styles.sideMenu}>
-            <TouchableOpacity onPress={handleToggleLike}>
-              <Text style={styles.icon}>{isLiked ? '❤️' : '🤍'}</Text>
-            </TouchableOpacity>
-            <Text style={styles.count}>{likeCount}</Text>
+         <View style={styles.sideMenu}>
+           {/* 좋아요 버튼 */}
+           <TouchableOpacity onPress={handleToggleLike}>
+             <Ionicons
+               name={isLiked ? 'heart' : 'heart-outline'}
+               size={32}
+               color={isLiked ? 'red' : 'white'}
+             />
+           </TouchableOpacity>
+           <Text style={styles.count}>{likeCount}</Text>
 
-            <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
-              <Text style={styles.icon}>💬</Text>
-            </TouchableOpacity>
-            <Text style={styles.count}>{commentCount}</Text>
-          </View>
+           {/* 댓글 버튼 */}
+           <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
+             <Ionicons name="chatbubble-outline" size={32} color="white" />
+           </TouchableOpacity>
+           <Text style={styles.count}>{commentCount}</Text>
+
+           {/* 공유 버튼 (새로 추가) */}
+           <TouchableOpacity onPress={() => console.log('공유 기능')}>
+             <Ionicons name="share-social-outline" size={32} color="white" />
+           </TouchableOpacity>
+         </View>
+
 
           {/* 📌 내 게시물일 때만 좋아요 유저 목록 보기 */}
           {currentUserId === creatorUserId && (
@@ -158,11 +170,12 @@ useEffect(() => {
           </View>
 
           {/* 📌 뒤로 가기 버튼 */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>◀</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}>
+        <Ionicons name="chevron-back" size={30} color="white" />
+      </TouchableOpacity>
+
         </View>
       </SafeAreaView>
 
