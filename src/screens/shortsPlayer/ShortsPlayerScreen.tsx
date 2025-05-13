@@ -3,6 +3,8 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
   SafeAreaView,
   Modal,
   FlatList,
@@ -137,6 +139,7 @@ useEffect(() => {
            <Text style={styles.count}>{likeCount}</Text>
 
            {/* 댓글 버튼 */}
+
            <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
              <Ionicons name="chatbubble-outline" size={32} color="white" />
            </TouchableOpacity>
@@ -181,19 +184,20 @@ useEffect(() => {
 
       {/* ✅ 댓글 모달 */}
       <Modal
-        visible={isCommentsVisible}
-        animationType="slide"
-        transparent={true}>
-        <CommentsScreen
-          postId={postId}
-          currentUserId={currentUserId}
-          creatorUserId={creatorUserId}
-          onClose={() => {
-            setIsCommentsVisible(false);
-            loadCounts(); // 댓글 작성 후 다시 카운트 로드
-          }}
-        />
-      </Modal>
+            visible={isCommentsVisible}
+            animationType="slide"
+            transparent={true}>
+            <CommentsScreen
+              postId={postId}
+              currentUserId={currentUserId}
+              creatorUserId={creatorUserId}
+              onClose={() => {
+                setIsCommentsVisible(false);
+                loadCounts(); // 댓글 작성 후 다시 카운트 로드
+
+              }}
+            />
+          </Modal>
 
       {/* ✅ 좋아요 누른 유저 모달 */}
       <Modal visible={isLikedUsersVisible} animationType="slide">

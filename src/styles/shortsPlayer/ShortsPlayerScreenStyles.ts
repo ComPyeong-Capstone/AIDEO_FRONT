@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
+import {COLORS} from '../colors';
 
 export const styles = StyleSheet.create({
   // 📌 전체 화면 배경
@@ -60,6 +61,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   creatorProfile: {
     width: scaleSize(40),
     height: scaleSize(40),
@@ -140,4 +142,5 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(20),
     textAlign: 'center',
   },
+
 });

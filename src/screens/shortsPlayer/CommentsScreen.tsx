@@ -8,8 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {
   getComments,
@@ -153,13 +155,12 @@ const CommentsScreen: React.FC<Props> = ({
   );
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <KeyboardAvoidingView
-        style={styles.flexContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}>
-        <View
-          style={[styles.modalContainer, {paddingBottom: insets.bottom + 10}]}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      style={{ flex: 1 }}>
+      <SafeAreaView style={styles.modalWrapper}>
+        <View style={styles.modalContainer}>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeText}>✖</Text>
           </TouchableOpacity>
@@ -169,7 +170,7 @@ const CommentsScreen: React.FC<Props> = ({
           <FlatList
             data={comments}
             keyExtractor={item => item.commentId.toString()}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <CommentItem
                 item={item}
                 onToggleLike={handleToggleLike}
@@ -178,6 +179,7 @@ const CommentsScreen: React.FC<Props> = ({
                 renderReply={renderReply}
               />
             )}
+            contentContainerStyle={{ paddingBottom: 100 }}
           />
 
           {replyingTo && (
@@ -191,25 +193,28 @@ const CommentsScreen: React.FC<Props> = ({
             </View>
           )}
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder={
-                replyingTo ? '답글을 입력하세요' : '댓글을 입력하세요'
-              }
-              placeholderTextColor="#aaa"
-              value={newComment}
-              onChangeText={setNewComment}
-            />
-            <TouchableOpacity
-              style={styles.sendButton}
-              onPress={handleCreateComment}>
-              <Text style={styles.sendText}>📩</Text>
-            </TouchableOpacity>
+          {/* ✅ 입력창을 하단 고정 */}
+          <View style={styles.inputWrapper}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  replyingTo ? '답글을 입력하세요' : '댓글을 입력하세요'
+                }
+                placeholderTextColor="#aaa"
+                value={newComment}
+                onChangeText={setNewComment}
+              />
+              <TouchableOpacity
+                style={styles.sendButton}
+                onPress={handleCreateComment}>
+                <Ionicons name="paper-plane-outline" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
