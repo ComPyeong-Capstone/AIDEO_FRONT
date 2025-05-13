@@ -86,7 +86,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
       {/* ✅ 진행바 */}
       <View style={styles.progressBarWrapper}>
-        <ProgressBar currentStep={3} />
+        <ProgressBar currentStep={3} mode="shorts" />
       </View>
 
       {/* ✅ 이미지 슬라이더 */}
@@ -144,6 +144,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
           title="영상 생성"
           onPress={() =>
             navigation.navigate('FinalVideoScreen', {
+              from: 'shorts',
               duration,
               prompt,
               imageUrls,

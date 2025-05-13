@@ -22,9 +22,22 @@ interface Props {
 const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
-  const {from = 'photo', videos = []} = route.params as {
+  const {
+    from = 'photo',
+    videos = [],
+    duration,
+    prompt,
+    imageUrls,
+    subtitles,
+    music,
+  } = route.params as {
     from?: 'photo' | 'shorts';
     videos?: string[];
+    duration: number;
+    prompt: string;
+    imageUrls: string[];
+    subtitles: string[];
+    music?: string;
   };
 
   const currentStep = from === 'photo' ? 3 : 4;
@@ -46,14 +59,19 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
             dotColor="#D9D9D9"
             paginationStyle={styles.pagination}
             containerStyle={styles.swiperContainer}>
-            {Array.isArray(videos) &&
+            {Array.isArray(videos) && videos.length > 0 ? (
               videos.map((item, index) => (
                 <View key={index} style={styles.videoItem}>
                   <Text style={styles.videoText}>
                     {item?.trim() ? item : '영상 없음'}
                   </Text>
                 </View>
-              ))}
+              ))
+            ) : (
+              <View style={styles.videoItem}>
+                <Text style={styles.videoText}>영상 없음</Text>
+              </View>
+            )}
           </Swiper>
         </View>
       </View>
@@ -62,7 +80,15 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
       <View style={styles.musicSpacing} />
       <TouchableOpacity
         style={styles.musicButton}
-        onPress={() => navigation.navigate('MusicSelectionScreen')}>
+        onPress={() =>
+          navigation.navigate('MusicSelectionScreen', {
+            duration,
+            prompt,
+            imageUrls,
+            subtitles,
+            music,
+          })
+        }>
         <Text style={styles.buttonText}>배경 음악</Text>
       </TouchableOpacity>
 

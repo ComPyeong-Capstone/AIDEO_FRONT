@@ -20,11 +20,12 @@ export type ShortsStackParamList = {
     subtitles: string[];
   };
   FinalVideoScreen: {
+    from?: 'photo' | 'shorts'; // ✅ from 추가
     duration: number;
     prompt: string;
     imageUrls: string[];
     subtitles: string[];
-    music?: string; // ✅ music 파라미터 추가
+    music?: string;
   };
   MusicSelectionScreen: {
     duration: number;
