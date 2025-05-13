@@ -1,98 +1,176 @@
-import {StyleSheet} from 'react-native';
-import {scaleSize} from '../responsive'; // ✅ 반응형 함수 가져오기
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {StyleSheet, Dimensions} from 'react-native';
+import {scaleFont, scaleSize} from '../responsive';
+import {COLORS} from '../colors';
+
+const {width, height} = Dimensions.get('window');
+
+const IMAGE_WIDTH = width * 0.75;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
   },
+
+  // ✅ 좌측 < 버튼
+  navButtonLeft: {
+    position: 'absolute',
+    top: scaleSize(12),
+    left: scaleSize(16),
+    padding: scaleSize(8),
+    zIndex: 20,
+  },
+
+  // ✅ 우측 > 버튼
+  navButtonRight: {
+    position: 'absolute',
+    top: scaleSize(12),
+    right: scaleSize(16),
+    padding: scaleSize(8),
+    zIndex: 20,
+  },
+
+  navIcon: {
+    fontSize: scaleFont(28),
+    color: COLORS.primary,
+  },
+
+  progressBarWrapper: {
+    marginTop: scaleSize(40),
+    width: '100%',
+    zIndex: 10,
+    paddingHorizontal: '5%',
+    backgroundColor: COLORS.background,
+  },
+
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
+    justifyContent: 'center',
     width: '100%',
-    paddingHorizontal: '10%',
   },
+
+  progressDotActive: {
+    fontSize: scaleFont(18),
+    color: COLORS.primary,
+  },
+
+  progressDotInactive: {
+    fontSize: scaleFont(18),
+    color: COLORS.textSecondary,
+  },
+
   progressLine: {
     height: 2,
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.primary,
     flex: 1,
     marginHorizontal: '2%',
   },
-  progressDotActive: {
-    color: '#51BCB4',
-  },
-  progressDotInactive: {
-    color: '#888',
-  },
-  sliderContainer: {
-    flexDirection: 'row',
+
+  sliderWrapper: {
+    marginTop: height * 0.045,
+    height: IMAGE_HEIGHT + scaleSize(30),
+    width: '100%',
     alignItems: 'center',
-    marginTop: scaleSize(80),
   },
-  imageItem: {
-    width: scaleSize(200),
-    height: scaleSize(250),
+
+  swiperContainer: {
+    width: '100%',
+  },
+
+  imageBox: {
+    width: IMAGE_WIDTH,
+    height: IMAGE_HEIGHT,
+    backgroundColor: COLORS.primary,
+    borderRadius: scaleSize(10),
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    overflow: 'hidden',
+  },
+
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+
+  imageText: {
+    fontSize: scaleFont(18),
+    fontWeight: 'bold',
+  },
+
+  pagination: {
+    display: 'none',
+  },
+
+  customPagination: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(10),
-    borderWidth: 2,
-    borderColor: '#51BCB4',
+    marginTop: scaleSize(12),
   },
-  imageText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
+
+  paginationDotWrapper: {
+    marginHorizontal: scaleSize(4),
   },
-  arrowButton: {
-    padding: scaleSize(20),
-  },
-  arrowText: {
-    fontSize: scaleSize(24),
-    color: '#51BCB4',
-  },
+
   captionBox: {
     width: '90%',
-    height: scaleSize(50),
-    borderColor: '#51BCB4',
-    borderWidth: 2,
+    height: scaleSize(60),
+    borderColor: COLORS.primary,
+    borderWidth: scaleSize(2),
     borderRadius: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(20),
+    paddingHorizontal: scaleSize(10),
+    marginTop: scaleSize(8),
   },
+
   captionText: {
-    fontSize: scaleSize(16),
+    color: COLORS.primary,
+    fontSize: scaleFont(16),
     fontWeight: 'bold',
-    color: '#51BCB4',
     textAlign: 'center',
   },
+
   buttonContainer: {
+    position: 'absolute',
+    bottom: scaleSize(40),
+    width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
-    marginTop: scaleSize(30),
+  },
+
+  buttonSpacing: {
+    width: '48%',
+  },
+
+  loadingOverlay: {
     position: 'absolute',
-    bottom: scaleSize(50),
-  },
-  button: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: scaleSize(12),
-    borderRadius: scaleSize(20),
-    width: '45%',
+    zIndex: 100,
   },
-  prevButton: {
-    backgroundColor: '#ccc',
+
+  loadingBox: {
+    backgroundColor: '#333',
+    padding: scaleSize(20),
+    borderRadius: scaleSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  nextButton: {
-    backgroundColor: '#51BCB4',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
+
+  loadingText: {
+    marginTop: scaleSize(10),
+    color: '#fff',
+    fontSize: scaleFont(14),
   },
 });

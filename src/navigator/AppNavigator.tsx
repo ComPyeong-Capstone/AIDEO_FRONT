@@ -1,35 +1,47 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { COLORS } from '../styles/colors'; // 🎨 색상 파일 가져오기
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
-// ✅ 하단 탭 네비게이션 (메인 화면)
+import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
-
-// ✅ Shorts 관련 네비게이션
 import ShortsNavigator from './ShortsNavigator';
+import PhotoNavigator from './PhotoNavigator';
+import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
+import PostVideoScreen from '../screens/common/PostVideoScreen';
 
-// ✅ Photo 관련 네비게이션
-import PhotoNavigator from './PhotoNavigator'; // ✅ 추가
+import {useUser} from '../context/UserContext';
+import {AppStackParamList} from './types';
 
-// ✅ Stack Navigator 생성
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<AppStackParamList>();
 
 const AppNavigator = () => {
+  const {user} = useUser();
+
+  console.log('[AppNavigator] user:', user);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Main" // ✅ 기본 화면을 'Main'으로 설정
-        screenOptions={{ headerShown: false }} // ✅ 모든 화면에서 헤더 숨김
-      >
-        {/* ✅ 메인 하단 탭 네비게이션 */}
-        <Stack.Screen name="Main" component={BottomTabNavigator} />
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {user ? (
+          <>
+            {/* 메인 탭 네비게이터 */}
+            <Stack.Screen name="Main" component={BottomTabNavigator} />
 
-        {/* ✅ Shorts 관련 네비게이션 */}
-        <Stack.Screen name="ShortsStack" component={ShortsNavigator} />
+            {/* 숏츠 및 사진 생성 흐름 */}
+            <Stack.Screen name="ShortsStack" component={ShortsNavigator} />
+            <Stack.Screen name="PhotoStack" component={PhotoNavigator} />
 
-        {/* ✅ Photo 관련 네비게이션 */}
-        <Stack.Screen name="PhotoStack" component={PhotoNavigator} />
+            {/* 동영상 플레이 및 업로드 화면 */}
+            <Stack.Screen
+              name="ShortsPlayerScreen"
+              component={ShortsPlayerScreen}
+            />
+            <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />
+          </>
+        ) : (
+          // 로그인/회원가입 흐름
+          <Stack.Screen name="Auth" component={AuthNavigator} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

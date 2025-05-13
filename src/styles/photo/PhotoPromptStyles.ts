@@ -1,78 +1,119 @@
-/*
-import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {StyleSheet, Dimensions} from 'react-native';
+import {COLORS} from '../../styles/colors';
+import {scaleSize, scaleFont} from '../../styles/responsive';
 
-const { width } = Dimensions.get('window');
-const IMAGE_WIDTH = width * 0.7;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
+const {height} = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.background,
+  },
+
+  progressBarWrapper: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
     alignItems: 'center',
+    paddingTop: scaleSize(10),
+    backgroundColor: COLORS.background,
+    zIndex: 10,
   },
-  progressContainer: {
-    flexDirection: 'row',
+
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
-    marginVertical: 10,
+    paddingBottom: scaleSize(220),
   },
-  progressDotActive: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+
+  contentWrapper: {
+    width: '80%',
+    alignItems: 'center',
+    paddingTop: scaleSize(70),
   },
-  progressDotInactive: {
-    fontSize: 16,
-    color: '#bbb',
+
+  swiperContainer: {
+    width: '100%',
+    aspectRatio: 9 / 16,
+    maxHeight: height * 0.55, // ✅ 최대 높이 제한으로 화면 넘침 방지
   },
-  progressLine: {
-    width: 20,
-    height: 2,
-    backgroundColor: '#bbb',
-  },
-  sliderWrapper: {
-    height: IMAGE_HEIGHT + 40,
-    justifyContent: 'center',
-  },
+
   slide: {
-    width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
-    backgroundColor: '#ddd',
-    justifyContent: 'center',
+    width: '100%',
+    aspectRatio: 9 / 16,
+    maxHeight: height * 0.55, // ✅ Swiper 내 슬라이드도 동일 제한
+    borderRadius: scaleSize(12),
+    backgroundColor: COLORS.imagebox,
     alignItems: 'center',
-    borderRadius: 10,
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  imageText: {
-    fontSize: 18,
+
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+
+  addButton: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: scaleSize(2),
+    borderColor: COLORS.primary,
+  },
+
+  addButtonText: {
+    fontSize: scaleFont(48),
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.primary,
   },
-  captionBox: {
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
+
+  pagination: {
+    position: 'absolute',
+    bottom: -scaleSize(24),
   },
-  captionText: {
-    fontSize: 16,
-    color: '#333',
+
+  paginationSpacing: {
+    height: scaleSize(32),
   },
-  buttonContainer: {
+
+  inputContainer: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderColor: COLORS.primary,
+    borderWidth: scaleSize(1.5),
+    borderRadius: scaleSize(8),
+    paddingHorizontal: scaleSize(12),
+    paddingVertical: scaleSize(8),
+    marginBottom: scaleSize(16),
+  },
+
+  promptInput: {
+    width: '100%',
+    height: scaleSize(70),
+    fontSize: scaleFont(16),
+    color: COLORS.textPrimary,
+    textAlignVertical: 'top',
+  },
+
+  fixedButtonWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     flexDirection: 'row',
-    marginTop: 30,
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.background,
+    paddingHorizontal: scaleSize(16),
+    paddingVertical: scaleSize(14),
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    zIndex: 10,
   },
-  button: {
-    backgroundColor: '#007BFF',
-    padding: 12,
-    marginHorizontal: 10,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+
+  buttonSpacing: {
+    width: '48%',
   },
 });
-*/

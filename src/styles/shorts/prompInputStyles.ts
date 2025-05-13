@@ -1,73 +1,100 @@
-import {StyleSheet} from 'react-native';
-import {scaleSize} from '../responsive'; // ✅ 반응형 함수 가져오기
-import { COLORS } from '../../styles/colors'; // 🎨 색상 파일 가져오기
+import {StyleSheet, Dimensions} from 'react-native';
+import {scaleSize, scaleFont} from '../responsive';
+import {COLORS} from '../../styles/colors';
+
+const {height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-backgroundColor: COLORS.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
+    backgroundColor: COLORS.background,
   },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+
+  // 진행바 위치 설정
+  progressBarWrapper: {
     position: 'absolute',
+    top: 0,
     width: '100%',
-    paddingHorizontal: '10%',
-  },
-  progressLine: {
-    height: 2,
-    backgroundColor: '#51BCB4',
-    flex: 1,
-    marginHorizontal: '2%',
-  },
-  progressDotActive: {
-    color: '#51BCB4',
-  },
-  progressDotInactive: {
-    color: '#888',
-  },
-  inputContainer: {
-    borderWidth: 2,
-    borderColor: '#51BCB4',
-    borderRadius: scaleSize(10),
-    justifyContent: 'center',
+    paddingTop: scaleSize(10),
+    backgroundColor: COLORS.background,
     alignItems: 'center',
-    width: scaleSize(300),
-    height: scaleSize(150),
-    marginTop: scaleSize(80),
+    zIndex: 10,
   },
+
+  // 프롬프트 입력 필드 포함하는 영역
+  contentWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: scaleSize(20),
+    paddingTop: scaleSize(60), // 진행바 공간 확보
+  },
+
+  inputContainer: {
+    borderWidth: scaleSize(2),
+    borderColor: COLORS.primary,
+    borderRadius: scaleSize(10),
+    width: '100%',
+    height: height * 0.25,
+    paddingHorizontal: scaleSize(12),
+    justifyContent: 'center',
+  },
+
   input: {
-    color: '#51BCB4',
-    textAlign: 'center',
     width: '100%',
     height: '100%',
+    color: COLORS.primary,
+    fontSize: scaleFont(16),
+    textAlignVertical: 'top',
+    padding: scaleSize(10),
   },
-  buttonContainer: {
+
+  // ✅ 고정된 하단 버튼 컨테이너
+  fixedButtonWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
-    marginTop: scaleSize(30),
+    backgroundColor: COLORS.background,
+    paddingHorizontal: scaleSize(20),
+    paddingVertical: scaleSize(14),
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    zIndex: 10,
+  },
+
+  buttonSpacing: {
+    width: '48%',
+  },
+
+  // 로딩 오버레이
+  loadingOverlay: {
     position: 'absolute',
-    bottom: scaleSize(50),
-  },
-  button: {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: scaleSize(12),
-    borderRadius: scaleSize(20),
-    width: scaleSize(140),
+    zIndex: 100,
   },
-  prevButton: {
-    backgroundColor: '#ccc',
-    marginRight: '2%',
+
+  // 로딩 박스
+  loadingBox: {
+    backgroundColor: '#333',
+    padding: scaleSize(20),
+    borderRadius: scaleSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scaleSize(10),
   },
-  nextButton: {
-    backgroundColor: '#51BCB4',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    color: '#1F2C3D',
+
+  // 로딩 텍스트
+  loadingText: {
+    marginTop: scaleSize(5),
+    color: '#fff',
+    fontSize: scaleFont(14),
   },
 });
