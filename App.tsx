@@ -6,8 +6,8 @@ import AppNavigator from './src/navigator/AppNavigator';
 import {UserProvider} from './src/context/UserContext';
 import SplashScreen from 'react-native-splash-screen';
 import {configureGoogleSignin} from './src/config/googleSignin';
-import { useThemeColors } from '../styles/useThemeColors';
 import {ThemeProvider} from './src/context/ThemeContext';
+import {VideoGenerationProvider} from './src/context/VideoGenerationContext'; // ✅ 추가
 
 const App = () => {
   useEffect(() => {
@@ -24,13 +24,14 @@ const App = () => {
 
   return (
     <UserProvider>
-        <ThemeProvider>
-      <SafeAreaProvider>
-        <AppNavigator />
-      </SafeAreaProvider>
-
-          </ThemeProvider>
-
+      <ThemeProvider>
+        <VideoGenerationProvider>
+          {/* ✅ 전역 상태 Provider 추가 */}
+          <SafeAreaProvider>
+            <AppNavigator />
+          </SafeAreaProvider>
+        </VideoGenerationProvider>
+      </ThemeProvider>
     </UserProvider>
   );
 };

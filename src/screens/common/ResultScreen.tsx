@@ -1,23 +1,33 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {View, Text, TouchableOpacity, Alert} from 'react-native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {styles} from '../../styles/common/resultScreenStyles'; // ✅ 스타일 가져오기
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Video from 'react-native-video';
 
-import {scaleSize} from '../../styles/responsive'; // ✅ 반응형 크기 조정 함수 가져오기
+import {styles} from '../../styles/common/resultScreenStyles';
+import {scaleSize} from '../../styles/responsive';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-// 📌 네비게이션 타입 정의
-type RootStackParamList = {
-  ResultScreen: undefined;
+type ShortsStackParamList = {
+  ResultScreen: {videos: string[]; subtitles: string[]; music?: string};
   Main: undefined;
 };
 
-type NavigationProps = StackNavigationProp<RootStackParamList, 'ResultScreen'>;
+type NavigationProps = StackNavigationProp<
+  ShortsStackParamList,
+  'ResultScreen'
+>;
 
 const ResultScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const {videos, subtitles, music} = route.params as {
+    videos: string[];
+    subtitles: string[];
+    music?: string;
+  };
+
+  const finalVideoUrl = videos?.[0];
 
   const handleExit = () => {
     navigation.reset({
@@ -26,16 +36,34 @@ const ResultScreen: React.FC = () => {
     });
   };
 
+  const handleSave = () => {
+    Alert.alert('저장', '로컬 저장 기능은 추후 지원 예정입니다.');
+  };
+
+  const handlePost = () => {
+    Alert.alert('포스팅', '게시 기능은 추후 구현됩니다.');
+  };
+
   return (
     <View style={styles.container}>
-      {/* 📌 중앙 네모 박스 (결과물) */}
-      <View style={styles.resultBox}>
-        <Text style={styles.resultText}>최종 결과물</Text>
+      {/* ✅ 최종 영상 미리보기 */}
+      <View style={styles.videoBox}>
+        {finalVideoUrl ? (
+          <Video
+            source={{uri: finalVideoUrl}}
+            style={styles.video}
+            resizeMode="cover"
+            controls
+            repeat
+          />
+        ) : (
+          <Text style={styles.errorText}>영상이 없습니다.</Text>
+        )}
       </View>
 
-      {/* 📌 버튼 */}
+      {/* ✅ 버튼 영역 */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.postButton}>
+        <TouchableOpacity style={styles.postButton} onPress={handlePost}>
           <Icon
             name="cloud-upload-outline"
             size={scaleSize(24)}
@@ -45,14 +73,9 @@ const ResultScreen: React.FC = () => {
         </TouchableOpacity>
 
         <View style={styles.smallButtonContainer}>
-          <TouchableOpacity style={styles.saveButton}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Ionicons
-                name="save-outline"
-                size={18}
-                color="#fff"
-                style={{marginRight: 6}}
-              />
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <View style={styles.iconWithText}>
+              <Icon name="save-outline" size={18} color="#fff" />
               <Text style={styles.smallButtonText}>저장</Text>
             </View>
           </TouchableOpacity>

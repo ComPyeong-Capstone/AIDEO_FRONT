@@ -1,4 +1,3 @@
-// src/api/generateApi.ts
 import {videoAxiosInstance} from './axiosInstance';
 
 // ✅ Request / Response 타입 정의
@@ -22,7 +21,7 @@ export interface RegenerateImageResponse {
 }
 
 export interface GeneratePartialVideoRequest {
-  image_urls: string[];
+  images: string[]; // ✅ 변경됨: image_urls → images
   subtitles: string[];
 }
 
@@ -47,7 +46,7 @@ export interface GenerateFinalVideoRequest {
   font_path: string;
   font_effect: string;
   font_color: string;
-  subtitle_y_positiong: number;
+  subtitle_y_position: number; // ✅ 오타 수정됨
 }
 
 export interface GenerateFinalVideoResponse {

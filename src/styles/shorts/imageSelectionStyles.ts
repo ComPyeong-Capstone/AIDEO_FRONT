@@ -4,7 +4,6 @@ import {COLORS} from '../colors';
 
 const {width, height} = Dimensions.get('window');
 
-// 이미지 크기 비율
 const IMAGE_WIDTH = width * 0.75;
 const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
@@ -15,11 +14,27 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  backButton: {
+  // ✅ 좌측 < 버튼
+  navButtonLeft: {
     position: 'absolute',
     top: scaleSize(12),
     left: scaleSize(16),
+    padding: scaleSize(8),
     zIndex: 20,
+  },
+
+  // ✅ 우측 > 버튼
+  navButtonRight: {
+    position: 'absolute',
+    top: scaleSize(12),
+    right: scaleSize(16),
+    padding: scaleSize(8),
+    zIndex: 20,
+  },
+
+  navIcon: {
+    fontSize: scaleFont(28),
+    color: COLORS.primary,
   },
 
   progressBarWrapper: {

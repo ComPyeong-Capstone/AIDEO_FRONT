@@ -1,8 +1,11 @@
 import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
-import {COLORS} from '../colors'; // 🎨 색상 파일 가져오기
+import {COLORS} from '../colors';
 
 const {width, height} = Dimensions.get('window');
+
+const VIDEO_WIDTH = width * 0.85;
+const VIDEO_HEIGHT = height * 0.65;
 
 export const styles = StyleSheet.create({
   container: {
@@ -11,30 +14,44 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     paddingTop: scaleSize(90),
   },
-  resultBox: {
-    width: width * 0.85,
-    height: height * 0.65,
-    backgroundColor: 'white',
+
+  // ✅ 영상 박스 (최종 미리보기)
+  videoBox: {
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
+    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: scaleSize(20),
     borderWidth: 2,
-    borderColor: '',
+    borderColor: '#ccc',
     marginVertical: scaleSize(25),
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  resultText: {
-    fontSize: scaleFont(20),
-    fontWeight: 'bold',
-    color: '#1F2C3D',
+
+  // ✅ 실제 Video 태그에 적용
+  video: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
   },
+
+  // ✅ 영상이 없을 때 메시지
+  errorText: {
+    fontSize: scaleFont(14),
+    color: '#888',
+    textAlign: 'center',
+  },
+
   buttonContainer: {
     marginTop: scaleSize(10),
     alignItems: 'center',
   },
+
   postButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -48,16 +65,19 @@ export const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+
   buttonText: {
     fontSize: scaleFont(20),
     fontWeight: 'bold',
     color: 'white',
     marginLeft: scaleSize(10),
   },
+
   smallButtonContainer: {
     flexDirection: 'row',
     marginTop: scaleSize(16),
   },
+
   saveButton: {
     backgroundColor: '#356868',
     paddingVertical: scaleSize(16),
@@ -65,6 +85,7 @@ export const styles = StyleSheet.create({
     borderRadius: scaleSize(20),
     marginHorizontal: scaleSize(8),
   },
+
   exitButton: {
     backgroundColor: '#777',
     paddingVertical: scaleSize(16),
@@ -72,8 +93,15 @@ export const styles = StyleSheet.create({
     borderRadius: scaleSize(20),
     marginHorizontal: scaleSize(8),
   },
+
   smallButtonText: {
     fontSize: scaleFont(17),
     color: 'white',
+  },
+
+  iconWithText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scaleSize(6), // React Native >= 0.71 이상 지원
   },
 });

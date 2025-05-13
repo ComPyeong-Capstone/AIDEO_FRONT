@@ -11,16 +11,21 @@ export type PhotoStackParamList = {
   SelectDurationScreen: {mode: 'photo'};
   PhotoPromptScreen: {duration: number};
   FinalVideoScreen: {
+    from?: 'photo'; // ✅ 흐름 구분
     prompt: string;
     images: {id: string; uri: string | null}[];
-    music?: string; // ✅ 음악 추가
+    videos?: string[]; // ✅ 부분 영상 리스트
+    subtitles?: string[]; // ✅ 자막 리스트
+    music?: string; // ✅ 음악
   };
   MusicSelectionScreen: {
     prompt: string;
     images: {id: string; uri: string | null}[];
-    music?: string; // ✅ 음악 전달
+    music?: string;
   };
-  ResultScreen: undefined;
+  ResultScreen: {
+    finalVideoUrl: string; // ✅ 최종 영상 URL 전달
+  };
 };
 
 // ✅ Stack Navigator 생성

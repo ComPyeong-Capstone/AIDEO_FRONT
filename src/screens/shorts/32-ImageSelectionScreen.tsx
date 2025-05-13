@@ -12,13 +12,12 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/Entypo';
 
 import {styles} from '../../styles/shorts/imageSelectionStyles';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
 import ProgressBar from '../../components/ProgressBar';
-import {regenerateImage} from '../../api/generateApi';
+import {regenerateImage, generatePartialVideo} from '../../api/generateApi';
 
 type Props = NativeStackScreenProps<
   ShortsStackParamList,
@@ -52,13 +51,10 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const handleRegenerateImage = async () => {
     try {
       setLoading(true);
-
-      // ✅ 자막 상태에 반영
       const updatedSubtitles = [...subtitles];
       updatedSubtitles[selectedIndex] = captionText;
       setSubtitles(updatedSubtitles);
 
-      // ✅ 이미지 재생성 요청
       const result = await regenerateImage({
         text: captionText,
         number: selectedIndex + 1,
@@ -75,21 +71,84 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     }
   };
 
+  const handleGenerateVideo = async () => {
+    const updatedSubtitles = subtitles.map((s, i) =>
+      i === selectedIndex ? captionText : s,
+    );
+    setSubtitles(updatedSubtitles);
+
+    const isValidImages = imageUrls.every(url => url && url.startsWith('http'));
+    const isValidSubtitles = updatedSubtitles.every(s => s.trim() !== '');
+
+    if (!isValidImages || !isValidSubtitles) {
+      Alert.alert('입력 오류', '모든 이미지와 자막을 입력해주세요.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const imageFilenames = imageUrls.map(url => {
+        const segments = url.split('/');
+        return segments[segments.length - 1];
+      });
+
+      const response = await generatePartialVideo({
+        images: imageFilenames,
+        subtitles: updatedSubtitles,
+      });
+
+      navigation.navigate('FinalVideoScreen', {
+        from: 'shorts',
+        duration,
+        prompt,
+        imageUrls,
+        subtitles: updatedSubtitles,
+        videos: response.video_urls,
+      });
+    } catch (error) {
+      console.error('부분 영상 생성 실패:', error);
+      Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSkipToFinal = () => {
+    const updatedSubtitles = subtitles.map((s, i) =>
+      i === selectedIndex ? captionText : s,
+    );
+    setSubtitles(updatedSubtitles);
+
+    navigation.navigate('FinalVideoScreen', {
+      from: 'shorts',
+      duration,
+      prompt,
+      imageUrls,
+      subtitles: updatedSubtitles,
+      videos: [],
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* 🔙 뒤로가기 */}
+      {/* ✅ 상단 < 이전 */}
       <TouchableOpacity
-        style={[styles.backButton, {top: insets.top + 10}]}
+        style={[styles.navButtonLeft, {top: insets.top + 10}]}
         onPress={() => navigation.goBack()}>
-        <Icon name="chevron-left" size={28} color="#333" />
+        <Text style={styles.navIcon}>{'<'}</Text>
       </TouchableOpacity>
 
-      {/* ✅ 진행바 */}
+      {/* ✅ 상단 > 다음 */}
+      <TouchableOpacity
+        style={[styles.navButtonRight, {top: insets.top + 10}]}
+        onPress={handleSkipToFinal}>
+        <Text style={styles.navIcon}>{'>'}</Text>
+      </TouchableOpacity>
+
       <View style={styles.progressBarWrapper}>
         <ProgressBar currentStep={3} mode="shorts" />
       </View>
 
-      {/* ✅ 이미지 슬라이더 */}
       <View style={styles.sliderWrapper}>
         <Swiper
           loop={false}
@@ -104,7 +163,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
           ))}
         </Swiper>
 
-        {/* ✅ 커스텀 페이지네이션 */}
         <View style={styles.customPagination}>
           {imageUrls.map((_, index) => (
             <Text
@@ -120,7 +178,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         </View>
       </View>
 
-      {/* ✅ 자막 입력창 */}
       <View style={styles.captionBox}>
         <TextInput
           style={styles.captionText}
@@ -131,7 +188,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         />
       </View>
 
-      {/* ✅ 하단 버튼 */}
       <View style={styles.buttonContainer}>
         <CustomButton
           title="사진 재생성"
@@ -142,28 +198,17 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         />
         <CustomButton
           title="영상 생성"
-          onPress={() =>
-            navigation.navigate('FinalVideoScreen', {
-              from: 'shorts',
-              duration,
-              prompt,
-              imageUrls,
-              subtitles: subtitles.map((s, i) =>
-                i === selectedIndex ? captionText : s,
-              ),
-            })
-          }
+          onPress={handleGenerateVideo}
           type="primary"
           style={styles.buttonSpacing}
         />
       </View>
 
-      {/* ✅ 로딩 오버레이 */}
       {loading && (
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingBox}>
             <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>이미지 생성 중...</Text>
+            <Text style={styles.loadingText}>처리 중...</Text>
           </View>
         </View>
       )}

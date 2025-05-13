@@ -15,7 +15,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
-  // ✅ 진행바 (노치 바로 아래)
+  // ✅ 진행바 (노치 아래)
   progressBarWrapper: {
     position: 'absolute',
     top: 0,
@@ -51,10 +51,10 @@ export default StyleSheet.create({
     marginHorizontal: scaleSize(6),
   },
 
-  // ✅ 영상 슬라이더
+  // ✅ 영상 슬라이더 컨테이너
   sliderContainer: {
     width: '100%',
-    marginTop: scaleSize(70), // ✅ 진행바와의 거리 조정
+    marginTop: scaleSize(70),
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -66,7 +66,7 @@ export default StyleSheet.create({
     borderColor: COLORS.primary,
     borderRadius: scaleSize(10),
     overflow: 'hidden',
-    backgroundColor: COLORS.background,
+    backgroundColor: '#000', // 영상 로딩 중에도 배경 보이게
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -88,6 +88,13 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.buttonText,
     textAlign: 'center',
+    marginBottom: scaleSize(10),
+  },
+
+  videoPlayer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000', // 영상 내부 영역도 까맣게
   },
 
   arrowButton: {
@@ -117,7 +124,7 @@ export default StyleSheet.create({
     borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(14), // ✅ 간격 줄임
+    marginTop: scaleSize(14),
   },
 
   buttonText: {

@@ -20,12 +20,13 @@ export type ShortsStackParamList = {
     subtitles: string[];
   };
   FinalVideoScreen: {
-    from?: 'photo' | 'shorts'; // ✅ from 추가
+    from?: 'photo' | 'shorts';
     duration: number;
     prompt: string;
     imageUrls: string[];
     subtitles: string[];
     music?: string;
+    videos?: string[]; // ✅ 추가된 부분
   };
   MusicSelectionScreen: {
     duration: number;
@@ -34,7 +35,11 @@ export type ShortsStackParamList = {
     subtitles: string[];
     music?: string;
   };
-  ResultScreen: undefined;
+  ResultScreen: {
+    videos: string[];
+    subtitles: string[];
+    music?: string;
+  };
 };
 
 // ✅ Stack Navigator 생성

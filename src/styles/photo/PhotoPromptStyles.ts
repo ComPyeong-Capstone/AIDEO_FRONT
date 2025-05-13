@@ -2,7 +2,7 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {COLORS} from '../../styles/colors';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 
-const {width, height} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
@@ -16,42 +16,37 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     paddingTop: scaleSize(10),
-    paddingHorizontal: width * 0.05,
     backgroundColor: COLORS.background,
     zIndex: 10,
   },
 
-  // ✅ ScrollView 내부 콘텐츠
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
-    paddingBottom: height * 0.26, // 하단 버튼과 입력창 여유
+    paddingBottom: scaleSize(220),
   },
 
-  // ✅ 전체 본문 Wrapper
   contentWrapper: {
-    width: '90%',
+    width: '80%',
     alignItems: 'center',
-    paddingHorizontal: scaleSize(16),
-    paddingTop: height * 0.07, // 진행바 아래 간격
+    paddingTop: scaleSize(70),
   },
 
-  // ✅ Swiper 컨테이너 (9:16 비율 고정)
   swiperContainer: {
-    width: '90%',
+    width: '100%',
     aspectRatio: 9 / 16,
-    alignSelf: 'center',
+    maxHeight: height * 0.55, // ✅ 최대 높이 제한으로 화면 넘침 방지
   },
 
-  // ✅ Swiper 내부 슬라이드
   slide: {
     width: '100%',
     aspectRatio: 9 / 16,
+    maxHeight: height * 0.55, // ✅ Swiper 내 슬라이드도 동일 제한
     borderRadius: scaleSize(12),
-    overflow: 'hidden',
+    backgroundColor: COLORS.imagebox,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.imagebox,
+    overflow: 'hidden',
   },
 
   image: {
@@ -65,54 +60,49 @@ export default StyleSheet.create({
     backgroundColor: '#f0f0f0',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: scaleSize(1.5),
+    borderWidth: scaleSize(2),
     borderColor: COLORS.primary,
   },
 
   addButtonText: {
     fontSize: scaleFont(48),
-    color: COLORS.primary,
     fontWeight: 'bold',
+    color: COLORS.primary,
   },
 
-  // ✅ Swiper pagination dot 위치를 Swiper 박스 외부로 내리기 위한 스타일
   pagination: {
     position: 'absolute',
-    bottom: -scaleSize(25),
+    bottom: -scaleSize(24),
   },
 
-  // ✅ dot과 프롬프트 입력창 사이 여백
   paginationSpacing: {
     height: scaleSize(32),
   },
 
-  // ✅ 프롬프트 입력창 wrapper
   inputContainer: {
-    width: '90%',
-    borderRadius: scaleSize(8),
-    borderWidth: scaleSize(1.5),
-    borderColor: COLORS.primary,
+    width: '100%',
     backgroundColor: '#fff',
+    borderColor: COLORS.primary,
+    borderWidth: scaleSize(1.5),
+    borderRadius: scaleSize(8),
     paddingHorizontal: scaleSize(12),
     paddingVertical: scaleSize(8),
-    marginBottom: scaleSize(12),
+    marginBottom: scaleSize(16),
   },
 
-  // ✅ 프롬프트 입력창 내부
   promptInput: {
     width: '100%',
-    height: height * 0.08,
+    height: scaleSize(70),
     fontSize: scaleFont(16),
     color: COLORS.textPrimary,
     textAlignVertical: 'top',
   },
 
-  // ✅ 하단 버튼 고정 영역
   fixedButtonWrapper: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
     right: 0,
+    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: COLORS.background,
@@ -123,7 +113,6 @@ export default StyleSheet.create({
     zIndex: 10,
   },
 
-  // ✅ 하단 버튼 간격
   buttonSpacing: {
     width: '48%',
   },
