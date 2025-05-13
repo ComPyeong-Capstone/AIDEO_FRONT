@@ -18,6 +18,7 @@ import {createNotification} from '../../api/notificationApi';
 import {getPostDetail} from '../../api/playVideo'; // 추가
 import Video from 'react-native-video'; // 추가
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const ShortsPlayerScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -39,6 +40,7 @@ const ShortsPlayerScreen: React.FC = () => {
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [isLikedUsersVisible, setIsLikedUsersVisible] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
+
 
   const loadCounts = useCallback(async () => {
     try {
@@ -183,21 +185,31 @@ useEffect(() => {
       </SafeAreaView>
 
       {/* ✅ 댓글 모달 */}
-      <Modal
-            visible={isCommentsVisible}
-            animationType="slide"
-            transparent={true}>
-            <CommentsScreen
-              postId={postId}
-              currentUserId={currentUserId}
-              creatorUserId={creatorUserId}
-              onClose={() => {
-                setIsCommentsVisible(false);
-                loadCounts(); // 댓글 작성 후 다시 카운트 로드
 
-              }}
-            />
-          </Modal>
+<Modal
+  visible={isCommentsVisible}
+  animationType="slide"
+  transparent={true}>
+  <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}>
+    {/* 🔹 배경 터치 감지 영역 */}
+    <TouchableWithoutFeedback onPress={() => setIsCommentsVisible(false)}>
+      <View style={{ flex: 1 }} />
+    </TouchableWithoutFeedback>
+
+    {/* 🔹 실제 모달 영역: 이 안쪽은 터치해도 닫히지 않음 */}
+    <CommentsScreen
+      postId={postId}
+      currentUserId={currentUserId}
+      creatorUserId={creatorUserId}
+      onClose={() => {
+        setIsCommentsVisible(false);
+        loadCounts(); // 댓글 작성 후 다시 카운트 로드
+      }}
+    />
+  </View>
+</Modal>
+
+
 
       {/* ✅ 좋아요 누른 유저 모달 */}
       <Modal visible={isLikedUsersVisible} animationType="slide">

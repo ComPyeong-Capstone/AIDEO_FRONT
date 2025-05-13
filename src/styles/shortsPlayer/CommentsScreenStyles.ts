@@ -128,9 +128,8 @@ modalContainer: {
   borderTopRightRadius: 20,
   paddingHorizontal: 10,
   paddingTop: scaleSize(16),
-    paddingBottom: scaleSize(0), // 키보드와 충돌하지 않게 약간 여유 두기
-
-  height: '70%', // ⬅️ 원하는 크기만큼 조절
+    paddingBottom: scaleSize(15), // 키보드와 충돌하지 않게 약간 여유 두기
+  height: '135%', // ⬅️ 원하는 크기만큼 조절
 },
 
   inputContainer: {
@@ -143,6 +142,7 @@ modalContainer: {
 inputWrapper: {
   paddingHorizontal: scaleSize(10),
   paddingVertical: scaleSize(10),
+    paddingBottom: scaleSize(5), // ✅ 하단 공간 추가
   backgroundColor: 'white',
   borderTopWidth: 1,
   borderColor: '#eee',

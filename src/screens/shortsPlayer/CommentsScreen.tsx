@@ -23,6 +23,7 @@ import {likeComment, unlikeComment} from '../../api/commentLikeApi';
 import {createNotification} from '../../api/notificationApi';
 import {styles} from '../../styles/shortsPlayer/CommentsScreenStyles';
 import CommentItem from '../../components/CommentItem';
+import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface Props {
   postId: number;
@@ -161,10 +162,6 @@ const CommentsScreen: React.FC<Props> = ({
       style={{ flex: 1 }}>
       <SafeAreaView style={styles.modalWrapper}>
         <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeText}>✖</Text>
-          </TouchableOpacity>
-
           <Text style={styles.headerText}>댓글</Text>
 
           <FlatList

@@ -12,5 +12,7 @@ module.exports = {
         allowUndefined: true,
       },
     ],
+        'react-native-reanimated/plugin', // ✅ 반드시 마지막에 위치해야 함
+
   ],
 };
