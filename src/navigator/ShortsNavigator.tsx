@@ -3,15 +3,15 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 // ✅ Shorts Screens
 import SelectDurationScreen from '../screens/common/SelectDurationScreen';
-import PromptInputScreen from '../screens/shorts/3210-PromptInputScreen';
-import ImageSelectionScreen from '../screens/shorts/3220-ImageSelectionScreen';
+import PromptInputScreen from '../screens/shorts/31-PromptInputScreen';
+import ImageSelectionScreen from '../screens/shorts/32-ImageSelectionScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import ResultScreen from '../screens/common/ResultScreen';
 
 // ✅ Stack Navigator 타입 정의
 export type ShortsStackParamList = {
-  SelectDurationScreen: {mode: 'shorts' | 'photo'}; // ✅ 수정됨
+  SelectDurationScreen: {mode: 'shorts' | 'photo'};
   PromptInputScreen: {duration: number};
   ImageSelectionScreen: {
     duration: number;
@@ -24,8 +24,15 @@ export type ShortsStackParamList = {
     prompt: string;
     imageUrls: string[];
     subtitles: string[];
+    music?: string; // ✅ music 파라미터 추가
   };
-  MusicSelectionScreen: undefined;
+  MusicSelectionScreen: {
+    duration: number;
+    prompt: string;
+    imageUrls: string[];
+    subtitles: string[];
+    music?: string;
+  };
   ResultScreen: undefined;
 };
 

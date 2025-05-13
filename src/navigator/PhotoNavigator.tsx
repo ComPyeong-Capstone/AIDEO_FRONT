@@ -2,19 +2,24 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import ResultScreen from '../screens/common/ResultScreen';
 import SelectDurationScreen from '../screens/common/SelectDurationScreen';
-import PhotoPromptScreen from '../screens/photo/3110-PhotoPromptScreen';
+import PhotoPromptScreen from '../screens/photo/PhotoPromptScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {
-  SelectDurationScreen: {mode: 'photo'}; // ✅ 추가
+  SelectDurationScreen: {mode: 'photo'};
   PhotoPromptScreen: {duration: number};
   FinalVideoScreen: {
     prompt: string;
     images: {id: string; uri: string | null}[];
+    music?: string; // ✅ 음악 추가
   };
-  MusicSelectionScreen: undefined;
+  MusicSelectionScreen: {
+    prompt: string;
+    images: {id: string; uri: string | null}[];
+    music?: string; // ✅ 음악 전달
+  };
   ResultScreen: undefined;
 };
 

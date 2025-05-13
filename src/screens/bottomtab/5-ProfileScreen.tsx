@@ -15,7 +15,7 @@ import {useWindowDimensions} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import {styles} from '../../styles/bottomtab/5000-profileStyles';
+import {styles} from '../../styles/bottomtab/5-profileStyles';
 import {useUser} from '../../context/UserContext';
 import {defaultProfileImages} from '../../utils/defaultProfile';
 import {userApi} from '../../api/userApi';

@@ -16,7 +16,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 
-import {styles} from '../../styles/bottomtab/1000-homeStyles'; // ✅ 고정 스타일 사용
+import {styles} from '../../styles/bottomtab/1-homeStyles'; // ✅ 고정 스타일 사용
 import {getAllPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 
@@ -71,48 +71,50 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
-const renderItem = ({item}: {item: PostThumbnail}) => {
-  console.log('썸네일 URL:', item.thumbnailURL); // ✅ OK
+  const renderItem = ({item}: {item: PostThumbnail}) => {
+    console.log('썸네일 URL:', item.thumbnailURL); // ✅ OK
 
-  return (
-    <TouchableOpacity
-      style={[styles.videoContainer, {width: (width - 40) / 2}]}
-      onPress={() =>
-        navigation.navigate('ShortsPlayerScreen', {
-          postId: item.postId,
-          title: item.title,
-          creator: item.author.userName,
-          currentUserId: user?.userId ?? 0,
-          creatorUserId: item.author.userId,
-        })
-      }>
-      <Image
-        source={{
-          uri: item.thumbnailURL || 'https://via.placeholder.com/200x300.png?text=No+Thumbnail',
-        }}
-        style={styles.thumbnailPlaceholder}
-      />
-      <View style={styles.textContainer}>
-        <Text numberOfLines={1} style={styles.title}>
-          {item.title}
-        </Text>
-        <View style={styles.creatorContainer}>
-          <Image
-            source={{
-              uri: item.author.profileImage || 'https://via.placeholder.com/100.png?text=User',
-            }}
-            style={styles.profileImage}
-          />
-          <Text style={styles.creator}>
-            {item.author.userName ?? `사용자 ${item.author.userId}`}
+    return (
+      <TouchableOpacity
+        style={[styles.videoContainer, {width: (width - 40) / 2}]}
+        onPress={() =>
+          navigation.navigate('ShortsPlayerScreen', {
+            postId: item.postId,
+            title: item.title,
+            creator: item.author.userName,
+            currentUserId: user?.userId ?? 0,
+            creatorUserId: item.author.userId,
+          })
+        }>
+        <Image
+          source={{
+            uri:
+              item.thumbnailURL ||
+              'https://via.placeholder.com/200x300.png?text=No+Thumbnail',
+          }}
+          style={styles.thumbnailPlaceholder}
+        />
+        <View style={styles.textContainer}>
+          <Text numberOfLines={1} style={styles.title}>
+            {item.title}
           </Text>
+          <View style={styles.creatorContainer}>
+            <Image
+              source={{
+                uri:
+                  item.author.profileImage ||
+                  'https://via.placeholder.com/100.png?text=User',
+              }}
+              style={styles.profileImage}
+            />
+            <Text style={styles.creator}>
+              {item.author.userName ?? `사용자 ${item.author.userId}`}
+            </Text>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>

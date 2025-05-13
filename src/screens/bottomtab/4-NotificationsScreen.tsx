@@ -9,7 +9,7 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
-import {styles} from '../../styles/bottomtab/4000-notificationsStyles';
+import {styles} from '../../styles/bottomtab/4-notificationsStyles';
 import {scaleSize} from '../../styles/responsive';
 import {
   getNotifications,

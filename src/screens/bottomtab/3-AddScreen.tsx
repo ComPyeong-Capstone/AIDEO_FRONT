@@ -10,7 +10,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BlurView} from '@react-native-community/blur';
-import {styles} from '../../styles/bottomtab/3000-addScreenStyles';
+import {styles} from '../../styles/bottomtab/3-addScreenStyles';
 import {scaleSize, scaleFont} from '../../styles/responsive';
 
 // 정확한 RootStackParamList 정의 (중첩 네비게이션 포함)

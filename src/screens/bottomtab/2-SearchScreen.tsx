@@ -11,7 +11,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {styles} from '../../styles/bottomtab/2000-searchStyles';
+import {styles} from '../../styles/bottomtab/2-searchStyles';
 import {scaleSize} from '../../styles/responsive';
 import {getPostsByHashtag, getMyPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';

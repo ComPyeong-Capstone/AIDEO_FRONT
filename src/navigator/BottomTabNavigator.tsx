@@ -5,14 +5,14 @@ import {
   BottomTabNavigationOptions,
 } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AddScreenModal from '../screens/bottomtab/3000-AddScreen';
+import AddScreenModal from '../screens/bottomtab/3-AddScreen';
 import {COLORS} from '../styles/colors';
 import {scaleSize} from '../styles/responsive';
 
-import HomeScreen from '../screens/bottomtab/1000-HomeScreen';
-import SearchScreen from '../screens/bottomtab/2000-SearchScreen';
-import NotificationsScreen from '../screens/bottomtab/4000-NotificationsScreen';
-import ProfileScreen from '../screens/bottomtab/5000-ProfileScreen';
+import HomeScreen from '../screens/bottomtab/1-HomeScreen';
+import SearchScreen from '../screens/bottomtab/2-SearchScreen';
+import NotificationsScreen from '../screens/bottomtab/4-NotificationsScreen';
+import ProfileScreen from '../screens/bottomtab/5-ProfileScreen';
 import {BottomTabParamList} from '../types/navigation';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -83,7 +83,6 @@ const BottomTabNavigator: React.FC = () => {
           name="Add"
           component={() => <></>}
           options={{
-
             tabBarButton: () => (
               <AddTabBarButton onPress={() => setModalVisible(true)} />
             ),
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: scaleSize(100),
   },
   tabBarStyle: {
-      backgroundColor: COLORS.background, // 예: 검정색 배경
+    backgroundColor: COLORS.background, // 예: 검정색 배경
 
     height: scaleSize(80),
     paddingBottom: Platform.OS === 'ios' ? scaleSize(10) : scaleSize(5),

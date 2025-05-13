@@ -3,35 +3,63 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../styles/common/musicSelectionStyles';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp} from '@react-navigation/native';
 import CustomButton from '../../styles/button';
 
-type RootStackParamList = {
-  MusicSelectionScreen: undefined;
-  PreviousScreen: {selectedMusic: string};
-};
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
+import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
 
-type NavigationProps = StackNavigationProp<
-  RootStackParamList,
+type ShortsProps = NativeStackScreenProps<
+  ShortsStackParamList,
   'MusicSelectionScreen'
 >;
-type RouteProps = RouteProp<RootStackParamList, 'MusicSelectionScreen'>;
+type PhotoProps = NativeStackScreenProps<
+  PhotoStackParamList,
+  'MusicSelectionScreen'
+>;
+type Props = ShortsProps | PhotoProps;
 
-type Props = {
-  navigation: NavigationProps;
-  route: RouteProps;
-};
-
-const MusicSelectionScreen: React.FC<Props> = ({navigation}) => {
+const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
   const musicList = ['음악 1', '음악 2', '음악 3'];
-  const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
+  const [selectedMusic, setSelectedMusic] = useState<string | null>(
+    route.params?.music || null,
+  );
 
   const getMusicItemStyle = (music: string) => [
     styles.musicItem,
     selectedMusic === music ? styles.selectedMusic : styles.unselectedMusic,
   ];
+
+  const handleConfirm = () => {
+    if (!selectedMusic) return;
+
+    if ('imageUrls' in route.params) {
+      // Shorts 흐름
+      const nav = navigation as NativeStackScreenProps<
+        ShortsStackParamList,
+        'MusicSelectionScreen'
+      >['navigation'];
+      nav.navigate('FinalVideoScreen', {
+        duration: route.params.duration,
+        prompt: route.params.prompt,
+        imageUrls: route.params.imageUrls,
+        subtitles: route.params.subtitles,
+        music: selectedMusic,
+      });
+    } else {
+      // Photo 흐름
+      const nav = navigation as NativeStackScreenProps<
+        PhotoStackParamList,
+        'MusicSelectionScreen'
+      >['navigation'];
+      nav.navigate('FinalVideoScreen', {
+        prompt: route.params.prompt,
+        images: route.params.images,
+        music: selectedMusic,
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, {paddingTop: insets.top}]}>
@@ -49,7 +77,6 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation}) => {
         </TouchableOpacity>
       ))}
 
-      {/* ✅ 하단 버튼 그룹 */}
       <View
         style={[styles.buttonContainer, {paddingBottom: insets.bottom + 10}]}>
         <CustomButton
@@ -60,11 +87,7 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation}) => {
         />
         <CustomButton
           title="선택 완료"
-          onPress={() => {
-            if (selectedMusic) {
-              navigation.navigate('PreviousScreen', {selectedMusic});
-            }
-          }}
+          onPress={handleConfirm}
           type="primary"
           style={[styles.button, styles.nextButton]}
         />
