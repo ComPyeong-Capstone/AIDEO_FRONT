@@ -21,7 +21,7 @@ export interface RegenerateImageResponse {
 }
 
 export interface GeneratePartialVideoRequest {
-  images: string[]; // ✅ 변경됨: image_urls → images
+  images: string[];
   subtitles: string[];
 }
 
@@ -46,11 +46,20 @@ export interface GenerateFinalVideoRequest {
   font_path: string;
   font_effect: string;
   font_color: string;
-  subtitle_y_position: number; // ✅ 오타 수정됨
+  subtitle_y_position: number;
 }
 
 export interface GenerateFinalVideoResponse {
   final_video_url: string;
+}
+
+export interface MusicPreview {
+  title: string;
+  url: string;
+}
+
+export interface GetMusicPreviewsResponse {
+  previews: MusicPreview[];
 }
 
 // ✅ 입력 프롬프트를 통한 사진 및 자막 생성
@@ -83,6 +92,38 @@ export const generatePartialVideo = async (
   return response.data;
 };
 
+// ✅ 사진과 자막을 form-data로 전송하여 부분 영상 생성
+export const generatePartialVideoWithUpload = async (
+  files: {uri: string; name: string; type: string}[],
+  subtitles: string[],
+): Promise<{video_urls: string[]}> => {
+  const formData = new FormData();
+
+  subtitles.forEach(subtitle => {
+    formData.append('subtitles', subtitle);
+  });
+
+  files.forEach(file => {
+    formData.append('files', {
+      uri: file.uri,
+      name: file.name,
+      type: file.type,
+    } as any);
+  });
+
+  const response = await videoAxiosInstance.post(
+    '/generate/video/partial/upload-images',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  );
+
+  return response.data;
+};
+
 // ✅ 부분 영상 하나 재생성
 export const regenerateSinglePartialVideo = async (
   payload: RegenerateSinglePartialVideoRequest,
@@ -102,5 +143,11 @@ export const generateFinalVideo = async (
     '/generate/video/final',
     payload,
   );
+  return response.data;
+};
+
+// ✅ 음악 프리뷰 목록 호출
+export const getMusicPreviews = async (): Promise<GetMusicPreviewsResponse> => {
+  const response = await videoAxiosInstance.get('/previews');
   return response.data;
 };

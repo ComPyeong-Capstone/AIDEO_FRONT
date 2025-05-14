@@ -37,6 +37,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const [subtitles, setSubtitles] = useState(initialSubtitles);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [captionText, setCaptionText] = useState(initialSubtitles[0]);
+  const [generatedVideos, setGeneratedVideos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleIndexChange = (index: number) => {
@@ -51,10 +52,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const handleRegenerateImage = async () => {
     try {
       setLoading(true);
-      const updatedSubtitles = [...subtitles];
-      updatedSubtitles[selectedIndex] = captionText;
-      setSubtitles(updatedSubtitles);
-
       const result = await regenerateImage({
         text: captionText,
         number: selectedIndex + 1,
@@ -63,6 +60,10 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       const updatedImages = [...imageUrls];
       updatedImages[selectedIndex] = result.image_url;
       setImageUrls(updatedImages);
+
+      const updatedSubtitles = [...subtitles];
+      updatedSubtitles[selectedIndex] = captionText;
+      setSubtitles(updatedSubtitles);
     } catch (error) {
       console.error('이미지 재생성 실패:', error);
       Alert.alert('에러', '이미지 재생성에 실패했습니다.');
@@ -87,6 +88,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
     try {
       setLoading(true);
+
       const imageFilenames = imageUrls.map(url => {
         const segments = url.split('/');
         return segments[segments.length - 1];
@@ -96,6 +98,8 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         images: imageFilenames,
         subtitles: updatedSubtitles,
       });
+
+      setGeneratedVideos(response.video_urls);
 
       navigation.navigate('FinalVideoScreen', {
         from: 'shorts',
@@ -119,26 +123,30 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     );
     setSubtitles(updatedSubtitles);
 
+    if (!generatedVideos || generatedVideos.length === 0) {
+      Alert.alert('영상 없음', '먼저 "영상 생성"을 눌러 영상을 만들어주세요.');
+      return;
+    }
+
     navigation.navigate('FinalVideoScreen', {
       from: 'shorts',
       duration,
       prompt,
       imageUrls,
       subtitles: updatedSubtitles,
-      videos: [],
+      videos: generatedVideos,
     });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ 상단 < 이전 */}
+      {/* 상단 좌우 버튼 */}
       <TouchableOpacity
         style={[styles.navButtonLeft, {top: insets.top + 10}]}
         onPress={() => navigation.goBack()}>
         <Text style={styles.navIcon}>{'<'}</Text>
       </TouchableOpacity>
 
-      {/* ✅ 상단 > 다음 */}
       <TouchableOpacity
         style={[styles.navButtonRight, {top: insets.top + 10}]}
         onPress={handleSkipToFinal}>
