@@ -11,7 +11,7 @@ import {VideoGenerationProvider} from './src/context/VideoGenerationContext'; //
 
 const App = () => {
   useEffect(() => {
-    configureGoogleSignin();
+//    configureGoogleSignin();
 
     const timeout = setTimeout(() => {
       if (SplashScreen?.hide) {
