@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, TouchableOpacity, Alert} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -27,7 +27,15 @@ const ResultScreen: React.FC = () => {
     music?: string;
   };
 
-  const finalVideoUrl = videos?.[0];
+  const rawUrl = videos?.[0];
+  const finalVideoUrl = rawUrl?.includes(':8000')
+    ? rawUrl
+    : rawUrl?.replace('http://3.35.182.180', 'http://3.35.182.180:8000');
+
+  useEffect(() => {
+    console.log('🎥 비디오 원본 URL:', rawUrl);
+    console.log('🚀 재생용 URL:', finalVideoUrl);
+  }, [rawUrl]);
 
   const handleExit = () => {
     navigation.reset({
@@ -52,9 +60,13 @@ const ResultScreen: React.FC = () => {
           <Video
             source={{uri: finalVideoUrl}}
             style={styles.video}
-            resizeMode="cover"
+            resizeMode="contain"
             controls
             repeat
+            paused={false}
+            onLoad={data => console.log('✅ 비디오 로드 성공:', data)}
+            onError={err => console.error('❌ 비디오 로드 실패:', err)}
+            onBuffer={info => console.log('⏳ 버퍼링 중:', info)}
           />
         ) : (
           <Text style={styles.errorText}>영상이 없습니다.</Text>

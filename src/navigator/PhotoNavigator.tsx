@@ -1,5 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
+
 import ResultScreen from '../screens/common/ResultScreen';
 import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PhotoPromptScreen from '../screens/photo/PhotoPromptScreen';
@@ -16,15 +17,18 @@ export type PhotoStackParamList = {
     images: {id: string; uri: string | null}[];
     videos?: string[]; // ✅ 부분 영상 리스트
     subtitles?: string[]; // ✅ 자막 리스트
-    music?: string; // ✅ 음악
+    music?: string; // ✅ 선택된 음악
+    musicTitle?: string; // ✅ 음악 제목
   };
   MusicSelectionScreen: {
     prompt: string;
     images: {id: string; uri: string | null}[];
     music?: string;
+    musicTitle?: string; // ✅ 음악 제목
+    videos?: string[]; // ✅ 기존 생성된 영상 (재사용 목적)
   };
   ResultScreen: {
-    finalVideoUrl: string; // ✅ 최종 영상 URL 전달
+    finalVideoUrl: string; // ✅ 최종 영상 URL
   };
 };
 

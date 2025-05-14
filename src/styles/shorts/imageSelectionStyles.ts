@@ -5,7 +5,7 @@ import {COLORS} from '../colors';
 const {width, height} = Dimensions.get('window');
 
 const IMAGE_WIDTH = width * 0.75;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9) + scaleSize(20);
 
 export const styles = StyleSheet.create({
   container: {
@@ -14,40 +14,38 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // ✅ 상단 내비게이션 버튼
-  navButtonLeft: {
-    position: 'absolute',
-    top: scaleSize(12),
-    left: scaleSize(16),
-    padding: scaleSize(8),
-    zIndex: 20,
-  },
-  navButtonRight: {
-    position: 'absolute',
-    top: scaleSize(12),
-    right: scaleSize(16),
-    padding: scaleSize(8),
-    zIndex: 20,
-  },
-  navIcon: {
-    fontSize: scaleFont(28),
-    color: COLORS.primary,
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '90%',
+    marginTop: scaleSize(8),
   },
 
-  // ✅ 진행바
+  titleAndBarWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  navIcon: {
+    fontSize: scaleFont(24),
+    color: COLORS.primary,
+    paddingHorizontal: scaleSize(4),
+  },
+
+  imageNumberText: {
+    fontSize: scaleFont(15),
+    color: '#000',
+    fontWeight: '500',
+  },
+
   progressBarWrapper: {
-    marginTop: scaleSize(40),
+    marginTop: scaleSize(4),
     width: '100%',
     paddingHorizontal: '5%',
     backgroundColor: COLORS.background,
-    zIndex: 10,
   },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
+
   progressDotActive: {
     fontSize: scaleFont(18),
     color: COLORS.primary,
@@ -56,40 +54,36 @@ export const styles = StyleSheet.create({
     fontSize: scaleFont(18),
     color: COLORS.textSecondary,
   },
-  progressLine: {
-    height: scaleSize(2),
-    backgroundColor: COLORS.primary,
-    flex: 1,
-    marginHorizontal: scaleSize(6),
-  },
 
-  // ✅ 이미지 슬라이더
   sliderWrapper: {
-    marginTop: height * 0.045,
+    marginTop: height * 0.02,
     height: IMAGE_HEIGHT + scaleSize(30),
     width: '100%',
     alignItems: 'center',
   },
+
   swiperContainer: {
     width: '100%',
   },
+
   imageBox: {
     width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
+    height: IMAGE_HEIGHT + scaleSize(20),
     backgroundColor: COLORS.primary,
     borderRadius: scaleSize(10),
     overflow: 'hidden',
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: scaleSize(24),
   },
+
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
 
-  // ✅ 페이지네이션
   customPagination: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -97,7 +91,6 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(12),
   },
 
-  // ✅ 자막 입력
   captionBox: {
     width: '90%',
     height: scaleSize(60),
@@ -109,6 +102,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: scaleSize(8),
   },
+
   captionText: {
     color: COLORS.primary,
     fontSize: scaleFont(16),
@@ -116,7 +110,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ✅ 하단 버튼
   buttonContainer: {
     position: 'absolute',
     bottom: scaleSize(40),
@@ -124,11 +117,11 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+
   buttonSpacing: {
     width: '48%',
   },
 
-  // ✅ 로딩 오버레이
   loadingOverlay: {
     position: 'absolute',
     top: 0,
@@ -140,6 +133,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 100,
   },
+
   loadingBox: {
     backgroundColor: '#333',
     padding: scaleSize(20),
@@ -147,9 +141,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loadingText: {
     marginTop: scaleSize(10),
     color: '#fff',
     fontSize: scaleFont(14),
+  },
+
+  hiddenPagination: {
+    display: 'none',
+    height: 0,
   },
 });

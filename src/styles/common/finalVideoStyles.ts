@@ -1,13 +1,11 @@
-// styles/common/finalVideoStyles.ts
 import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../colors';
 
 const {width} = Dimensions.get('window');
 
-// ✅ 9:16 비율
 const VIDEO_WIDTH = width * 0.75;
-const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9);
+const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9) + scaleSize(20); // 여유 높이 포함
 
 export default StyleSheet.create({
   container: {
@@ -16,19 +14,13 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
-  // ✅ 상단 좌우 버튼은 컴포넌트에서 insets.top으로 조정
-  topArrowLeft: {
-    position: 'absolute',
-    left: scaleSize(16),
+  topNavWrapper: {
+    marginTop: scaleSize(16),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: scaleSize(16),
     zIndex: 10,
-    padding: scaleSize(8),
-  },
-
-  topArrowRight: {
-    position: 'absolute',
-    right: scaleSize(16),
-    zIndex: 10,
-    padding: scaleSize(8),
   },
 
   arrowText: {
@@ -37,45 +29,19 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // ✅ 진행바 위치 최적화
   progressBarWrapper: {
-    position: 'absolute',
+    marginTop: scaleSize(12),
     width: '100%',
     alignItems: 'center',
-    paddingTop: scaleSize(4),
-    paddingBottom: scaleSize(4),
+    paddingVertical: scaleSize(4),
     paddingHorizontal: width * 0.05,
     backgroundColor: COLORS.background,
     zIndex: 5,
   },
 
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-
-  progressDotActive: {
-    fontSize: scaleFont(18),
-    color: COLORS.primary,
-  },
-
-  progressDotInactive: {
-    fontSize: scaleFont(18),
-    color: '#888',
-  },
-
-  progressLine: {
-    height: scaleSize(2),
-    backgroundColor: COLORS.primary,
-    flex: 1,
-    marginHorizontal: scaleSize(6),
-  },
-
   sliderContainer: {
     width: '100%',
-    marginTop: scaleSize(100), // ✅ 진행바와 충분한 간격
+    marginTop: scaleSize(20),
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -90,11 +56,6 @@ export default StyleSheet.create({
     backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-
-  swiperContainer: {
-    width: '100%',
-    height: '100%',
   },
 
   videoItem: {
@@ -118,14 +79,34 @@ export default StyleSheet.create({
     marginBottom: scaleSize(10),
   },
 
+  swiperContainer: {
+    width: '100%',
+    height: '100%',
+  },
+
   pagination: {
-    position: 'absolute',
-    bottom: scaleSize(-16),
-    alignSelf: 'center',
+    display: 'none', // ✅ Swiper 내부 pagination 제거
+  },
+
+  customPagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: scaleSize(12), // ✅ 외부 dot 표시 복원
+  },
+
+  progressDotActive: {
+    fontSize: scaleFont(18),
+    color: COLORS.primary,
+  },
+
+  progressDotInactive: {
+    fontSize: scaleFont(18),
+    color: '#888',
   },
 
   musicSpacing: {
-    height: scaleSize(10),
+    height: scaleSize(10), // 여백 줄임
   },
 
   musicButton: {
@@ -136,7 +117,14 @@ export default StyleSheet.create({
     borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(14),
+    marginTop: scaleSize(10), // 위로 올림
+  },
+
+  musicLabel: {
+    fontSize: scaleFont(14),
+    color: COLORS.textSecondary,
+    marginTop: scaleSize(6), // 위로 올림
+    textAlign: 'center',
   },
 
   buttonText: {
@@ -149,22 +137,22 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '90%',
-    position: 'absolute',
-    bottom: scaleSize(24),
-  },
-
-  button: {
-    width: '45%',
-    alignItems: 'center',
-    paddingVertical: scaleSize(12),
-    borderRadius: scaleSize(20),
+    marginTop: scaleSize(16), // 위로 올림
   },
 
   prevButton: {
     backgroundColor: '#ccc',
+    paddingVertical: scaleSize(12),
+    borderRadius: scaleSize(20),
+    width: '45%',
+    alignItems: 'center',
   },
 
   nextButton: {
     backgroundColor: COLORS.primary,
+    paddingVertical: scaleSize(12),
+    borderRadius: scaleSize(20),
+    width: '45%',
+    alignItems: 'center',
   },
 });

@@ -18,7 +18,7 @@ const axiosInstance = axios.create({
 // ✅ 영상 생성 API (8000 포트)
 export const videoAxiosInstance = axios.create({
   baseURL: `${BASE_URL}${BASE_URL.endsWith(':8000') ? '' : ':8000'}`,
-  timeout: 60000,
+  timeout: 600000,
   headers: {
     'Content-Type': 'application/json',
   },

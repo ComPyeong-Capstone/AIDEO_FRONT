@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {
+  View,
   Text,
   TouchableOpacity,
-  View,
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import Sound from 'react-native-sound'; // ✅ 추가
+import Sound from 'react-native-sound';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../styles/common/musicSelectionStyles';
@@ -56,20 +56,23 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     fetchMusic();
 
     return () => {
-      currentSound?.release(); // ✅ 언마운트 시 사운드 해제
+      stopAndReleaseSound();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const playMusic = (url: string) => {
-    // ✅ 이미 재생 중인 음악 멈추기
+  const stopAndReleaseSound = () => {
     if (currentSound) {
       currentSound.stop(() => {
         currentSound.release();
+        setCurrentSound(null);
       });
-      setCurrentSound(null);
     }
+  };
 
-    // ✅ 새 음악 로드 및 재생
+  const playMusic = (url: string) => {
+    stopAndReleaseSound();
+
     const sound = new Sound(url, undefined, error => {
       if (error) {
         console.error('사운드 로드 실패:', error);
@@ -88,11 +91,7 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   const handleMusicSelect = (url: string) => {
     if (selectedMusic === url) {
-      // ✅ 같은 음악 클릭 시 재생 중지
-      currentSound?.stop(() => {
-        currentSound.release();
-        setCurrentSound(null);
-      });
+      stopAndReleaseSound();
       setSelectedMusic(null);
     } else {
       playMusic(url);
@@ -100,24 +99,44 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     }
   };
 
+  const handleBack = () => {
+    stopAndReleaseSound();
+    navigation.goBack();
+  };
+
   const handleConfirm = () => {
     if (!selectedMusic) return;
 
+    stopAndReleaseSound();
+
+    const selectedTitle =
+      musicList.find(m => m.url === selectedMusic)?.title ?? '';
+
+    const commonParams = {
+      music: selectedMusic,
+      musicTitle: selectedTitle,
+      videos: route.params.videos ?? [],
+    };
+
     if ('imageUrls' in route.params) {
+      // Shorts 흐름
       const nav = navigation as ShortsProps['navigation'];
       nav.navigate('FinalVideoScreen', {
+        ...commonParams,
+        from: 'shorts',
         duration: route.params.duration,
         prompt: route.params.prompt,
         imageUrls: route.params.imageUrls,
         subtitles: route.params.subtitles,
-        music: selectedMusic,
       });
     } else {
+      // Photo 흐름
       const nav = navigation as PhotoProps['navigation'];
       nav.navigate('FinalVideoScreen', {
+        ...commonParams,
+        from: 'photo',
         prompt: route.params.prompt,
         images: route.params.images,
-        music: selectedMusic,
       });
     }
   };
@@ -153,7 +172,7 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         style={[styles.buttonContainer, {paddingBottom: insets.bottom + 10}]}>
         <CustomButton
           title="이전"
-          onPress={() => navigation.goBack()}
+          onPress={handleBack}
           type="secondary"
           style={[styles.button, styles.prevButton]}
         />

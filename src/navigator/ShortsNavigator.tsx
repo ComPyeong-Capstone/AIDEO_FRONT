@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-// ✅ Shorts Screens
+// ✅ Screens
 import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PromptInputScreen from '../screens/shorts/31-PromptInputScreen';
 import ImageSelectionScreen from '../screens/shorts/32-ImageSelectionScreen';
@@ -9,7 +9,7 @@ import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import ResultScreen from '../screens/common/ResultScreen';
 
-// ✅ Stack Navigator 타입 정의
+// ✅ Stack Param 타입 정의
 export type ShortsStackParamList = {
   SelectDurationScreen: {mode: 'shorts' | 'photo'};
   PromptInputScreen: {duration: number};
@@ -18,6 +18,7 @@ export type ShortsStackParamList = {
     prompt: string;
     imageUrls: string[];
     subtitles: string[];
+    videos?: string[]; // ✅ 재사용할 부분 영상 리스트
   };
   FinalVideoScreen: {
     from?: 'photo' | 'shorts';
@@ -26,7 +27,8 @@ export type ShortsStackParamList = {
     imageUrls: string[];
     subtitles: string[];
     music?: string;
-    videos?: string[]; // ✅ 추가된 부분
+    musicTitle?: string;
+    videos?: string[]; // ✅ 부분 영상 리스트
   };
   MusicSelectionScreen: {
     duration: number;
@@ -34,9 +36,11 @@ export type ShortsStackParamList = {
     imageUrls: string[];
     subtitles: string[];
     music?: string;
+    musicTitle?: string;
+    videos?: string[]; // ✅ 부분 영상 리스트
   };
   ResultScreen: {
-    videos: string[];
+    videos: string[]; // ✅ 최종 영상 1개일 수도 있지만 string[] 형태 유지
     subtitles: string[];
     music?: string;
   };
