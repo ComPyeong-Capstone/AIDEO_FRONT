@@ -26,6 +26,7 @@ interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'PostVideoScreen'>;
 }
 
+
 const PostVideoScreen: React.FC<Props> = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -34,6 +35,18 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [videoURI, setVideoURI] = useState<string | null>(null);
+  const handleTagInput = (text: string) => {
+    const words = text.split(/[\s\n]+/); // 단어 단위 분할
+
+    const processed = words
+      .filter(word => word.length > 0) // 빈 문자열 제거
+      .map(word => (word.startsWith('#') ? word : `#${word}`)); // # 붙이기
+
+    const lastChar = text.slice(-1);
+    const needsSpace = lastChar === ' ' || lastChar === '\n';
+
+    setTags(processed.join(' ') + (needsSpace ? ' ' : ''));
+  };
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -174,14 +187,16 @@ console.log('user?.token:', user?.token);
             )}
           </TouchableOpacity>
 
-          <TextInput
-            style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
-            placeholder="태그 텍스트 (Ex. #캡스톤, #컴펑)"
-            placeholderTextColor="#1111111"
-            value={tags}
-            onChangeText={setTags}
-            multiline
-          />
+    <TextInput
+      style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
+      placeholder="태그 텍스트 (Ex. #캡스톤, #컴펑)"
+      placeholderTextColor="#999"
+      value={tags}
+      onChangeText={handleTagInput}
+      multiline
+    />
+
+
         </View>
 
         <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
