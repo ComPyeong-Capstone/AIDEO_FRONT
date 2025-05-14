@@ -49,15 +49,14 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   };
 
   const currentStep = from === 'photo' ? 3 : 4;
-
-  const [videoUrls, setVideoUrls] = useState<string[]>([]);
+  const [videoUrls, setVideoUrls] = useState<string[]>(
+    preGeneratedVideos ?? [],
+  );
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (from === 'photo') {
-      setVideoUrls(preGeneratedVideos);
-      return;
-    }
+    // 영상이 이미 있으면 재생성하지 않음
+    if (preGeneratedVideos && preGeneratedVideos.length > 0) return;
 
     const generateVideos = async () => {
       try {
@@ -97,7 +96,8 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
     };
 
     generateVideos();
-  }, [from, imageUrls, subtitles, duration, preGeneratedVideos]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGenerateFinalVideo = async () => {
     try {
@@ -125,12 +125,38 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
     }
   };
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleForward = () => {
+    navigation.navigate('ResultScreen', {
+      videos: videoUrls,
+      subtitles,
+      music,
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.progressBarWrapper, {marginTop: insets.top}]}>
+      {/* 상단 좌우 버튼 */}
+      <TouchableOpacity
+        style={[styles.topArrowLeft, {top: insets.top + 10}]}
+        onPress={handleBack}>
+        <Text style={styles.arrowText}>{'<'}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.topArrowRight, {top: insets.top + 10}]}
+        onPress={handleForward}>
+        <Text style={styles.arrowText}>{'>'}</Text>
+      </TouchableOpacity>
+
+      {/* 진행바 */}
+      <View style={[styles.progressBarWrapper, {top: insets.top + 50}]}>
         <ProgressBar currentStep={currentStep} mode={from} />
       </View>
 
+      {/* 영상 슬라이더 */}
       <View style={styles.sliderContainer}>
         <View style={styles.videoWrapper}>
           {loading ? (
@@ -169,6 +195,7 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
         </View>
       </View>
 
+      {/* 음악 선택 */}
       <View style={styles.musicSpacing} />
       <TouchableOpacity
         style={styles.musicButton}
@@ -184,10 +211,26 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
         <Text style={styles.buttonText}>배경 음악</Text>
       </TouchableOpacity>
 
+      {/* 하단 버튼 */}
       <View style={[styles.buttonContainer, {bottom: insets.bottom + 10}]}>
         <CustomButton
-          title="이전"
-          onPress={() => navigation.goBack()}
+          title="부분 영상 재생성"
+          onPress={() => {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'ImageSelectionScreen',
+                  params: {
+                    duration,
+                    prompt,
+                    imageUrls,
+                    subtitles,
+                  },
+                },
+              ],
+            });
+          }}
           type="secondary"
           style={[styles.button, styles.prevButton]}
           textStyle={styles.buttonText}
