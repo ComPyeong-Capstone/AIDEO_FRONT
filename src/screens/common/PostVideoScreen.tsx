@@ -1,19 +1,26 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
-  useWindowDimensions,
   Alert,
+  TouchableOpacity,
+    useWindowDimensions,
+Platform,
 } from 'react-native';
+import Video from 'react-native-video';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import styles from '../../styles/common/PostScreenStyles';
+import styles from '../../styles/common/postVideoStyles';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {createPost} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 import {AppStackParamList} from '../../navigator/types';
 import {launchImageLibrary} from 'react-native-image-picker';
+import CommonButton from '../../styles/button';
+import Icon from 'react-native-vector-icons/Feather';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import axios from 'axios';
+import {BASE_URL} from '@env';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'PostVideoScreen'>;
@@ -24,127 +31,168 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const {user} = useUser();
 
-  const [title, setTitle] = useState<string>('');
-  const [tags, setTags] = useState<string>('');
+  const [title, setTitle] = useState('');
+  const [tags, setTags] = useState('');
   const [videoURI, setVideoURI] = useState<string | null>(null);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/youtube.upload'],
+      webClientId: 'YOUR_WEB_CLIENT_ID',
+    });
+  }, []);
 
   const handlePickVideo = async () => {
     try {
-      const result = await launchImageLibrary({
-        mediaType: 'mixed', // ✅ 영상 + 사진 모두 가능
-        selectionLimit: 1,
-      });
-
-      if (result.assets && result.assets.length > 0) {
+      const result = await launchImageLibrary({mediaType: 'video', selectionLimit: 1});
+      if (result.assets?.length) {
         const selected = result.assets[0];
-        if (selected.uri) {
-          setVideoURI(selected.uri); // 사진 URI도 테스트용으로 사용
-        }
+        if (selected.uri) setVideoURI(selected.uri);
       }
     } catch (error) {
       console.error('미디어 선택 오류:', error);
     }
   };
 
-  const handlePost = async () => {
-    if (!user) {
-      Alert.alert('에러', '로그인 정보가 없습니다.');
-      return;
-    }
-
-    if (!title.trim()) {
-      Alert.alert('입력 오류', '제목을 입력해주세요.');
-      return;
-    }
-
-    if (!videoURI) {
-      Alert.alert('입력 오류', '영상을 선택해주세요.');
-      return;
-    }
-
+  const uploadToYouTube = async () => {
     try {
-      const payload = {
-        title: title.trim(),
-        videoURL: videoURI, // ✅ 실제 선택한 영상 URI 사용
-        hashtags: tags
-          .split(/[#,\s]+/)
-          .map(tag => tag.trim())
-          .filter(tag => tag !== ''),
-      };
+      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.signIn();
+      const token = (await GoogleSignin.getTokens()).accessToken;
 
-      await createPost(payload);
+      const form = new FormData();
+      form.append('video', {
+        uri: videoURI,
+        type: 'video/mp4',
+        name: 'upload.mp4',
+      } as any);
+      form.append('snippet', JSON.stringify({ title: title || 'Untitled', description: tags }));
+      form.append('status', JSON.stringify({ privacyStatus: 'unlisted' }));
 
-      Alert.alert('게시 완료', '게시물이 성공적으로 등록되었습니다.');
-
-      navigation.navigate('Main', {
-        screen: 'Home',
-        params: {
-          newPost: {
-            id: String(Date.now()),
-            title: payload.title,
-            creator: user.userName,
-            thumbnail: 'https://via.placeholder.com/150',
+      const response = await axios.post(
+        'https://www.googleapis.com/upload/youtube/v3/videos?part=snippet,status',
+        form,
+        {
+          headers: {
+  Authorization: `Bearer ${user?.token}`,
+            'Content-Type': 'multipart/form-data',
           },
-        },
-      });
-    } catch (error) {
-      console.error('게시물 등록 실패:', error);
-      Alert.alert('에러', '게시물 등록에 실패했습니다.');
+          params: { uploadType: 'multipart' },
+        }
+      );
+
+      Alert.alert('YouTube 업로드 완료', '영상이 YouTube에 업로드되었습니다.');
+      console.log('YouTube 업로드 성공:', response.data);
+    } catch (error: any) {
+      console.error('YouTube 업로드 실패:', error?.response || error);
+      Alert.alert('에러', 'YouTube 업로드에 실패했습니다.');
     }
   };
 
+
+const uploadToMyServer = async (title: string, tags: string, videoURI: string | null, token: string | undefined) => {
+  if (!videoURI) {
+    Alert.alert('오류', '업로드할 영상을 선택해주세요.');
+    return;
+  }
+console.log('user:', user);
+console.log('user?.token:', user?.token);
+
+  try {
+    const formData = new FormData();
+
+    // ✅ 1. postDTO 객체 생성 및 JSON 문자열로 감싸기
+    const postDTO = {
+      title: title.trim(),
+      hashtags: tags.split(/[#,\s]+/).filter(Boolean),
+    };
+
+    formData.append('postDTO', {
+      name: 'postDTO',
+      type: 'application/json',
+      string: JSON.stringify(postDTO),
+      uri: Platform.OS === 'ios' ? undefined : '', // 안드로이드는 '' 필요, iOS는 생략 가능
+    } as any);
+
+    // ✅ 2. videoFile 추가
+    formData.append('videoFile', {
+      uri: videoURI,
+      type: 'video/mp4',
+      name: 'video.mp4',
+    } as any);
+
+    // ✅ 3. 전송
+    const response = await axios.post(`${BASE_URL}:8080/posts/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      transformRequest: (data, headers) => {
+        return data;
+      },
+    });
+
+    console.log('✅ 업로드 성공:', response.data);
+    Alert.alert('업로드 성공', '서버에 영상이 성공적으로 업로드되었습니다.');
+  } catch (error: any) {
+    console.error('🚨 업로드 실패:', error?.response?.data || error.message);
+    Alert.alert('업로드 실패', '서버 업로드 중 문제가 발생했습니다.');
+  }
+};
+
+
   return (
-    <SafeAreaView style={[styles.container, {paddingTop: insets.top}]}>
-      {/* 제목 입력 */}
-      <TextInput
-        style={[styles.input, {width: width * 0.9}]}
-        placeholder="제목을 입력하세요"
-        placeholderTextColor="#51BCB4"
-        value={title}
-        onChangeText={setTitle}
-      />
+    <SafeAreaView style={[styles.container, {paddingTop: insets.top, flex: 1}]}>
+      <View style={{flex: 1, justifyContent: 'space-between', alignItems: 'center'}}>
+        <TextInput
+          style={[styles.input, {width: width * 0.9, marginTop: 10}]}
+          placeholder="제목을 입력하세요"
+          placeholderTextColor="#999999"
+          value={title}
+          onChangeText={setTitle}
 
-      {/* 영상 미리보기 영역 */}
-      <View
-        style={[
-          styles.videoContainer,
-          {width: width * 0.8, height: height * 0.35},
-        ]}>
-        {videoURI ? (
-          <Text style={styles.videoText} numberOfLines={2}>
-            {videoURI}
-          </Text>
-        ) : (
-          <Text style={styles.videoText}>선택된 영상 없음</Text>
-        )}
-      </View>
+        />
 
-      {/* 영상 선택 버튼 */}
-      <TouchableOpacity style={styles.postButton} onPress={handlePickVideo}>
-        <Text style={styles.buttonText}>📁 영상 선택</Text>
-      </TouchableOpacity>
+        <View style={{alignItems: 'center'}}>
+          <TouchableOpacity
+            style={[styles.videoContainer, {width: width * 0.8, height: height * 0.35}]}
+            onPress={handlePickVideo}
+            activeOpacity={0.7}>
+            {videoURI ? (
+              <Video
+                source={{uri: videoURI}}
+                style={{width: '100%', height: '100%'}}
+                resizeMode="cover"
+                repeat
+                muted
+              />
+            ) : (
+              <>
+                <Icon name="upload" size={40} color="#51BCB4" style={{marginBottom: 20}} />
+                <Text style={styles.videoText}>동영상 파일 업로드</Text>
+              </>
+            )}
+          </TouchableOpacity>
 
-      {/* 해시태그 입력 */}
-      <TextInput
-        style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
-        placeholder="태그 텍스트 (Ex. #캡스톤, #컴펑)"
-        placeholderTextColor="#51BCB4"
-        value={tags}
-        onChangeText={setTags}
-        multiline
-      />
+          <TextInput
+            style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
+            placeholder="태그 텍스트 (Ex. #캡스톤, #컴펑)"
+            placeholderTextColor="#1111111"
+            value={tags}
+            onChangeText={setTags}
+            multiline
+          />
+        </View>
 
-      {/* 버튼 영역 */}
-      <View style={[styles.buttonContainer, {width: width * 0.9}]}>
-        <TouchableOpacity
-          style={styles.exitButton}
-          onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>나가기</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.postButton} onPress={handlePost}>
-          <Text style={styles.buttonText}>게시</Text>
-        </TouchableOpacity>
+        <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
+          <CommonButton title="YouTube 업로드" onPress={uploadToYouTube} type="secondary" style={{width: width * 0.4}} />
+<CommonButton
+  title="내 서버에 업로드"
+  onPress={() => uploadToMyServer(title, tags, videoURI, user?.token)}
+  type="primary"
+  style={{width: width * 0.4}}
+/>
+        </View>
       </View>
     </SafeAreaView>
   );

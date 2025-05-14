@@ -1822,7 +1822,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGoogleSignin (13.2.0):
+  - RNGoogleSignin (13.3.1):
     - DoubleConversion
     - glog
     - GoogleSignIn (~> 7.1)
@@ -2421,7 +2421,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 008c319179d681a6a00966edfc67fda68f9fbb2e
   ReactCommon: 0c097b53f03d6bf166edbcd0915da32f3015dd90
   RNGestureHandler: dcb1b1db024f3744b03af56d132f4f72c4c27195
-  RNGoogleSignin: 5e115ab981ba1a9f5fae37000f49cd996c394df0
+  RNGoogleSignin: 857a975c3cc5cefd1a9b13c2213ed879b3b5fd36
   RNReanimated: 6383cd0d805e48768b97bd65bcb1d06f0e69ab8e
   RNScreens: b32d0d59b53acb574fa795a9343591ef4e7ab7c2
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b

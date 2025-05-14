@@ -49,11 +49,15 @@ const AuthScreen = () => {
 
       console.log('✅ 로그인 성공:', {token, user});
 
-      await saveAuthTokens(token);
+        const savedToken = await getAccessToken();
       console.log('🔐 저장된 토큰:', getAccessToken());
 
-      setUser(user); // 이걸로 자동 라우팅됨
-      Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
+   // 🔑 user + token 함께 저장
+      setUser({
+        ...user,
+        token,
+      });
+  Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
     } catch (error: any) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message ?? error?.message;
