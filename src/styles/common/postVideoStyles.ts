@@ -37,7 +37,7 @@ input: {
   borderWidth: 1,
   borderRadius: scaleSize(8), // ⬅️ 둥근 정도 줄임
   paddingHorizontal: scaleSize(10),
-  color: COLORS.primary,
+  color: COLORS.black,
   marginBottom: scaleSize(1), // ⬅️ 아래 요소와 간격 줄임
   height: scaleSize(40),
 },
