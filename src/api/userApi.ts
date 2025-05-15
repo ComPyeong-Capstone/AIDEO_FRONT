@@ -4,12 +4,13 @@ import axiosInstance from './axiosInstance';
 
 /** 로그인 응답 타입 */
 export interface LoginResponse {
+  accesstoken: string;
+  refreshToken: string;
   user: {
     userId: number;
     userName: string;
     profileImage: string | null;
   };
-  token: string;
 }
 
 /** 사용자 API 모듈 */

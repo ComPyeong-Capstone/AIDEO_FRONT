@@ -33,31 +33,24 @@ const AuthScreen = () => {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPassword = password.trim();
 
-    console.group('📌 로그인 요청 로그');
-    console.log('🧪 입력값:', {
-      email,
-      password,
-      normalizedEmail,
-      normalizedPassword,
-    });
-
     try {
-      const {token, user} = await userApi.login(
+      const { accesstoken, refreshToken, user } = await userApi.login(
         normalizedEmail,
         normalizedPassword,
       );
 
-      console.log('✅ 로그인 성공:', {token, user});
+      if (!accesstoken || typeof accesstoken !== 'string') {
+        throw new Error('accessToken이 유효하지 않습니다.');
+      }
 
-        const savedToken = await getAccessToken();
-      console.log('🔐 저장된 토큰:', getAccessToken());
+      await saveAuthTokens(accesstoken);
 
-   // 🔑 user + token 함께 저장
       setUser({
         ...user,
-        token,
+        token: accesstoken,
       });
-  Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
+
+      Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
     } catch (error: any) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message ?? error?.message;
@@ -78,10 +71,10 @@ const AuthScreen = () => {
       }
 
       Alert.alert('로그인 실패', errorMsg);
-    } finally {
-      console.groupEnd();
     }
   };
+
+
 
   return (
     <SafeAreaView style={authStyles.container}>

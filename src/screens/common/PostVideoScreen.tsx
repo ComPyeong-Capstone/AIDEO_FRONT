@@ -54,6 +54,13 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
       webClientId: 'YOUR_WEB_CLIENT_ID',
     });
   }, []);
+useEffect(() => {
+  const fetchToken = async () => {
+    const savedToken = await getAccessToken();
+    console.log('🧾 저장된 토큰 from 스토리지:', savedToken);
+  };
+  fetchToken();
+}, []);
 
   const handlePickVideo = async () => {
     try {
@@ -110,6 +117,10 @@ const uploadToMyServer = async (title: string, tags: string, videoURI: string | 
   }
 console.log('user:', user);
 console.log('user?.token:', user?.token);
+if (!user?.token) {
+  Alert.alert('로그인이 필요합니다', '토큰이 없어 업로드할 수 없습니다.');
+  return;
+}
 
   try {
     const formData = new FormData();
@@ -144,6 +155,7 @@ console.log('user?.token:', user?.token);
         return data;
       },
     });
+console.log('user?.token:', user?.token);
 
     console.log('✅ 업로드 성공:', response.data);
     Alert.alert('업로드 성공', '서버에 영상이 성공적으로 업로드되었습니다.');
@@ -152,6 +164,7 @@ console.log('user?.token:', user?.token);
     Alert.alert('업로드 실패', '서버 업로드 중 문제가 발생했습니다.');
   }
 };
+
 
 
   return (
