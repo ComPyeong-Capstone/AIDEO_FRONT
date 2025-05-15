@@ -168,22 +168,20 @@ console.log('user?.token:', user?.token);
 
 
   return (
-    <SafeAreaView style={[styles.container, {paddingTop: insets.top, flex: 1}]}>
+<SafeAreaView style={[styles.container, {paddingTop: 0, flex: 1}]}>
       <View style={{flex: 1, justifyContent: 'space-between', alignItems: 'center'}}>
-        <TextInput
-          style={[styles.input, {width: width * 0.9, marginTop: 10}]}
-          placeholder="제목을 입력하세요"
-          placeholderTextColor="#999999"
-          value={title}
-          onChangeText={setTitle}
-
-        />
 
         <View style={{alignItems: 'center'}}>
-          <TouchableOpacity
-            style={[styles.videoContainer, {width: width * 0.8, height: height * 0.35}]}
-            onPress={handlePickVideo}
-            activeOpacity={0.7}>
+   <TouchableOpacity
+     style={[
+       styles.videoContainer,
+       {
+         width: width * 0.8, // 가로 너비 줄임
+         height: (width * 0.8) * (16 / 9), // 또는 원하는 비율
+       },
+     ]}
+   >
+
             {videoURI ? (
               <Video
                 source={{uri: videoURI}}
@@ -199,10 +197,16 @@ console.log('user?.token:', user?.token);
               </>
             )}
           </TouchableOpacity>
-
+  <TextInput
+         style={[styles.input, {width: width * 0.9, marginTop: 0}]} // ✅ 빈 공간 제거
+         placeholder="제목"
+         placeholderTextColor="#999999"
+         value={title}
+         onChangeText={setTitle}
+       />
     <TextInput
       style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
-      placeholder="태그 텍스트 (Ex. #캡스톤, #컴펑)"
+      placeholder="태그 입력  ex) #GPT, #AI"
       placeholderTextColor="#999"
       value={tags}
       onChangeText={handleTagInput}
@@ -215,7 +219,7 @@ console.log('user?.token:', user?.token);
         <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
           <CommonButton title="YouTube 업로드" onPress={uploadToYouTube} type="secondary" style={{width: width * 0.4}} />
 <CommonButton
-  title="내 서버에 업로드"
+  title="AIVIDEO 업로드"
   onPress={() => uploadToMyServer(title, tags, videoURI, user?.token)}
   type="primary"
   style={{width: width * 0.4}}

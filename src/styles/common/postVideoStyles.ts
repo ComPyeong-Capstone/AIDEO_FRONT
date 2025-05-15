@@ -14,6 +14,8 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingHorizontal: '10%',
+      marginTop: scaleSize(10), // 상단 여백 추가
+
   },
 
    videoContainer: {
@@ -25,6 +27,8 @@ export default StyleSheet.create({
       borderWidth: 2,
       borderRadius: scaleSize(10),
       marginVertical: scaleSize(10),
+        marginBottom: scaleSize(20), // ⬅️ 아래 요소와 간격 줄임
+
     },
 
   videoText: {
@@ -38,7 +42,8 @@ input: {
   borderRadius: scaleSize(8), // ⬅️ 둥근 정도 줄임
   paddingHorizontal: scaleSize(10),
   color: COLORS.black,
-  marginBottom: scaleSize(1), // ⬅️ 아래 요소와 간격 줄임
+
+  marginBottom: scaleSize(10), // ⬅️ 아래 요소와 간격 줄임
   height: scaleSize(40),
 },
 
@@ -55,6 +60,6 @@ input: {
     fontSize: scaleSize(16),
   },
   inputMultiline: {
-    height: scaleSize(80),
+    height: scaleSize(50),
   },
 });
