@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
@@ -18,6 +19,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {styles} from '../../styles/bottomtab/1-homeStyles';
 import {getAllPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type RootStackParamList = {
   ShortsPlayerScreen: {
@@ -42,6 +44,7 @@ const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [thumbnails, setThumbnails] = useState<PostThumbnail[]>([]);
 const [refreshing, setRefreshing] = useState(false);
+const [sortOrder, setSortOrder] = useState<'latest' | 'likes' | 'oldest'>('latest');
 
 const handleRefresh = async () => {
   setRefreshing(true);
@@ -53,6 +56,43 @@ const handleRefresh = async () => {
     setRefreshing(false);
   }
 };
+const sortThumbnails = (data: PostThumbnail[], order: 'latest' | 'likes' | 'oldest') => {
+  if (order === 'latest') {
+    return [...data].sort((a, b) => b.postId - a.postId); // 최신순 (내림차순)
+  } else if (order === 'oldest') {
+    return [...data].sort((a, b) => a.postId - b.postId); // 오래된순 (오름차순)
+  } else {
+    return [...data].sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0)); // 좋아요순
+  }
+};
+
+const handleSortPress = () => {
+  Alert.alert('정렬 기준 선택', '', [
+    {
+      text: '최신순',
+      onPress: () => {
+        setSortOrder('latest');
+        setThumbnails(prev => sortThumbnails(prev, 'latest'));
+      },
+    },
+    {
+      text: '오래된순',
+      onPress: () => {
+        setSortOrder('oldest');
+        setThumbnails(prev => sortThumbnails(prev, 'oldest'));
+      },
+    },
+    {
+      text: '좋아요순',
+      onPress: () => {
+        setSortOrder('likes');
+        setThumbnails(prev => sortThumbnails(prev, 'likes'));
+      },
+    },
+    {text: '취소', style: 'cancel'},
+  ]);
+};
+
 
   const fetchThumbnails = async () => {
     try {
@@ -67,7 +107,7 @@ const handleRefresh = async () => {
         reversed.map(item => `id: ${item.postId}, title: ${item.title}`),
       );
 
-      setThumbnails(reversed);
+setThumbnails(sortThumbnails(reversed, sortOrder));
     } catch (error) {
       console.error('썸네일 불러오기 실패:', error);
     } finally {
@@ -141,7 +181,11 @@ const handleRefresh = async () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
         <Text style={styles.header}>VideoAI</Text>
+         <TouchableOpacity onPress={handleSortPress} style={{position: 'absolute', right: 20}}>
+            <Icon name="sort-ascending" size={24}/>
+          </TouchableOpacity>
       </View>
+
 
       {loading ? (
         <ActivityIndicator size="large" color="#51BCB4" />
