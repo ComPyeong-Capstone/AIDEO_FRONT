@@ -41,6 +41,18 @@ const HomeScreen: React.FC = () => {
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [thumbnails, setThumbnails] = useState<PostThumbnail[]>([]);
+const [refreshing, setRefreshing] = useState(false);
+
+const handleRefresh = async () => {
+  setRefreshing(true);
+  try {
+    await fetchThumbnails();
+  } catch (err) {
+    console.error('새로고침 실패:', err);
+  } finally {
+    setRefreshing(false);
+  }
+};
 
   const fetchThumbnails = async () => {
     try {
@@ -134,14 +146,17 @@ const HomeScreen: React.FC = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#51BCB4" />
       ) : (
-        <FlatList
-          data={thumbnails}
-          renderItem={renderItem}
-          keyExtractor={item => item.postId.toString()}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.contentContainer}
-        />
+      <FlatList
+        data={thumbnails}
+        renderItem={renderItem}
+        keyExtractor={item => item.postId.toString()}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.contentContainer}
+        refreshing={refreshing} // ✅ 추가
+        onRefresh={handleRefresh} // ✅ 추가
+      />
+
       )}
     </SafeAreaView>
   );
