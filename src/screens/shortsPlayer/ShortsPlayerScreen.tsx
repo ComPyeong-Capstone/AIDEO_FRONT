@@ -19,6 +19,8 @@ import {getPostDetail} from '../../api/playVideo'; // 추가
 import Video from 'react-native-video'; // 추가
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Image } from 'react-native'; // ✅ 대문자 I!
+import {BASE_URL} from '@env';
 
 const ShortsPlayerScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -40,12 +42,14 @@ const ShortsPlayerScreen: React.FC = () => {
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [isLikedUsersVisible, setIsLikedUsersVisible] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
+const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
 
   const loadCounts = useCallback(async () => {
     try {
       const comments = await getComments(postId);
       setCommentCount(comments.length);
+console.log('🔥 프로필 이미지 URL:', profileImageUrl);
 
       const users = await getLikedUsers(postId);
       setLikedUsers(users);
@@ -69,13 +73,25 @@ useEffect(() => {
     try {
       const post = await getPostDetail(postId);
       setVideoURL(post.videoURL ?? null);
-    } catch (error) {
+
+      const rawPath = post.author?.profileImage;
+
+   if (rawPath && typeof rawPath === 'string') {
+     setProfileImageUrl(
+       rawPath.startsWith('http')
+         ? rawPath
+         : `${BASE_URL}:8080${rawPath}`
+     );
+   }
+
+}catch (error) {
       console.error('게시물 상세 조회 실패:', error);
     }
   };
 
   fetchPostDetail();
 }, [postId]);
+
 
   const handleToggleLike = async () => {
     try {
@@ -133,13 +149,22 @@ useEffect(() => {
               <View style={styles.topBar}>
 
 
-                <View style={styles.profileTitleContainer}>
-                  <View style={styles.creatorProfile} />
-                  <View>
-                    <Text style={styles.creator}>{creator}</Text>
-                    <Text style={styles.title}>{title}</Text>
-                  </View>
-                </View>
+
+  <View style={styles.profileTitleContainer}>
+    {profileImageUrl && profileImageUrl.startsWith('http') && (
+      <Image
+        source={{ uri: profileImageUrl }}
+        style={styles.creatorProfile}
+      />
+    )}
+
+    <View style={{ marginLeft: 10 }}>
+      <Text style={styles.creator}>{creator ?? ''}</Text>
+      <Text style={styles.title}>{title ?? ''}</Text>
+    </View>
+  </View>
+
+
               </View>
 
               {/* 📌 오른쪽 사이드 메뉴 (좋아요, 댓글 등) */}

@@ -63,13 +63,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  creatorProfile: {
-    width: scaleSize(40),
-    height: scaleSize(40),
-    backgroundColor: '#D3D3D3',
-    borderRadius: scaleSize(100),
-    marginRight: scaleSize(5),
-  },
   creator: {
     fontSize: scaleFont(22),
     color: 'white',
@@ -150,11 +143,6 @@ topBar: {
   paddingTop: 10,
 },
 
-profileTitleContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginLeft: 10,
-},
 topOverlay: {
   position: 'absolute',
   top: 0,
@@ -174,20 +162,21 @@ topBar: {
   right: 0,
   flexDirection: 'row',
   alignItems: 'center',
-  padding: 10,
+  padding: 15,
   zIndex: 10,
 },
 profileTitleContainer: {
   flexDirection: 'row',
   alignItems: 'center',
-  marginLeft: 10,
+  marginLeft: 5,
+   gap: 8, // 또는
+
+},
+creatorProfile: {
+  width: 40,
+  height: 40,
+  borderRadius: 20, // ✅ 반지름이 width/height의 절반
+  backgroundColor: '#ccc', // 이미지 없을 때 백업
 },
 
-creatorProfile: {
-  width: 36,
-  height: 36,
-  borderRadius: 18,
-  backgroundColor: '#ccc',
-  marginRight: 8,
-},
 });
