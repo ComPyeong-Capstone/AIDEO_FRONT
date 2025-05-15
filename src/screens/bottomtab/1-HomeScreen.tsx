@@ -180,7 +180,7 @@ setThumbnails(sortThumbnails(reversed, sortOrder));
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
-        <Text style={styles.header}>VideoAI</Text>
+        <Text style={styles.header}>AIDEO</Text>
          <TouchableOpacity onPress={handleSortPress} style={{position: 'absolute', right: 20}}>
             <Icon name="sort-ascending" size={24}/>
           </TouchableOpacity>

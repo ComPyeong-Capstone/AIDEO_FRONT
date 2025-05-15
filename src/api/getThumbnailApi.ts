@@ -1,3 +1,5 @@
+//getThumbnailsApi.ts
+
 import {videoAxiosInstance} from './axiosInstance';
 
 export const getPostThumbnails = async (): Promise<PostThumbnail[]> => {

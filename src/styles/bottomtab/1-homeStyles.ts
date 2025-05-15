@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     },
     thumbnailPlaceholder: {
       width: '100%',
-      aspectRatio: 1,
+  aspectRatio: 9 / 10, // ✅ 세로 비율로 수정
       backgroundColor: COLORS.thumbnail,
       borderTopLeftRadius: scaleSize(12),
       borderTopRightRadius: scaleSize(12),
