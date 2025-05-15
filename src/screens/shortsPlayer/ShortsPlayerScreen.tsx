@@ -111,78 +111,74 @@ useEffect(() => {
 
   return (
     <>
-      <SafeAreaView style={styles.safeContainer}>
-        <View style={styles.container}>
-          {/* 📌 영상 플레이스홀더 */}
-         <View style={styles.videoPlaceholder}>
-           {videoURL ? (
-             <Video
-               source={{ uri: videoURL }}
-               style={styles.videoPlayer}
-               resizeMode="cover"
-               repeat
-               muted={false}
-               controls
-             />
-           ) : (
-             <Text style={styles.videoText}>영상 불러오는 중...</Text>
-           )}
-         </View>
 
-         <View style={styles.sideMenu}>
-           {/* 좋아요 버튼 */}
-           <TouchableOpacity onPress={handleToggleLike}>
-             <Ionicons
-               name={isLiked ? 'heart' : 'heart-outline'}
-               size={32}
-               color={isLiked ? 'red' : 'white'}
-             />
-           </TouchableOpacity>
-           <Text style={styles.count}>{likeCount}</Text>
+          <SafeAreaView style={styles.safeContainer}>
+            <View style={styles.container}>
 
-           {/* 댓글 버튼 */}
+              {/* 📌 배경 영상 */}
+              {videoURL ? (
+                <Video
+                  source={{ uri: videoURL }}
+                  style={styles.videoPlayer} // <- absolute 위치
+                  resizeMode="cover"
+                  repeat
+                  muted={false}
+                  controls
+                />
+              ) : (
+                <Text style={styles.videoText}>영상 불러오는 중...</Text>
+              )}
 
-           <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
-             <Ionicons name="chatbubble-outline" size={32} color="white" />
-           </TouchableOpacity>
-           <Text style={styles.count}>{commentCount}</Text>
-
-           {/* 공유 버튼 (새로 추가) */}
-           <TouchableOpacity onPress={() => console.log('공유 기능')}>
-             <Ionicons name="share-social-outline" size={32} color="white" />
-           </TouchableOpacity>
-         </View>
+              {/* 📌 상단 바: 뒤로 가기 + 프로필 + 제목 (영상 위에 오버레이) */}
+              <View style={styles.topBar}>
 
 
-          {/* 📌 내 게시물일 때만 좋아요 유저 목록 보기 */}
-          {currentUserId === creatorUserId && (
-            <TouchableOpacity
-              style={styles.likeUserButton}
-              onPress={handleOpenLikeList}>
-              <Text style={styles.likeUserButtonText}>
-                ❤️ 좋아요 누른 유저 보기
-              </Text>
-            </TouchableOpacity>
-          )}
+                <View style={styles.profileTitleContainer}>
+                  <View style={styles.creatorProfile} />
+                  <View>
+                    <Text style={styles.creator}>{creator}</Text>
+                    <Text style={styles.title}>{title}</Text>
+                  </View>
+                </View>
+              </View>
 
-          {/* 📌 영상 정보 */}
-          <View style={styles.videoInfo}>
-            <View style={styles.creatorProfile} />
-            <View>
-              <Text style={styles.creator}>{creator}</Text>
-              <Text style={styles.title}>{title}</Text>
+              {/* 📌 오른쪽 사이드 메뉴 (좋아요, 댓글 등) */}
+              <View style={styles.sideMenu}>
+                <TouchableOpacity onPress={handleToggleLike}>
+                  <Ionicons
+                    name={isLiked ? 'heart' : 'heart-outline'}
+                    size={32}
+                    color={isLiked ? 'red' : 'white'}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.count}>{likeCount}</Text>
+
+                <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
+                  <Ionicons name="chatbubble-outline" size={32} color="white" />
+                </TouchableOpacity>
+                <Text style={styles.count}>{commentCount}</Text>
+
+                <TouchableOpacity onPress={() => console.log('공유 기능')}>
+                  <Ionicons name="share-social-outline" size={32} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              {/* 📌 내 게시물일 때만 좋아요 유저 보기 */}
+              {currentUserId === creatorUserId && (
+                <TouchableOpacity
+                  style={styles.likeUserButton}
+                  onPress={handleOpenLikeList}>
+                  <Text style={styles.likeUserButtonText}>
+                    ❤️ 좋아요 누른 유저 보기
+                  </Text>
+                </TouchableOpacity>
+              )}
+
             </View>
-          </View>
+          </SafeAreaView>
 
-          {/* 📌 뒤로 가기 버튼 */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}>
-        <Ionicons name="chevron-back" size={30} color="white" />
-      </TouchableOpacity>
 
-        </View>
-      </SafeAreaView>
+
 
       {/* ✅ 댓글 모달 */}
 

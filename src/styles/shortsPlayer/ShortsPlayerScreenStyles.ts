@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: 'black',
+      zIndex: 0,
   },
 
   safeContainer: {
@@ -142,5 +143,51 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(20),
     textAlign: 'center',
   },
+topBar: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingHorizontal: 10,
+  paddingTop: 10,
+},
 
+profileTitleContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginLeft: 10,
+},
+topOverlay: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingHorizontal: 12,
+  paddingTop: 10,
+  zIndex: 10,
+},
+topBar: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: 10,
+  zIndex: 10,
+},
+profileTitleContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginLeft: 10,
+},
+
+creatorProfile: {
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+  backgroundColor: '#ccc',
+  marginRight: 8,
+},
 });

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
     useWindowDimensions,
 Platform,
+ActivityIndicator,
 } from 'react-native';
 import Video from 'react-native-video';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -21,6 +22,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import axios from 'axios';
 import {BASE_URL} from '@env';
+import * as Progress from 'react-native-progress';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'PostVideoScreen'>;
@@ -31,6 +33,9 @@ const PostVideoScreen: React.FC<Props> = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const {user} = useUser();
+    const [uploadProgress, setUploadProgress] = useState<number>(0); // 0~100%
+    const [uploading, setUploading] = useState(false);
+const [videoLoading, setVideoLoading] = useState(false);
 
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
@@ -62,17 +67,20 @@ useEffect(() => {
   fetchToken();
 }, []);
 
-  const handlePickVideo = async () => {
-    try {
-      const result = await launchImageLibrary({mediaType: 'video', selectionLimit: 1});
-      if (result.assets?.length) {
-        const selected = result.assets[0];
-        if (selected.uri) setVideoURI(selected.uri);
-      }
-    } catch (error) {
-      console.error('미디어 선택 오류:', error);
+const handlePickVideo = async () => {
+  try {
+    setVideoLoading(true); // 로딩 시작
+    const result = await launchImageLibrary({mediaType: 'video', selectionLimit: 1});
+    if (result.assets?.length) {
+      const selected = result.assets[0];
+      if (selected.uri) setVideoURI(selected.uri);
     }
-  };
+  } catch (error) {
+    console.error('미디어 선택 오류:', error);
+  } finally {
+    setVideoLoading(false); // 로딩 종료
+  }
+};
 
   const uploadToYouTube = async () => {
     try {
@@ -110,22 +118,28 @@ useEffect(() => {
   };
 
 
-const uploadToMyServer = async (title: string, tags: string, videoURI: string | null, token: string | undefined) => {
+// ✅ 올바른 수정
+const uploadToMyServer = async (
+  title: string,
+  tags: string,
+  videoURI: string | null,
+  token: string | undefined
+) => {
   if (!videoURI) {
     Alert.alert('오류', '업로드할 영상을 선택해주세요.');
     return;
   }
-console.log('user:', user);
-console.log('user?.token:', user?.token);
-if (!user?.token) {
-  Alert.alert('로그인이 필요합니다', '토큰이 없어 업로드할 수 없습니다.');
-  return;
-}
+
+  if (!user?.token) {
+    Alert.alert('로그인이 필요합니다');
+    return;
+  }
+
+  setUploading(true);
+  setUploadProgress(0);
 
   try {
     const formData = new FormData();
-
-    // ✅ 1. postDTO 객체 생성 및 JSON 문자열로 감싸기
     const postDTO = {
       title: title.trim(),
       hashtags: tags.split(/[#,\s]+/).filter(Boolean),
@@ -135,33 +149,31 @@ if (!user?.token) {
       name: 'postDTO',
       type: 'application/json',
       string: JSON.stringify(postDTO),
-      uri: Platform.OS === 'ios' ? undefined : '', // 안드로이드는 '' 필요, iOS는 생략 가능
     } as any);
 
-    // ✅ 2. videoFile 추가
     formData.append('videoFile', {
       uri: videoURI,
       type: 'video/mp4',
       name: 'video.mp4',
     } as any);
 
-    // ✅ 3. 전송
     const response = await axios.post(`${BASE_URL}:8080/posts/upload`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${user.token}`,
       },
-      transformRequest: (data, headers) => {
-        return data;
+      onUploadProgress: e => {
+        const percent = Math.round((e.loaded * 100) / e.total);
+        setUploadProgress(percent);
       },
     });
-console.log('user?.token:', user?.token);
 
-    console.log('✅ 업로드 성공:', response.data);
-    Alert.alert('업로드 성공', '서버에 영상이 성공적으로 업로드되었습니다.');
-  } catch (error: any) {
-    console.error('🚨 업로드 실패:', error?.response?.data || error.message);
-    Alert.alert('업로드 실패', '서버 업로드 중 문제가 발생했습니다.');
+    Alert.alert('성공', '업로드 완료');
+  } catch (err) {
+    console.error('❌ 업로드 실패:', err?.response?.data || err.message);
+    Alert.alert('에러', '업로드 실패');
+  } finally {
+    setUploading(false);
   }
 };
 
@@ -173,30 +185,34 @@ console.log('user?.token:', user?.token);
 
         <View style={{alignItems: 'center'}}>
    <TouchableOpacity
+     onPress={handlePickVideo} // ✅ 영상 선택 트리거
      style={[
        styles.videoContainer,
        {
-         width: width * 0.8, // 가로 너비 줄임
-         height: (width * 0.8) * (16 / 9), // 또는 원하는 비율
+         width: width * 0.8,
+         height: (width * 0.8) * (16 / 9),
        },
      ]}
    >
+    {videoLoading ? (
+      <ActivityIndicator size="large" color="#51BCB4" />
+    ) : videoURI ? (
+      <Video
+        source={{uri: videoURI}}
+        style={{width: '100%', height: '100%'}}
+        resizeMode="cover"
+        repeat
+        muted
+      />
+    ) : (
+      <>
+        <Icon name="upload" size={40} color="#51BCB4" style={{marginBottom: 20}} />
+        <Text style={styles.videoText}>동영상 파일 업로드</Text>
+      </>
+    )}
 
-            {videoURI ? (
-              <Video
-                source={{uri: videoURI}}
-                style={{width: '100%', height: '100%'}}
-                resizeMode="cover"
-                repeat
-                muted
-              />
-            ) : (
-              <>
-                <Icon name="upload" size={40} color="#51BCB4" style={{marginBottom: 20}} />
-                <Text style={styles.videoText}>동영상 파일 업로드</Text>
-              </>
-            )}
-          </TouchableOpacity>
+   </TouchableOpacity>
+
   <TextInput
          style={[styles.input, {width: width * 0.9, marginTop: 0}]} // ✅ 빈 공간 제거
          placeholder="제목"
@@ -216,15 +232,36 @@ console.log('user?.token:', user?.token);
 
         </View>
 
-        <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
-          <CommonButton title="YouTube 업로드" onPress={uploadToYouTube} type="secondary" style={{width: width * 0.4}} />
-<CommonButton
-  title="AIVIDEO 업로드"
-  onPress={() => uploadToMyServer(title, tags, videoURI, user?.token)}
-  type="primary"
-  style={{width: width * 0.4}}
-/>
+      <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
+        <CommonButton title="YouTube 업로드" onPress={uploadToYouTube} type="secondary" style={{width: width * 0.4}} />
+        <CommonButton
+          title="AIVIDEO 업로드"
+          onPress={() => {
+            setUploading(true); // 시작
+            uploadToMyServer(title, tags, videoURI, user?.token).finally(() =>
+              setUploading(false) // 끝나면 숨기기
+            );
+          }}
+          type="primary"
+          style={{width: width * 0.4}}
+        />
+      </View>
+
+      {uploading && (
+        <View style={{marginTop: 10, alignItems: 'center'}}>
+        <Progress.Bar
+          progress={uploadProgress / 100}
+          width={width * 0.8}
+          color="#51BCB4"
+          borderColor="#ccc"
+        />
+        <Text style={{ marginTop: 5, color: '#51BCB4' }}>
+          {uploadProgress}% 업로드 중...
+        </Text>
+
         </View>
+      )}
+
       </View>
     </SafeAreaView>
   );
