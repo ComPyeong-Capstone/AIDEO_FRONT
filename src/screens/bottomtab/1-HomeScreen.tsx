@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getPostThumbnails} from '../../api/postApi'; // 또는 썸네일 전용 api 파일
+import {getPostThumbnails} from '../../api/postApi';
 
 import {
   View,
@@ -14,9 +14,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import Feather from 'react-native-vector-icons/Feather';
 
-import {styles} from '../../styles/bottomtab/1-homeStyles'; // ✅ 고정 스타일 사용
+import {styles} from '../../styles/bottomtab/1-homeStyles';
 import {getAllPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 
@@ -46,7 +45,17 @@ const HomeScreen: React.FC = () => {
   const fetchThumbnails = async () => {
     try {
       const data = await getPostThumbnails();
-      setThumbnails(data);
+
+      // 🔁 배열 순서 반전하여 최신 게시물이 위로 오도록
+      const reversed = [...data].reverse();
+
+      // 🔍 배열 상태 로그
+      console.log(
+        '뒤집은 썸네일 목록:',
+        reversed.map(item => `id: ${item.postId}, title: ${item.title}`),
+      );
+
+      setThumbnails(reversed);
     } catch (error) {
       console.error('썸네일 불러오기 실패:', error);
     } finally {
@@ -57,6 +66,7 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     fetchThumbnails();
   }, []);
+
   const fetchPosts = async () => {
     try {
       const data = await getAllPosts();
@@ -71,9 +81,8 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
-  const renderItem = ({item}: {item: PostThumbnail}) => {
-    console.log('썸네일 URL:', item.thumbnailURL); // ✅ OK
 
+  const renderItem = ({item}: {item: PostThumbnail}) => {
     return (
       <TouchableOpacity
         style={[styles.videoContainer, {width: (width - 40) / 2}]}

@@ -55,7 +55,9 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (videoUrls.length > 0) return;
+    if (videoUrls.length > 0) {
+      return;
+    }
 
     const generateVideos = async () => {
       try {

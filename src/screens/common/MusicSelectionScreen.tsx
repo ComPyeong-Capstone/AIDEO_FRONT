@@ -105,7 +105,9 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handleConfirm = () => {
-    if (!selectedMusic) return;
+    if (!selectedMusic) {
+      return;
+    }
 
     stopAndReleaseSound();
 
