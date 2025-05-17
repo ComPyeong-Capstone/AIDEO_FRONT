@@ -24,7 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>앱이 사진 라이브러리에 접근하려면 허용이 필요합니다.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>동영상을 사진 앱에 저장하기 위해 권한이 필요합니다.</string>
 	<!-- ✅ HTTP 로드 허용 (모든 도메인) -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
