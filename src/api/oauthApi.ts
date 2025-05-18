@@ -1,10 +1,12 @@
 // src/api/oauthApi.ts
 import axiosInstance from './axiosInstance';
 
+/*
 export const googleLoginApi = async (idToken: string) => {
   const response = await axiosInstance.post('/oauth/google', { idToken });
   return response.data;
 };
+ */
 
 export interface SocialLoginResponse {
   user?: {
@@ -63,7 +65,7 @@ const kakaoSignup = async (nickname: string): Promise<SocialLoginResponse> => {
 
 // 🔹 카카오 인가 코드 HTML 반환 (웹뷰용)
 const getKakaoLoginHTML = async (): Promise<string> => {
-  const response = await axiosInstance.get('/oauth/kakao', {
+  const response = await axiosInstance.post('/oauth/kakao', {
     headers: {Accept: 'text/html'},
     responseType: 'text',
   });

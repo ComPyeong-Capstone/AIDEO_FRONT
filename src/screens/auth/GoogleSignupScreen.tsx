@@ -13,28 +13,37 @@ const GoogleSignupScreen: React.FC<Props> = ({ route, navigation }) => {
   const [nickname, setNickname] = useState('');
   const { setUser } = useUser();
 
-  const handleSubmit = async () => {
-    if (!nickname) {
-      Alert.alert('입력 오류', '닉네임을 입력해주세요.');
-      return;
+const handleSubmit = async () => {
+  if (!nickname) {
+    Alert.alert('입력 오류', '닉네임을 입력해주세요.');
+    return;
+  }
+
+  try {
+    const response = await oauthApi.googleSignup(email, nickname);
+    console.log('✅ signup 응답:', response);
+
+    if (!response || !response.accessToken || !response.user) {
+      throw new Error('회원가입 실패');
     }
 
-    try {
-const response = await oauthApi.googleSignup(email, nickname);
-      if (!response || !response.token || !response.user) {
-        throw new Error('회원가입 실패');
-      }
+    await saveAuthTokens(response.accessToken);
+    setUser({ ...response.user, token: response.accessToken });
 
-      await saveAuthTokens(response.token);
-      setUser({ ...response.user, token: response.token });
+    Alert.alert('가입 완료', `${response.user.userName}님 환영합니다!`);
+    navigation.replace('Main');
 
-      Alert.alert('가입 완료', `${response.user.userName}님 환영합니다!`);
-      navigation.replace('Main');
-    } catch (error) {
+  } catch (error: any) {
+    if (error?.response?.status === 409) {
+      Alert.alert('이미 가입된 이메일입니다.', '로그인을 진행해주세요.');
+      navigation.replace('Login');
+    } else {
       console.error('닉네임 설정 실패:', error);
       Alert.alert('회원가입 실패', '닉네임 설정 중 문제가 발생했습니다.');
     }
-  };
+  }
+};
+
 
   return (
     <View style={{ padding: 20 }}>
