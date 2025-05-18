@@ -19,6 +19,7 @@ import {RootStackParamList} from '../../types/navigation';
 import {googleLoginApi} from '../../api/oauthApi'; // 필요한 경우 추가
 import { oauthApi } from '../../api/oauthApi'; // POST /oauth/google with idToken
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { CommonActions } from '@react-navigation/native';
 
 const AuthScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -102,8 +103,12 @@ const handleGoogleLogin = async () => {
       await saveAuthTokens(accessToken);
       setUser({ ...user, token: accessToken });
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-      navigation.replace('Main');
-    }
+navigation.dispatch(
+  CommonActions.reset({
+    index: 0,
+    routes: [{ name: 'Main' }],
+  }),
+);    }
   } catch (error) {
     console.error('❌ Google 로그인 실패:', error);
     Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');

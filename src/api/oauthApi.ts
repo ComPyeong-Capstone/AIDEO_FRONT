@@ -28,13 +28,22 @@ export const googleLogin = async (idToken: string, platform: 'ios' | 'android') 
 
 
 // 🔹 구글 닉네임 설정
-const googleSignup = async (email: string, nickname: string): Promise<SocialLoginResponse> => {
-  const response = await axiosInstance.post('/oauth/google/signup', {
-    email,
-    nickname,
-  });
-  return response.data;
+export const googleSignup = async (
+  email: string,
+  nickname: string
+): Promise<SocialLoginResponse> => {
+  try {
+    const response = await axiosInstance.post('/oauth/google/signup', {
+      email,
+      nickname,
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ Google 회원가입 실패:', error.response?.data || error.message);
+    throw error; // 상위에서 catch할 수 있도록 다시 던짐
+  }
 };
+
 
 // 🔹 카카오 로그인
 const kakaoLogin = async (
