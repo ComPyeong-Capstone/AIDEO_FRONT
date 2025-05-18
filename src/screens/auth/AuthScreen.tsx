@@ -103,12 +103,7 @@ const handleGoogleLogin = async () => {
       await saveAuthTokens(accessToken);
       setUser({ ...user, token: accessToken });
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-navigation.dispatch(
-  CommonActions.reset({
-    index: 0,
-    routes: [{ name: 'Main' }],
-  }),
-);    }
+  }
   } catch (error) {
     console.error('❌ Google 로그인 실패:', error);
     Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');
