@@ -16,10 +16,12 @@ import {userApi} from '../../api/userApi';
 import {useUser} from '../../context/UserContext';
 import {saveAuthTokens, getAccessToken} from '../../utils/storage';
 import {RootStackParamList} from '../../types/navigation';
+import {googleLoginApi} from '../../api/oauthApi'; // 필요한 경우 추가
+import { oauthApi } from '../../api/oauthApi'; // POST /oauth/google with idToken
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const AuthScreen = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const {setUser} = useUser();
@@ -72,8 +74,41 @@ const AuthScreen = () => {
 
       Alert.alert('로그인 실패', errorMsg);
     }
+
   };
 
+const handleGoogleLogin = async () => {
+  try {
+    await GoogleSignin.hasPlayServices();
+
+    const userInfo = await GoogleSignin.signIn();
+    console.log('🟢 Google user info:', userInfo);
+
+    // 여기가 핵심!
+    const idToken = userInfo.idToken || userInfo?.data?.idToken;
+
+    console.log('🟢 idToken:', idToken);
+
+    if (!idToken) {
+      throw new Error('Google 로그인 토큰을 가져오지 못했습니다.');
+    }
+
+    const response = await oauthApi.googleLogin(idToken, 'ios');
+
+    if (response.needSignup) {
+      navigation.navigate('GoogleSignup', { email: response.email });
+    } else {
+      const { accessToken, refreshToken, user } = response;
+      await saveAuthTokens(accessToken);
+      setUser({ ...user, token: accessToken });
+      Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
+      navigation.replace('Main');
+    }
+  } catch (error) {
+    console.error('❌ Google 로그인 실패:', error);
+    Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');
+  }
+};
 
 
   return (
@@ -112,17 +147,13 @@ const AuthScreen = () => {
         <View style={authStyles.line} />
       </View>
 
-      <TouchableOpacity style={authStyles.googleButton}>
-        <View style={authStyles.googleButtonContent}>
-          <Icon
-            name="google"
-            size={20}
-            color="#fff"
-            style={authStyles.googleIcon}
-          />
-          <Text style={authStyles.buttonText}>Google로 로그인</Text>
-        </View>
-      </TouchableOpacity>
+    <TouchableOpacity style={authStyles.googleButton} onPress={handleGoogleLogin}>
+      <View style={authStyles.googleButtonContent}>
+        <Icon name="google" size={20} color="#fff" style={authStyles.googleIcon} />
+        <Text style={authStyles.buttonText}>Google로 로그인</Text>
+      </View>
+    </TouchableOpacity>
+
 
       <TouchableOpacity style={authStyles.kakaoButton}>
         <View style={authStyles.kakaoButtonContent}>

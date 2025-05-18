@@ -1,6 +1,11 @@
 // src/api/oauthApi.ts
 import axiosInstance from './axiosInstance';
 
+export const googleLoginApi = async (idToken: string) => {
+  const response = await axiosInstance.post('/oauth/google', { idToken });
+  return response.data;
+};
+
 export interface SocialLoginResponse {
   user?: {
     userId: number;
@@ -12,16 +17,21 @@ export interface SocialLoginResponse {
   email?: string;
 }
 
-// 🔹 구글 로그인
-const googleLogin = async (idToken: string): Promise<SocialLoginResponse> => {
-  const response = await axiosInstance.post('/oauth/google', {idToken});
+export const googleLogin = async (idToken: string, platform: 'ios' | 'android') => {
+  const response = await axiosInstance.post('/oauth/google', {
+    idToken,
+    platform,
+  });
   return response.data;
 };
 
+
+
 // 🔹 구글 닉네임 설정
-const googleSignup = async (nickname: string): Promise<SocialLoginResponse> => {
+const googleSignup = async (email: string, nickname: string): Promise<SocialLoginResponse> => {
   const response = await axiosInstance.post('/oauth/google/signup', {
-    userName: nickname,
+    email,
+    nickname,
   });
   return response.data;
 };
@@ -53,7 +63,7 @@ const getKakaoLoginHTML = async (): Promise<string> => {
 
 // ✅ 하나의 객체로 묶어서 export
 export const oauthApi = {
-  googleLogin,
+    googleLogin,
   googleSignup,
   kakaoLogin,
   kakaoSignup,

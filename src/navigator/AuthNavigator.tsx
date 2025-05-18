@@ -6,6 +6,7 @@ import GoogleSignupScreen from '../screens/auth/GoogleSignupScreen';
 import KakaoLoginWebViewScreen from '../screens/auth/KakaoLoginWebViewScreen';
 import KakaoSignupScreen from '../screens/auth/KakaoSignupScreen';
 import {RootStackParamList} from '../types/navigation';
+//import GoogleSignupScreen from '../screens/auth/GoogleSignupScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

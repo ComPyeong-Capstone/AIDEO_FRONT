@@ -77,7 +77,18 @@ const attachInterceptors = (instance: typeof axiosInstance) => {
     },
   );
 };
-
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const token = await getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 // ✅ 인터셉터 각각 적용
 attachInterceptors(axiosInstance);
 attachInterceptors(videoAxiosInstance);
