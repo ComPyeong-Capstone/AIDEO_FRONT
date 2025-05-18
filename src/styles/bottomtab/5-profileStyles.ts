@@ -35,6 +35,13 @@ export const styles = StyleSheet.create({
     marginBottom: scaleSize(10),
   },
 
+  previewImage: {
+    width: scaleSize(100),
+    height: scaleSize(100),
+    borderRadius: scaleSize(50),
+    marginBottom: scaleSize(10),
+  },
+
   username: {
     marginTop: scaleSize(10),
     fontSize: scaleFont(20),
@@ -103,12 +110,12 @@ export const styles = StyleSheet.create({
   videoContainer: {
     backgroundColor: '#D0D0D0',
     borderRadius: scaleSize(16),
-    aspectRatio: 1.15, // ✅ 세로 여유
+    aspectRatio: 1.15,
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: scaleSize(16),
-    marginHorizontal: scaleSize(4), // ✅ 양 옆 간격
+    marginHorizontal: scaleSize(4),
   },
 
   thumbnailPlaceholder: {
@@ -187,6 +194,13 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(10),
   },
 
+  gallerySelectText: {
+    color: '#51BCB4',
+    fontWeight: 'bold',
+    fontSize: scaleFont(14),
+    marginTop: scaleSize(12),
+  },
+
   input: {
     width: '100%',
     borderWidth: 1,
@@ -226,7 +240,7 @@ export const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: 'space-between',
     marginBottom: scaleSize(16),
-    paddingHorizontal: scaleSize(4), // ✅ 열 전체 padding
+    paddingHorizontal: scaleSize(4),
   },
 
   postsContainer: {
