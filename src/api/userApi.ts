@@ -58,4 +58,17 @@ export const userApi = {
     // ✅ 백엔드에서 S3 URL을 반환하면 그걸 그대로 반환
     return response.data as string;
   },
+
+  /** 🔹 리프레시 토큰으로 토큰 재발급 */
+  refreshAccessToken: async (
+    refreshToken: string,
+  ): Promise<{accesstoken: string}> => {
+    const response = await axiosInstance.post('/auth/refresh', {refreshToken});
+    return response.data;
+  },
+
+  /** 🔹 로그아웃 */
+  logout: async (): Promise<void> => {
+    await axiosInstance.delete('/auth/logout');
+  },
 };
