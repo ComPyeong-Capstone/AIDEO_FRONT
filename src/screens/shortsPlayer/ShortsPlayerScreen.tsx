@@ -9,7 +9,7 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {styles} from '../../styles/shortsPlayer/ShortsPlayerScreenStyles';
 import CommentsScreen from './CommentsScreen';
 import {postLike, cancelLike, getLikedUsers} from '../../api/postLikeApi';
@@ -21,6 +21,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '@env';
 
 const ShortsPlayerScreen: React.FC = () => {
+  const navigation = useNavigation();
   const route = useRoute();
   const {postId, title, creator, currentUserId, creatorUserId, showComments} =
     route.params as {
@@ -40,6 +41,7 @@ const ShortsPlayerScreen: React.FC = () => {
   const [isLikedUsersVisible, setIsLikedUsersVisible] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [hashtags, setHashtags] = useState<string[]>([]);
 
   const loadCounts = useCallback(async () => {
     try {
@@ -57,9 +59,7 @@ const ShortsPlayerScreen: React.FC = () => {
 
   useEffect(() => {
     loadCounts();
-    if (showComments) {
-      setIsCommentsVisible(true);
-    }
+    if (showComments) setIsCommentsVisible(true);
   }, [loadCounts, showComments]);
 
   useEffect(() => {
@@ -67,6 +67,7 @@ const ShortsPlayerScreen: React.FC = () => {
       try {
         const post = await getPostDetail(postId);
         setVideoURL(post.videoURL ?? null);
+        setHashtags(post.hashtags ?? []);
 
         const rawPath = post.author?.profileImage;
         if (rawPath && typeof rawPath === 'string') {
@@ -111,6 +112,14 @@ const ShortsPlayerScreen: React.FC = () => {
     }
   };
 
+  const handleEditPost = () => {
+    navigation.navigate('PostVideoScreen', {
+      finalVideoUrl: videoURL,
+      title,
+      tags: hashtags.join(' '),
+    });
+  };
+
   return (
     <>
       <SafeAreaView style={styles.safeContainer}>
@@ -128,9 +137,17 @@ const ShortsPlayerScreen: React.FC = () => {
             <Text style={styles.videoText}>영상 불러오는 중...</Text>
           )}
 
+          {currentUserId === creatorUserId && (
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={handleEditPost}>
+              <Ionicons name="create-outline" size={28} color="white" />
+            </TouchableOpacity>
+          )}
+
           <View style={styles.topBar}>
             <View style={styles.profileTitleContainer}>
-              {profileImageUrl && profileImageUrl.startsWith('http') && (
+              {profileImageUrl && (
                 <Image
                   source={{uri: profileImageUrl}}
                   style={styles.creatorProfile}

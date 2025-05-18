@@ -35,6 +35,12 @@ export const styles = StyleSheet.create({
     paddingVertical: scaleSize(8),
     zIndex: 10,
   },
+  editButton: {
+    position: 'absolute',
+    top: scaleSize(14),
+    right: scaleSize(14),
+    zIndex: 11,
+  },
   profileTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -88,8 +94,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-
-  // ✅ 모달 전체 내용에 좌우 padding 주기 위한 wrapper
   likedUsersContainer: {
     flex: 1,
     backgroundColor: 'white',
@@ -100,7 +104,6 @@ export const styles = StyleSheet.create({
     paddingBottom: scaleSize(10),
     paddingHorizontal: scaleSize(24),
   },
-
   likedUsersTitle: {
     fontSize: scaleFont(18),
     fontWeight: 'bold',

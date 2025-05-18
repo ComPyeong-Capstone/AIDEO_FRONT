@@ -31,24 +31,24 @@ type NavigationProps = StackNavigationProp<
 >;
 type RouteProps = RouteProp<AppStackParamList, 'PostVideoScreen'>;
 
-const PostVideoScreen: React.FC<{navigation: NavigationProps}> = ({
-  navigation,
-}) => {
+const PostVideoScreen: React.FC<{navigation: NavigationProps}> = ({}) => {
   const {width} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const {user} = useUser();
   const route = useRoute<RouteProps>();
   const finalVideoUrl = route.params?.finalVideoUrl ?? null;
+  const initialTitle = route.params?.title ?? '';
+  const initialTags = route.params?.tags ?? '';
 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
-  const [title, setTitle] = useState('');
-  const [tags, setTags] = useState('');
+  const [title, setTitle] = useState(initialTitle);
+  const [tags, setTags] = useState(initialTags);
   const [videoURI, setVideoURI] = useState<string | null>(finalVideoUrl);
 
   const handleTagInput = (text: string) => {
-    const words = text.split(/[\s,]+/); // 공백 또는 쉼표 기준 분리
+    const words = text.split(/[\s,]+/);
     const processed = words
       .filter(word => word.length > 0)
       .map(word => (word.startsWith('#') ? word : `#${word}`));
@@ -73,7 +73,9 @@ const PostVideoScreen: React.FC<{navigation: NavigationProps}> = ({
       });
       if (result.assets?.length) {
         const selected = result.assets[0];
-        if (selected.uri) setVideoURI(selected.uri);
+        if (selected.uri) {
+          setVideoURI(selected.uri);
+        }
       }
     } catch (error) {
       console.error('미디어 선택 오류:', error);
