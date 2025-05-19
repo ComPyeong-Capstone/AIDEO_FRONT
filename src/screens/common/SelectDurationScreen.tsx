@@ -1,26 +1,46 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, TouchableOpacity, SafeAreaView} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {
+  useNavigation,
+  useRoute,
+  CompositeNavigationProp,
+} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {styles} from '../../styles/common/selectDurationStyles';
 import ProgressBar from '../../components/ProgressBar';
 import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
+import {AppStackParamList} from '../../types/navigation';
 
 // 공용 Param 정의
 type CommonParamList = {
   SelectDurationScreen: {mode: 'photo' | 'shorts'};
 };
 
-// Props
-type Props = NativeStackScreenProps<CommonParamList, 'SelectDurationScreen'>;
+// 네비게이션 타입 조합
+type NavigationProps = CompositeNavigationProp<
+  NativeStackNavigationProp<CommonParamList, 'SelectDurationScreen'>,
+  NativeStackNavigationProp<AppStackParamList>
+>;
 
-const SelectDurationScreen: React.FC<Props> = ({navigation, route}) => {
+const SelectDurationScreen: React.FC = () => {
   const [duration, setDuration] = useState<number>(5);
   const insets = useSafeAreaInsets();
-  const {mode} = route.params;
+  const navigation = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const {mode} = route.params as CommonParamList['SelectDurationScreen'];
+
+  // 🔽 슬라이드(back gesture) 시에도 Main(Home)으로 이동
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', e => {
+      e.preventDefault();
+      navigation.navigate('Main', {screen: 'Home'});
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const handleNext = () => {
     if (mode === 'photo') {
@@ -37,7 +57,7 @@ const SelectDurationScreen: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handleBack = () => {
-    navigation.goBack();
+    navigation.navigate('Main', {screen: 'Home'});
   };
 
   return (

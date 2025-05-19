@@ -58,18 +58,19 @@ const NotificationsScreen: React.FC = () => {
     }
   };
 
-  const getNotificationText = (type: string) => {
+  // ✅ 유저 이름을 포함하는 알림 텍스트 생성 함수
+  const getNotificationText = (type: string, senderName: string) => {
     switch (type) {
       case 'LIKE':
-        return '누군가 게시물을 좋아요 했습니다.';
+        return `${senderName}님이 게시물을 좋아요 했습니다.`;
       case 'COMMENT':
-        return '누군가 댓글을 달았습니다.';
+        return `${senderName}님이 댓글을 달았습니다.`;
       case 'COMMENT_LIKE':
-        return '누군가 댓글을 좋아요 했습니다.';
+        return `${senderName}님이 댓글을 좋아요 했습니다.`;
       case 'REPLY':
-        return '누군가 내 댓글에 답글을 달았습니다.';
+        return `${senderName}님이 내 댓글에 답글을 달았습니다.`;
       default:
-        return '새로운 알림이 있습니다.';
+        return `${senderName}님의 새로운 알림이 있습니다.`;
     }
   };
 
@@ -95,24 +96,28 @@ const NotificationsScreen: React.FC = () => {
     }
   };
 
-  const renderItem = ({item}: {item: Notification}) => (
-    <TouchableOpacity onPress={() => handlePressNotification(item)}>
-      <View
-        style={[
-          styles.notificationContainer,
-          item.notiRead ? styles.readBackground : styles.unreadBackground,
-        ]}>
-        <Text style={styles.notificationText}>
-          {getNotificationText(item.notiType)}
-        </Text>
-        <Ionicons
-          name={getIconName(item.notiType)}
-          size={scaleSize(20)}
-          color="#51BCB4"
-        />
-      </View>
-    </TouchableOpacity>
-  );
+  const renderItem = ({item}: {item: Notification}) => {
+    const senderName = item.sender?.userName || '누군가';
+
+    return (
+      <TouchableOpacity onPress={() => handlePressNotification(item)}>
+        <View
+          style={[
+            styles.notificationContainer,
+            item.notiRead ? styles.readBackground : styles.unreadBackground,
+          ]}>
+          <Text style={styles.notificationText}>
+            {getNotificationText(item.notiType, senderName)}
+          </Text>
+          <Ionicons
+            name={getIconName(item.notiType)}
+            size={scaleSize(20)}
+            color="#51BCB4"
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>

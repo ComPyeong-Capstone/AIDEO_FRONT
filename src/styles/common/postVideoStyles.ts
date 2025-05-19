@@ -1,65 +1,81 @@
 import {StyleSheet, Dimensions} from 'react-native';
-import {COLORS} from '../../styles/colors';
+import {COLORS} from '../colors';
 
 const {width} = Dimensions.get('window');
 
 const scaleSize = (size: number) => (size * width) / 375;
-const videoWidth = width * 0.8;
-const videoHeight = videoWidth * (16 / 9);
 
-export default StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: '10%',
-      marginTop: scaleSize(10), // 상단 여백 추가
-
   },
-
-   videoContainer: {
-      width: videoWidth,
-      height: videoHeight,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderColor: COLORS.black,
-      borderWidth: 2,
-      borderRadius: scaleSize(10),
-      marginVertical: scaleSize(10),
-        marginBottom: scaleSize(20), // ⬅️ 아래 요소와 간격 줄임
-
-    },
-
+  mainWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  alignCenter: {
+    alignItems: 'center',
+  },
+  videoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: COLORS.black,
+    borderWidth: 2,
+    borderRadius: scaleSize(10),
+    marginVertical: scaleSize(10),
+  },
+  fullSize: {
+    width: '100%',
+    height: '100%',
+  },
+  uploadIcon: {
+    marginBottom: scaleSize(20),
+  },
   videoText: {
     color: COLORS.black,
     fontWeight: 'bold',
     fontSize: scaleSize(18),
   },
-input: {
-  borderColor: COLORS.black,
-  borderWidth: 1,
-  borderRadius: scaleSize(8), // ⬅️ 둥근 정도 줄임
-  paddingHorizontal: scaleSize(10),
-  color: COLORS.black,
-
-  marginBottom: scaleSize(10), // ⬅️ 아래 요소와 간격 줄임
-  height: scaleSize(40),
-},
-
-
+  input: {
+    borderColor: COLORS.black,
+    borderWidth: 1,
+    borderRadius: scaleSize(8),
+    paddingHorizontal: scaleSize(10),
+    color: COLORS.black,
+    marginBottom: scaleSize(10),
+    height: scaleSize(40),
+  },
+  inputMultiline: {
+    height: scaleSize(50),
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: scaleSize(10),
   },
-
-  buttonText: {
-    fontWeight: 'bold',
-    color: COLORS.black,
-    fontSize: scaleSize(16),
+  uploadProgressWrapper: {
+    marginTop: scaleSize(10),
+    alignItems: 'center',
   },
-  inputMultiline: {
-    height: scaleSize(50),
+  uploadProgressText: {
+    marginTop: scaleSize(5),
+    color: '#51BCB4',
+  },
+  halfWidthButton: {
+    width: '45%',
   },
 });
+
+// ✅ 함수형 스타일
+export const dynamicVideoSize = (screenWidth: number) => ({
+  width: screenWidth * 0.8,
+  height: screenWidth * 0.8 * (16 / 9),
+});
+
+export const inputFullWidth = (screenWidth: number) => ({
+  width: screenWidth * 0.9,
+});
+
+export default styles;

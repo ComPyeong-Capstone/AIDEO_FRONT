@@ -14,55 +14,61 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useWindowDimensions} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 import {styles} from '../../styles/bottomtab/5-profileStyles';
 import {useUser} from '../../context/UserContext';
-import {defaultProfileImages} from '../../utils/defaultProfile';
 import {userApi} from '../../api/userApi';
 import {getMyPosts, PostResponse} from '../../api/postApi';
-
 import {AppStackParamList} from '../../types/navigation';
-
-const getProfileImageByName = (fileName: string | null | undefined) => {
-  const match = fileName?.match(/profile(\d+)\.jpg/);
-  if (match) {
-    const index = parseInt(match[1], 10) - 1;
-    return defaultProfileImages[index] ?? defaultProfileImages[0];
-  }
-  return defaultProfileImages[0];
-};
-
-type NavigationProps = StackNavigationProp<
-  AppStackParamList,
-  'ShortsPlayerScreen'
->;
 
 const ProfileScreen: React.FC = () => {
   const {user, setUser} = useUser();
   const {width} = useWindowDimensions();
-  const navigation = useNavigation<NavigationProps>();
+  const navigation =
+    useNavigation<
+      StackNavigationProp<AppStackParamList, 'ShortsPlayerScreen'>
+    >();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [newNickname, setNewNickname] = useState(user?.userName ?? '');
-  const [selectedImage, setSelectedImage] = useState(user?.profileImage ?? '');
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const [userPosts, setUserPosts] = useState<PostResponse[]>([]);
 
   const itemWidth = (width - 40) / 2;
   const itemHeight = itemWidth;
 
+  const handleOpenGallery = async () => {
+    const result = await launchImageLibrary({mediaType: 'photo'});
+    if (result.assets?.length) {
+      setSelectedImageUri(result.assets[0].uri ?? null);
+    }
+  };
+
   const handleSaveProfile = async () => {
     if (!user) return;
     const nicknameUnchanged = newNickname === user.userName;
-    const imageUnchanged = selectedImage === user.profileImage;
+    const imageUnchanged = !selectedImageUri;
+
     if (nicknameUnchanged && imageUnchanged) {
       Alert.alert('알림', '변경된 내용이 없습니다.');
       return;
     }
     try {
       if (!nicknameUnchanged) await userApi.updateNickname(newNickname);
-      if (!imageUnchanged)
-        await userApi.updateProfileImageByName(selectedImage);
-      setUser({...user, userName: newNickname, profileImage: selectedImage});
+      if (!imageUnchanged && selectedImageUri) {
+        const file = {
+          uri: selectedImageUri,
+          name: 'profile.jpg',
+          type: 'image/jpeg',
+        };
+        await userApi.updateProfileImage(file as any);
+      }
+      setUser({
+        ...user,
+        userName: newNickname,
+        profileImage: selectedImageUri ?? user.profileImage,
+      });
       Alert.alert('성공', '프로필이 변경되었습니다.');
       setModalVisible(false);
     } catch (err: any) {
@@ -104,13 +110,15 @@ const ProfileScreen: React.FC = () => {
           showComments: false,
         })
       }>
-  <Image
-    source={{ uri: item.thumbnailURL || 'https://via.placeholder.com/200x300.png?text=No+Thumbnail' }}
-    style={styles.thumbnailImage}
-    resizeMode="cover"
-  />
-
-
+      <Image
+        source={{
+          uri:
+            item.thumbnailURL ||
+            'https://via.placeholder.com/200x300.png?text=No+Thumbnail',
+        }}
+        style={styles.thumbnailImage}
+        resizeMode="cover"
+      />
       <View style={styles.textContainer}>
         <Text numberOfLines={1} style={styles.title}>
           {item.title}
@@ -125,7 +133,11 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.profileSection}>
           <View style={styles.profileCenteredRow}>
             <Image
-              source={getProfileImageByName(user?.profileImage)}
+              source={
+                selectedImageUri
+                  ? {uri: selectedImageUri}
+                  : {uri: user?.profileImage ?? ''}
+              }
               style={styles.profileImage}
             />
             <Text style={styles.username}>{user?.userName ?? ''}</Text>
@@ -133,7 +145,11 @@ const ProfileScreen: React.FC = () => {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.longButton}
-              onPress={() => setModalVisible(true)}>
+              onPress={() => {
+                setNewNickname(user?.userName ?? '');
+                setSelectedImageUri(null);
+                setModalVisible(true);
+              }}>
               <Text style={styles.buttonText}>프로필 편집</Text>
             </TouchableOpacity>
           </View>
@@ -161,39 +177,35 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>프로필 편집</Text>
+
+            <Image
+              source={
+                selectedImageUri
+                  ? {uri: selectedImageUri}
+                  : {uri: user?.profileImage ?? ''}
+              }
+              style={styles.profileImage}
+            />
+
             <TextInput
               value={newNickname}
               onChangeText={setNewNickname}
               style={styles.input}
               placeholder="닉네임 입력"
             />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.profileImageRow}>
-                {defaultProfileImages.map((item, index) => {
-                  const profileName = `profile${index + 1}.jpg`;
-                  const isSelected = selectedImage === profileName;
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => setSelectedImage(profileName)}>
-                      <Image
-                        source={item}
-                        style={[
-                          styles.modalImage,
-                          isSelected && styles.selectedImageBorder,
-                        ]}
-                      />
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.modalSaveButton}
+              onPress={handleOpenGallery}>
+              <Text style={styles.buttonText}>📁 갤러리에서 선택</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.modalSaveButton}
               onPress={handleSaveProfile}>
               <Text style={styles.buttonText}>저장</Text>
             </TouchableOpacity>
+
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={styles.modalCloseText}>닫기</Text>
             </TouchableOpacity>

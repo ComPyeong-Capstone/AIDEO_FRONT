@@ -1,57 +1,89 @@
 import {StyleSheet} from 'react-native';
-import {scaleSize} from '../responsive';
+import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../../styles/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingHorizontal: scaleSize(12),
-    paddingVertical: scaleSize(10),
   },
+
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#51BCB4',
+    backgroundColor: COLORS.maincolor,
     borderRadius: scaleSize(12),
     paddingHorizontal: scaleSize(12),
     paddingVertical: scaleSize(10),
-    marginBottom: scaleSize(18),
-    width: '100%',
+    marginHorizontal: scaleSize(15),
+    marginBottom: scaleSize(15),
   },
+
   searchIcon: {
     marginRight: scaleSize(8),
   },
+
   searchInput: {
     flex: 1,
-    color: '#1F2C3D',
-    fontSize: scaleSize(16),
+    color: COLORS.black,
+    fontSize: scaleFont(16),
   },
+
   videoItem: {
-    backgroundColor: COLORS.imagebox,
-    borderRadius: scaleSize(12),
-    marginBottom: scaleSize(12),
-    overflow: 'hidden',
-    paddingBottom: scaleSize(8), // ✅ 하단 여백 추가
+    width: '48%',
+    backgroundColor: COLORS.videocontainer,
+    borderRadius: scaleSize(25),
+    alignItems: 'center',
+    paddingBottom: scaleSize(10),
+    marginBottom: scaleSize(15),
   },
+
   videoThumbnail: {
     width: '100%',
-    height: scaleSize(150),
-    backgroundColor: '#ccc',
+    aspectRatio: 9 / 10, // 세로형 영상 비율
+    backgroundColor: COLORS.thumbnail,
+    borderTopLeftRadius: scaleSize(12),
+    borderTopRightRadius: scaleSize(12),
   },
+
   videoInfoContainer: {
-    paddingHorizontal: scaleSize(10),
-    paddingTop: scaleSize(10),
-    alignItems: 'flex-start', // ✅ 왼쪽 정렬
+    alignItems: 'center',
+    marginTop: scaleSize(10),
   },
+
   videoTitle: {
-    fontSize: scaleSize(16),
     fontWeight: 'bold',
-    color: '#51BCB4',
+    color: COLORS.maincolor,
+    textAlign: 'center',
+    fontSize: scaleFont(16),
   },
+
+  creatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: scaleSize(5),
+  },
+
+  profileImage: {
+    width: scaleSize(24),
+    height: scaleSize(24),
+    borderRadius: scaleSize(12),
+    backgroundColor: COLORS.maincolor,
+    marginRight: scaleSize(8),
+  },
+
   videoCreator: {
-    fontSize: scaleSize(14),
-    color: '#A9BCD0',
-    marginTop: scaleSize(4),
+    color: COLORS.maincolor,
+    fontSize: scaleFont(14),
+  },
+
+  columnWrapper: {
+    justifyContent: 'space-between',
+    marginHorizontal: scaleSize(15),
+  },
+
+  contentContainer: {
+    paddingBottom: scaleSize(10),
   },
 });

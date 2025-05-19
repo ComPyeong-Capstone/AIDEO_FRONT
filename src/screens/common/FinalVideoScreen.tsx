@@ -14,7 +14,6 @@ import Video from 'react-native-video';
 
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import styles from '../../styles/common/finalVideoStyles';
-import ProgressBar from '../../components/ProgressBar';
 import CustomButton from '../../styles/button';
 import {generatePartialVideo, generateFinalVideo} from '../../api/generateApi';
 
@@ -30,7 +29,6 @@ interface Props {
 const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   const route = useRoute();
   const {
-    from = 'photo',
     duration,
     prompt,
     imageUrls = [],
@@ -49,15 +47,12 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
     videos?: string[];
   };
 
-  const currentStep = from === 'photo' ? 3 : 4;
   const [videoUrls, setVideoUrls] = useState<string[]>(preGeneratedVideos);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (videoUrls.length > 0) {
-      return;
-    }
+    if (videoUrls.length > 0) return;
 
     const generateVideos = async () => {
       try {
@@ -93,8 +88,7 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
     };
 
     generateVideos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [duration, imageUrls, subtitles, videoUrls.length]);
 
   const handleGenerateFinalVideo = async () => {
     if (videoUrls.length === 0 || subtitles.length === 0) {
@@ -121,19 +115,14 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
         subtitle_y_position: -150,
       };
 
-      console.log('🎬 최종 영상 요청:', JSON.stringify(requestBody, null, 2));
-
       const finalRes = await generateFinalVideo(requestBody);
 
-      // ✅ 포트 보정
       const fixedFinalUrl = finalRes.final_video_url.includes(':8000')
         ? finalRes.final_video_url
         : finalRes.final_video_url.replace(
             'http://3.35.182.180',
             'http://3.35.182.180:8000',
           );
-
-      console.log('📦 최종 영상 URL:', fixedFinalUrl);
 
       navigation.navigate('ResultScreen', {
         videos: [fixedFinalUrl],
@@ -168,22 +157,22 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 상단 이동 버튼 */}
-      <View style={styles.topNavWrapper}>
+      <View style={styles.headerContainer}>
         <TouchableOpacity onPress={handleBack}>
-          <Text style={styles.arrowText}>{'<'}</Text>
+          <Text style={styles.navIcon}>{'<'}</Text>
         </TouchableOpacity>
+
+        <View style={styles.titleCenterWrapper}>
+          <Text style={styles.imageNumberText}>
+            {videoUrls.length > 0 ? `${selectedIndex + 1}번 영상` : ''}
+          </Text>
+        </View>
+
         <TouchableOpacity onPress={handleForward}>
-          <Text style={styles.arrowText}>{'>'}</Text>
+          <Text style={styles.navIcon}>{'>'}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 진행 바 */}
-      <View style={styles.progressBarWrapper}>
-        <ProgressBar currentStep={currentStep} mode={from} />
-      </View>
-
-      {/* 영상 슬라이더 */}
       <View style={styles.sliderContainer}>
         <View style={styles.videoWrapper}>
           {loading ? (
@@ -198,46 +187,39 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
               showsPagination={false}
               onIndexChanged={setSelectedIndex}
               containerStyle={styles.swiperContainer}>
-              {videoUrls.length > 0 ? (
-                videoUrls.map((url, index) => (
-                  <View key={index} style={styles.videoItem}>
-                    <Video
-                      source={{uri: url}}
-                      style={styles.videoPlayer}
-                      resizeMode="cover"
-                      repeat
-                      muted
-                      controls
-                    />
-                  </View>
-                ))
-              ) : (
-                <View style={styles.videoItem}>
-                  <Text style={styles.videoText}>영상 없음</Text>
+              {videoUrls.map((url, index) => (
+                <View key={index} style={styles.videoItem}>
+                  <Video
+                    source={{uri: url}}
+                    style={styles.videoPlayer}
+                    resizeMode="cover"
+                    repeat
+                    muted
+                    controls
+                  />
                 </View>
-              )}
+              ))}
             </Swiper>
           )}
         </View>
 
         {videoUrls.length > 0 && (
-          <View style={styles.customPagination}>
+          <View style={styles.dotWrapper}>
             {videoUrls.map((_, index) => (
-              <Text
+              <View
                 key={index}
-                style={
+                style={[
+                  styles.dot,
                   index === selectedIndex
-                    ? styles.progressDotActive
-                    : styles.progressDotInactive
-                }>
-                ●
-              </Text>
+                    ? styles.dotActive
+                    : styles.dotInactive,
+                ]}
+              />
             ))}
           </View>
         )}
       </View>
 
-      {/* 배경 음악 선택 */}
       <View style={styles.musicSpacing} />
       <TouchableOpacity
         style={styles.musicButton}
@@ -254,10 +236,8 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
         }>
         <Text style={styles.buttonText}>배경 음악</Text>
       </TouchableOpacity>
-
       <Text style={styles.musicLabel}>선택된 음악: {musicTitle || '없음'}</Text>
 
-      {/* 하단 버튼 */}
       <View style={styles.buttonContainer}>
         <CustomButton
           title="부분 영상 재생성"

@@ -21,9 +21,14 @@ export type BottomTabParamList = {
 
 // 앱 내 주요 스택 네비게이션 (메인 탭, 영상 등록, 쇼츠 플레이어 등)
 export type AppStackParamList = {
-  [key: string]: object | undefined;
+  // ✅ 내부 screen 이동이 가능하도록 Main 타입 수정
+  Main:
+    | undefined
+    | {
+        screen: keyof BottomTabParamList;
+        params?: BottomTabParamList[keyof BottomTabParamList];
+      };
 
-  Main: undefined;
   Auth: undefined;
   ShortsStack: undefined;
   PhotoStack: undefined;

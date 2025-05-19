@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,17 +6,19 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import {styles} from '../../styles/bottomtab/2-searchStyles';
 import {scaleSize} from '../../styles/responsive';
 import {getPostsByHashtag, getMyPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 
-// 🔧 네비게이션 타입 정의
 type RootStackParamList = {
   ShortsPlayerScreen: {
     postId: number;
@@ -30,39 +32,77 @@ type RootStackParamList = {
 const SearchScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPosts, setFilteredPosts] = useState<PostResponse[]>([]);
+  const [sortOrder, setSortOrder] = useState<'latest' | 'likes' | 'oldest'>(
+    'latest',
+  );
+
   const {user} = useUser();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      handleSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery, sortOrder]);
 
-    if (!query.trim()) {
+  const handleSearch = async (query: string) => {
+    const cleanQuery = query.trim().replace(/^#/, '');
+    if (!cleanQuery) {
       setFilteredPosts([]);
       return;
     }
 
     try {
-      if (query.startsWith('#')) {
-        // 해시태그 검색
-        const hashtag = query.replace('#', '').trim();
-        const posts = await getPostsByHashtag(hashtag);
-        setFilteredPosts(posts);
+      let posts: PostResponse[] = [];
+
+      if (query.startsWith('#') || query.length > 0) {
+        posts = await getPostsByHashtag(cleanQuery);
       } else if (query === user?.userName) {
-        // 본인 이름 검색 시 내 게시물 조회
-        const posts = await getMyPosts();
-        setFilteredPosts(posts);
-      } else {
-        // 사용자 이름 검색은 서버에서 지원하지 않음
-        setFilteredPosts([]);
+        posts = await getMyPosts();
       }
+
+      const sorted = sortPosts(posts, sortOrder);
+      setFilteredPosts(sorted);
     } catch (error) {
       console.error('검색 실패:', error);
     }
   };
 
+  const sortPosts = (
+    data: PostResponse[],
+    order: 'latest' | 'likes' | 'oldest',
+  ): PostResponse[] => {
+    if (order === 'latest') {
+      return [...data].sort((a, b) => b.postId - a.postId);
+    } else if (order === 'oldest') {
+      return [...data].sort((a, b) => a.postId - b.postId);
+    } else {
+      return [...data].sort((a, b) => (b.likeCount ?? 0) - (a.likeCount ?? 0));
+    }
+  };
+
+  const handleSortPress = () => {
+    Alert.alert('정렬 기준 선택', '', [
+      {
+        text: '최신순',
+        onPress: () => setSortOrder('latest'),
+      },
+      {
+        text: '오래된순',
+        onPress: () => setSortOrder('oldest'),
+      },
+      {
+        text: '좋아요순',
+        onPress: () => setSortOrder('likes'),
+      },
+      {text: '취소', style: 'cancel'},
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* 🔍 검색창 */}
+      {/* 🔍 검색창 + 정렬버튼 */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search-outline"
@@ -72,17 +112,23 @@ const SearchScreen: React.FC = () => {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="해시태그(#태그) 또는 사용자명을 입력"
+          placeholder="해시태그 또는 사용자명을 입력"
           placeholderTextColor="#1F2C3D"
           value={searchQuery}
-          onChangeText={handleSearch}
+          onChangeText={setSearchQuery}
         />
+        <TouchableOpacity onPress={handleSortPress}>
+          <Icon name="sort-ascending" size={scaleSize(24)} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       {/* 🔍 검색 결과 */}
       <FlatList
         data={filteredPosts}
         keyExtractor={item => item.postId.toString()}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.contentContainer}
         renderItem={({item}) => (
           <TouchableOpacity
             style={styles.videoItem}
@@ -96,13 +142,27 @@ const SearchScreen: React.FC = () => {
               })
             }>
             <Image
-              source={{uri: item.videoURL}}
+              source={{uri: item.thumbnailURL ?? item.videoURL}}
               style={styles.videoThumbnail}
               resizeMode="cover"
             />
             <View style={styles.videoInfoContainer}>
-              <Text style={styles.videoTitle}>{item.title}</Text>
-              <Text style={styles.videoCreator}>👤 {item.author.userName}</Text>
+              <Text style={styles.videoTitle} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <View style={styles.creatorContainer}>
+                <Image
+                  source={{
+                    uri:
+                      item.author.profileImage ||
+                      'https://via.placeholder.com/100.png?text=User',
+                  }}
+                  style={styles.profileImage}
+                />
+                <Text style={styles.videoCreator} numberOfLines={1}>
+                  {item.author.userName}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
         )}

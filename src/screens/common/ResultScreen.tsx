@@ -1,15 +1,25 @@
 import React, {useEffect} from 'react';
-import {View, Text, TouchableOpacity, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
-
 import {styles} from '../../styles/common/resultScreenStyles';
 import {scaleSize} from '../../styles/responsive';
 import {StackNavigationProp} from '@react-navigation/stack';
+import CameraRoll from '@react-native-camera-roll/camera-roll';
+import RNFS from 'react-native-fs';
 
+// ▶️ Stack Param Type
 type ShortsStackParamList = {
   ResultScreen: {videos: string[]; subtitles: string[]; music?: string};
+  PostVideoScreen: {finalVideoUrl: string};
   Main: undefined;
 };
 
@@ -21,7 +31,7 @@ type NavigationProps = StackNavigationProp<
 const ResultScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute();
-  const {videos, subtitles, music} = route.params as {
+  const {videos} = route.params as {
     videos: string[];
     subtitles: string[];
     music?: string;
@@ -34,8 +44,8 @@ const ResultScreen: React.FC = () => {
 
   useEffect(() => {
     console.log('🎥 비디오 원본 URL:', rawUrl);
-    console.log('🚀 재생용 URL:', finalVideoUrl);
-  }, [rawUrl]);
+    console.log('🎉 재사용 URL:', finalVideoUrl);
+  }, [rawUrl, finalVideoUrl]);
 
   const handleExit = () => {
     navigation.reset({
@@ -44,17 +54,81 @@ const ResultScreen: React.FC = () => {
     });
   };
 
-  const handleSave = () => {
-    Alert.alert('저장', '로컬 저장 기능은 추후 지원 예정입니다.');
+  const handleSave = async () => {
+    if (!finalVideoUrl) {
+      Alert.alert('에러', '저장할 영상이 없습니다.');
+      return;
+    }
+
+    try {
+      if (Platform.OS === 'android') {
+        console.log('📱 Android 권한 요청 중...');
+        const granted = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        ]);
+
+        const hasPermission =
+          granted['android.permission.READ_MEDIA_VIDEO'] ===
+            PermissionsAndroid.RESULTS.GRANTED ||
+          granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED;
+
+        if (!hasPermission) {
+          Alert.alert('권한 거부', '저장을 위해 권한이 필요합니다.');
+          return;
+        }
+        console.log('✅ 권한 허용됨');
+      }
+
+      const fileName = `video_${Date.now()}.mp4`;
+      const localPath =
+        Platform.OS === 'android'
+          ? `${RNFS.CachesDirectoryPath}/${fileName}`
+          : `${RNFS.TemporaryDirectoryPath}${fileName}`;
+
+      console.log('📥 다운로드 시작:', finalVideoUrl);
+      const downloadResult = await RNFS.downloadFile({
+        fromUrl: finalVideoUrl,
+        toFile: localPath,
+      }).promise;
+
+      if (downloadResult.statusCode !== 200) {
+        throw new Error(`다운로드 실패: ${downloadResult.statusCode}`);
+      }
+
+      console.log('✅ 다운로드 성공:', localPath);
+      console.log('💾 갤러리 저장 시작...');
+
+      // CameraRoll 객체 로그 확인
+      console.log('📸 CameraRoll:', CameraRoll);
+      console.log('📸 CameraRoll.save:', (CameraRoll as any).save);
+
+      await (CameraRoll as any).save(localPath, {type: 'video'});
+
+      console.log('✅ 갤러리 저장 성공');
+      Alert.alert('✅ 저장 완료', '영상이 갤러리에 저장되었습니다.');
+    } catch (err) {
+      console.error('❌ 저장 실패:', err);
+      Alert.alert('에러', '영상 저장 중 문제가 발생했습니다.');
+    }
   };
 
   const handlePost = () => {
-    Alert.alert('포스팅', '게시 기능은 추후 구현됩니다.');
+    if (!finalVideoUrl) {
+      Alert.alert('에러', '게시할 영상이 없습니다.');
+      return;
+    }
+
+    console.log('🚀 포스팅으로 이동:', finalVideoUrl);
+    navigation.navigate('PostVideoScreen', {
+      finalVideoUrl,
+    });
   };
 
   return (
     <View style={styles.container}>
-      {/* ✅ 최종 영상 미리보기 */}
+      {/* ▶️ 비디오 미리보기 */}
       <View style={styles.videoBox}>
         {finalVideoUrl ? (
           <Video
@@ -73,7 +147,7 @@ const ResultScreen: React.FC = () => {
         )}
       </View>
 
-      {/* ✅ 버튼 영역 */}
+      {/* ▶️ 버튼 영역 */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.postButton} onPress={handlePost}>
           <Icon
