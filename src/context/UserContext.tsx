@@ -8,6 +8,8 @@ export interface User {
   userName: string;
   profileImage: string | null;
   email?: string; // ✅ 로그인 응답에 email이 없기 때문에 optional 처리
+    token?: string; // ✅ 이 줄 추가!
+
 }
 
 // ✅ Context에서 사용할 타입

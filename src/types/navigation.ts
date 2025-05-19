@@ -5,7 +5,7 @@ export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   Signup: undefined;
-  GoogleSignup: {email?: string}; // 구글 닉네임 설정
+  GoogleSignup: { email: string }; // ✅ email 전달됨
   KakaoLoginWebView: undefined; // 카카오 WebView 로그인
   KakaoSignup: undefined; // 카카오 닉네임 설정
 };

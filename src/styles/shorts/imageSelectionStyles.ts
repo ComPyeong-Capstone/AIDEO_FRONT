@@ -5,7 +5,7 @@ import {COLORS} from '../colors';
 const {width, height} = Dimensions.get('window');
 
 const IMAGE_WIDTH = width * 0.75;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9) + scaleSize(20);
 
 export const styles = StyleSheet.create({
   container: {
@@ -14,63 +14,49 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // ✅ 좌측 < 버튼
-  navButtonLeft: {
-    position: 'absolute',
-    top: scaleSize(12),
-    left: scaleSize(16),
-    padding: scaleSize(8),
-    zIndex: 20,
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '90%',
+    marginTop: scaleSize(8),
   },
 
-  // ✅ 우측 > 버튼
-  navButtonRight: {
-    position: 'absolute',
-    top: scaleSize(12),
-    right: scaleSize(16),
-    padding: scaleSize(8),
-    zIndex: 20,
+  titleAndBarWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   navIcon: {
-    fontSize: scaleFont(28),
+    fontSize: scaleFont(24),
     color: COLORS.primary,
+    paddingHorizontal: scaleSize(4),
+  },
+
+  imageNumberText: {
+    fontSize: scaleFont(15),
+    color: '#000',
+    fontWeight: '500',
   },
 
   progressBarWrapper: {
-    marginTop: scaleSize(40),
+    marginTop: scaleSize(4),
     width: '100%',
-    zIndex: 10,
     paddingHorizontal: '5%',
     backgroundColor: COLORS.background,
-  },
-
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
   },
 
   progressDotActive: {
     fontSize: scaleFont(18),
     color: COLORS.primary,
   },
-
   progressDotInactive: {
     fontSize: scaleFont(18),
     color: COLORS.textSecondary,
   },
 
-  progressLine: {
-    height: 2,
-    backgroundColor: COLORS.primary,
-    flex: 1,
-    marginHorizontal: '2%',
-  },
-
   sliderWrapper: {
-    marginTop: height * 0.045,
+    marginTop: height * 0.02,
     height: IMAGE_HEIGHT + scaleSize(30),
     width: '100%',
     alignItems: 'center',
@@ -82,28 +68,20 @@ export const styles = StyleSheet.create({
 
   imageBox: {
     width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
+    height: IMAGE_HEIGHT + scaleSize(20),
     backgroundColor: COLORS.primary,
     borderRadius: scaleSize(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
     overflow: 'hidden',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: scaleSize(24),
   },
 
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
-  },
-
-  imageText: {
-    fontSize: scaleFont(18),
-    fontWeight: 'bold',
-  },
-
-  pagination: {
-    display: 'none',
+    resizeMode: 'contain',
   },
 
   customPagination: {
@@ -113,19 +91,15 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(12),
   },
 
-  paginationDotWrapper: {
-    marginHorizontal: scaleSize(4),
-  },
-
   captionBox: {
     width: '90%',
     height: scaleSize(60),
     borderColor: COLORS.primary,
     borderWidth: scaleSize(2),
     borderRadius: scaleSize(10),
+    paddingHorizontal: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: scaleSize(10),
     marginTop: scaleSize(8),
   },
 
@@ -172,5 +146,10 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(10),
     color: '#fff',
     fontSize: scaleFont(14),
+  },
+
+  hiddenPagination: {
+    display: 'none',
+    height: 0,
   },
 });

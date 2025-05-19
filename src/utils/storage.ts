@@ -2,7 +2,6 @@ import {MMKV} from 'react-native-mmkv';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 const mmkv = new MMKV();
-
 export const saveAuthTokens = async (
   accessToken: string,
   refreshToken?: string,
@@ -15,16 +14,14 @@ export const saveAuthTokens = async (
 
   mmkv.set('accessToken', accessToken);
 
-  if (refreshToken !== undefined) {
-    if (typeof refreshToken !== 'string') {
-      throw new Error(
-        `refreshToken은 문자열이어야 합니다. 현재 타입: ${typeof refreshToken}`,
-      );
+  if (refreshToken !== undefined && typeof refreshToken === 'string') {
+    try {
+      await EncryptedStorage.setItem('refreshToken', refreshToken);
+    } catch (e) {
+      console.warn('🔴 refreshToken 저장 실패:', e);
     }
-    await EncryptedStorage.setItem('refreshToken', refreshToken);
   }
 };
-
 export const getAccessToken = () => {
   return mmkv.getString('accessToken') ?? null;
 };
@@ -34,6 +31,10 @@ export const getRefreshToken = async () => {
 };
 
 export const clearAuthTokens = async () => {
-  mmkv.delete('accessToken');
-  await EncryptedStorage.removeItem('refreshToken');
+  try {
+    mmkv.delete('accessToken');
+    await EncryptedStorage.removeItem('refreshToken');
+  } catch (error) {
+    console.warn('🔴 refreshToken 제거 중 오류:', error);
+  }
 };

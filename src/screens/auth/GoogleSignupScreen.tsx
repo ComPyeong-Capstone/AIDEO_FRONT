@@ -1,66 +1,68 @@
-// src/screens/auth/GoogleSignupScreen.tsx
-
-import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, Alert} from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../types/navigation';
-import {useUser} from '../../context/UserContext';
-import {oauthApi} from '../../api/oauthApi';
-import {saveAuthTokens} from '../../utils/storage';
-import {getRandomProfileImageFileName} from '../../utils/defaultProfile';
-import {userApi} from '../../api/userApi';
-import {googleSignupStyles as styles} from '../../styles/auth/GoogleSignupScreenStyles';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types/navigation';
+import { oauthApi } from '../../api/oauthApi';
+import { saveAuthTokens } from '../../utils/storage';
+import { useUser } from '../../context/UserContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GoogleSignup'>;
 
-const GoogleSignupScreen: React.FC<Props> = ({navigation}) => {
+const GoogleSignupScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { email } = route.params;
   const [nickname, setNickname] = useState('');
-  const {setUser} = useUser();
+  const { setUser } = useUser();
 
-  const handleSubmit = async () => {
-    if (!nickname) {
-      Alert.alert('입력 오류', '닉네임을 입력해주세요.');
-      return;
+const handleSubmit = async () => {
+  if (!nickname) {
+    Alert.alert('입력 오류', '닉네임을 입력해주세요.');
+    return;
+  }
+
+  try {
+    const response = await oauthApi.googleSignup(email, nickname);
+    console.log('✅ signup 응답:', response);
+
+    if (!response || !response.accessToken || !response.user) {
+      throw new Error('회원가입 실패');
     }
 
-    try {
-      const {user, token} = await oauthApi.googleSignup(nickname);
+    await saveAuthTokens(response.accessToken);
+    setUser({ ...response.user, token: response.accessToken });
 
-      if (!user || !token) {
-        Alert.alert('회원가입 실패', '서버 응답이 올바르지 않습니다.');
-        return;
-      }
+    Alert.alert('가입 완료', `${response.user.userName}님 환영합니다!`);
+    navigation.replace('Main');
 
-      await saveAuthTokens(token);
-
-      if (!user.profileImage) {
-        const randomImage = getRandomProfileImageFileName();
-        await userApi.updateProfileImageByName(randomImage);
-        user.profileImage = randomImage;
-      }
-
-      setUser(user);
-      Alert.alert('가입 완료', `${user.userName}님 환영합니다!`);
-      navigation.replace('Main');
-    } catch (error) {
-      console.error('구글 닉네임 설정 실패 ❌', error);
+  } catch (error: any) {
+    if (error?.response?.status === 409) {
+      Alert.alert('이미 가입된 이메일입니다.', '로그인을 진행해주세요.');
+      navigation.replace('Login');
+    } else {
+      console.error('닉네임 설정 실패:', error);
       Alert.alert('회원가입 실패', '닉네임 설정 중 문제가 발생했습니다.');
     }
-  };
+  }
+};
+
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>닉네임 설정</Text>
-
+    <View style={{ padding: 20 }}>
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+        닉네임을 설정해주세요
+      </Text>
       <TextInput
-        placeholder="닉네임을 입력하세요"
+        placeholder="닉네임 입력"
         value={nickname}
         onChangeText={setNickname}
-        style={styles.input}
+        style={{
+          borderWidth: 1,
+          marginVertical: 10,
+          padding: 10,
+          borderRadius: 5,
+        }}
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>완료</Text>
+      <TouchableOpacity onPress={handleSubmit} style={{ backgroundColor: '#000', padding: 15 }}>
+        <Text style={{ color: '#fff', textAlign: 'center' }}>가입 완료</Text>
       </TouchableOpacity>
     </View>
   );

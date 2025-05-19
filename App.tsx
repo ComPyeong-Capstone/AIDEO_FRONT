@@ -5,13 +5,21 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import AppNavigator from './src/navigator/AppNavigator';
 import {UserProvider} from './src/context/UserContext';
 import SplashScreen from 'react-native-splash-screen';
-import {configureGoogleSignin} from './src/config/googleSignin';
+//import {configureGoogleSignin} from './src/config/googleSignin';
 import {ThemeProvider} from './src/context/ThemeContext';
 import {VideoGenerationProvider} from './src/context/VideoGenerationContext'; // ✅ 추가
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {iosClientId,webClientId} from '@env';
+import { configureGoogleSignin } from './src/config/googleSignin';
+import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '@env';
 
 const App = () => {
-  useEffect(() => {
-    configureGoogleSignin();
+
+console.log('WEB_CLIENT_ID:', WEB_CLIENT_ID);
+
+useEffect(() => {
+  configureGoogleSignin();
+
 
     const timeout = setTimeout(() => {
       if (SplashScreen?.hide) {

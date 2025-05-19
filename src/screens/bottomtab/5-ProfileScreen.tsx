@@ -104,11 +104,13 @@ const ProfileScreen: React.FC = () => {
           showComments: false,
         })
       }>
-      <Image
-        source={{uri: item.videoURL}}
-        style={styles.thumbnailImage}
-        resizeMode="cover"
-      />
+  <Image
+    source={{ uri: item.thumbnailURL || 'https://via.placeholder.com/200x300.png?text=No+Thumbnail' }}
+    style={styles.thumbnailImage}
+    resizeMode="cover"
+  />
+
+
       <View style={styles.textContainer}>
         <Text numberOfLines={1} style={styles.title}>
           {item.title}

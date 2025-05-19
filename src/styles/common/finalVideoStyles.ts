@@ -4,9 +4,8 @@ import {COLORS} from '../colors';
 
 const {width} = Dimensions.get('window');
 
-// ✅ 9:16 비율
 const VIDEO_WIDTH = width * 0.75;
-const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9);
+const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9) + scaleSize(20); // 여유 높이 포함
 
 export default StyleSheet.create({
   container: {
@@ -15,23 +14,85 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
-  // ✅ 진행바 (노치 아래)
-  progressBarWrapper: {
-    position: 'absolute',
-    top: 0,
+  topNavWrapper: {
+    marginTop: scaleSize(16),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: '100%',
-    alignItems: 'center',
-    paddingTop: scaleSize(8),
-    paddingHorizontal: width * 0.05,
-    backgroundColor: COLORS.background,
+    paddingHorizontal: scaleSize(16),
     zIndex: 10,
   },
 
-  progressContainer: {
-    flexDirection: 'row',
+  arrowText: {
+    fontSize: scaleFont(24),
+    color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+
+  progressBarWrapper: {
+    marginTop: scaleSize(12),
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: scaleSize(4),
+    paddingHorizontal: width * 0.05,
+    backgroundColor: COLORS.background,
+    zIndex: 5,
+  },
+
+  sliderContainer: {
+    width: '100%',
+    marginTop: scaleSize(20),
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  videoWrapper: {
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
+    borderWidth: scaleSize(2),
+    borderColor: COLORS.primary,
+    borderRadius: scaleSize(10),
+    overflow: 'hidden',
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  videoItem: {
     width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  videoPlayer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
+  },
+
+  videoText: {
+    fontSize: scaleFont(16),
+    fontWeight: 'bold',
+    color: COLORS.buttonText,
+    textAlign: 'center',
+    marginBottom: scaleSize(10),
+  },
+
+  swiperContainer: {
+    width: '100%',
+    height: '100%',
+  },
+
+  pagination: {
+    display: 'none', // ✅ Swiper 내부 pagination 제거
+  },
+
+  customPagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: scaleSize(12), // ✅ 외부 dot 표시 복원
   },
 
   progressDotActive: {
@@ -44,76 +105,8 @@ export default StyleSheet.create({
     color: '#888',
   },
 
-  progressLine: {
-    height: scaleSize(2),
-    backgroundColor: COLORS.primary,
-    flex: 1,
-    marginHorizontal: scaleSize(6),
-  },
-
-  // ✅ 영상 슬라이더 컨테이너
-  sliderContainer: {
-    width: '100%',
-    marginTop: scaleSize(70),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  videoWrapper: {
-    width: VIDEO_WIDTH,
-    height: VIDEO_HEIGHT,
-    borderWidth: scaleSize(2),
-    borderColor: COLORS.primary,
-    borderRadius: scaleSize(10),
-    overflow: 'hidden',
-    backgroundColor: '#000', // 영상 로딩 중에도 배경 보이게
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  swiperContainer: {
-    width: '100%',
-    height: '100%',
-  },
-
-  videoItem: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  videoText: {
-    fontSize: scaleFont(16),
-    fontWeight: 'bold',
-    color: COLORS.buttonText,
-    textAlign: 'center',
-    marginBottom: scaleSize(10),
-  },
-
-  videoPlayer: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000', // 영상 내부 영역도 까맣게
-  },
-
-  arrowButton: {
-    padding: scaleSize(15),
-  },
-
-  arrowText: {
-    fontSize: scaleFont(20),
-    color: COLORS.primary,
-  },
-
-  pagination: {
-    position: 'absolute',
-    bottom: scaleSize(-16),
-    alignSelf: 'center',
-  },
-
   musicSpacing: {
-    height: scaleSize(10),
+    height: scaleSize(10), // 여백 줄임
   },
 
   musicButton: {
@@ -124,7 +117,14 @@ export default StyleSheet.create({
     borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(14),
+    marginTop: scaleSize(10), // 위로 올림
+  },
+
+  musicLabel: {
+    fontSize: scaleFont(14),
+    color: COLORS.textSecondary,
+    marginTop: scaleSize(6), // 위로 올림
+    textAlign: 'center',
   },
 
   buttonText: {
@@ -137,21 +137,22 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '90%',
-    position: 'absolute',
-  },
-
-  button: {
-    width: '45%',
-    alignItems: 'center',
-    paddingVertical: scaleSize(12),
-    borderRadius: scaleSize(20),
+    marginTop: scaleSize(16), // 위로 올림
   },
 
   prevButton: {
     backgroundColor: '#ccc',
+    paddingVertical: scaleSize(12),
+    borderRadius: scaleSize(20),
+    width: '45%',
+    alignItems: 'center',
   },
 
   nextButton: {
     backgroundColor: COLORS.primary,
+    paddingVertical: scaleSize(12),
+    borderRadius: scaleSize(20),
+    width: '45%',
+    alignItems: 'center',
   },
 });

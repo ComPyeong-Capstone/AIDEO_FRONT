@@ -1,26 +1,19 @@
 import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
+import {COLORS} from '../colors';
 
 export const styles = StyleSheet.create({
   // 전체 배경
   safeContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: COLORS.background,
     justifyContent: 'flex-end',
   },
   flexContainer: {
     flex: 1,
   },
 
-  // 모달 박스
-  modalContainer: {
-    flex: 1,
-    backgroundColor: '#1E2A38',
-    paddingTop: scaleSize(50),
-    paddingHorizontal: scaleSize(20),
-    borderTopLeftRadius: scaleSize(15),
-    borderTopRightRadius: scaleSize(15),
-  },
+
 
   // 닫기 버튼
   closeButton: {
@@ -33,14 +26,14 @@ export const styles = StyleSheet.create({
   },
   closeText: {
     fontSize: scaleFont(20),
-    color: 'white',
+    color: COLORS.textprimary,
   },
 
   // 헤더
   headerText: {
     fontSize: scaleFont(18),
     fontWeight: 'bold',
-    color: '#51BCB4',
+    color: COLORS.textprimary,
     textAlign: 'center',
     marginBottom: scaleSize(15),
   },
@@ -54,6 +47,7 @@ export const styles = StyleSheet.create({
   // 댓글
   commentItem: {
     marginBottom: scaleSize(15),
+
   },
 
   // 대댓글
@@ -81,12 +75,12 @@ export const styles = StyleSheet.create({
   },
   username: {
     fontSize: scaleFont(14),
-    color: 'white',
+    color: COLORS.textprimary,
     fontWeight: 'bold',
   },
   commentText: {
     fontSize: scaleFont(14),
-    color: 'white',
+    color: COLORS.textprimary,
     marginTop: scaleSize(2),
   },
 
@@ -98,7 +92,7 @@ export const styles = StyleSheet.create({
 
   // 답글 버튼
   replyButton: {
-    color: '#51BCB4',
+    color: COLORS.textSecondary,
     fontSize: scaleFont(13),
     marginTop: scaleSize(4),
   },
@@ -122,22 +116,50 @@ export const styles = StyleSheet.create({
     color: '#FF6B6B',
     fontSize: scaleFont(13),
   },
+modalWrapper: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // 🔹 뒤 화면이 살짝 보이도록
+  },
 
-  // 입력창
+modalContainer: {
+  backgroundColor: 'white',
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  paddingHorizontal: 10,
+  paddingTop: scaleSize(16),
+    paddingBottom: scaleSize(15), // 키보드와 충돌하지 않게 약간 여유 두기
+  height: '135%', // ⬅️ 원하는 크기만큼 조절
+},
+
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#51BCB4',
-    borderRadius: scaleSize(10),
-    padding: scaleSize(10),
-    marginTop: scaleSize(15),
+    marginTop: scaleSize(16), // 🔹 아래로 여백 추가
+    marginBottom: scaleSize(0), // 기존 -40 제거하고 정상 처리
+    paddingHorizontal: scaleSize(0),
   },
-  input: {
-    flex: 1,
-    fontSize: scaleFont(16),
-    color: 'black',
-    paddingHorizontal: scaleSize(10),
-  },
+inputWrapper: {
+  paddingHorizontal: scaleSize(10),
+  paddingVertical: scaleSize(10),
+    paddingBottom: scaleSize(5), // ✅ 하단 공간 추가
+  backgroundColor: 'white',
+  borderTopWidth: 1,
+  borderColor: '#eee',
+},
+
+ input: {
+   flex: 1,
+   borderWidth: 1,
+   borderColor: '#ccc',
+   borderRadius: 25,
+   paddingHorizontal: 14,
+   paddingVertical: 12,
+   backgroundColor: '#fff',
+   fontSize: 16,
+   color: '#000',
+ },
+
   sendButton: {
     padding: scaleSize(10),
   },

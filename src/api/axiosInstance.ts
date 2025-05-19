@@ -1,3 +1,4 @@
+//axiosInstance.ts
 import axios from 'axios';
 import {getAccessToken, clearAuthTokens} from '../utils/storage';
 import {BASE_URL} from '@env';
@@ -17,7 +18,7 @@ const axiosInstance = axios.create({
 // ✅ 영상 생성 API (8000 포트)
 export const videoAxiosInstance = axios.create({
   baseURL: `${BASE_URL}${BASE_URL.endsWith(':8000') ? '' : ':8000'}`,
-  timeout: 60000,
+  timeout: 600000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -76,7 +77,18 @@ const attachInterceptors = (instance: typeof axiosInstance) => {
     },
   );
 };
-
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const token = await getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 // ✅ 인터셉터 각각 적용
 attachInterceptors(axiosInstance);
 attachInterceptors(videoAxiosInstance);
