@@ -24,6 +24,7 @@ import CommonButton from '../../styles/button';
 import Icon from 'react-native-vector-icons/Feather';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import * as Progress from 'react-native-progress';
+import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '@env';
 
 type NavigationProps = StackNavigationProp<
   AppStackParamList,
@@ -57,12 +58,14 @@ const PostVideoScreen: React.FC<{navigation: NavigationProps}> = ({}) => {
     setTags(processed.join(' ') + (needsSpace ? ' ' : ''));
   };
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/youtube.upload'],
-      webClientId: 'YOUR_WEB_CLIENT_ID',
-    });
-  }, []);
+useEffect(() => {
+  GoogleSignin.configure({
+    scopes: ['https://www.googleapis.com/auth/youtube.upload'],
+    webClientId: WEB_CLIENT_ID,   // ✅ 웹 클라이언트 ID
+    iosClientId: IOS_CLIENT_ID,   // ✅ iOS 클라이언트 ID 추가 필수!
+  });
+}, []);
+
 
   const handlePickVideo = async () => {
     try {
@@ -120,6 +123,25 @@ const PostVideoScreen: React.FC<{navigation: NavigationProps}> = ({}) => {
       setUploading(false);
     }
   };
+const uploadToYouTube = async () => {
+  try {
+    // 👇 구글 로그인 상태 확인 (필요 시)
+    await GoogleSignin.hasPlayServices();
+    const userInfo = await GoogleSignin.signIn();
+
+    // 👇 accessToken 확보 (YouTube 업로드에 사용)
+    const { accessToken } = await GoogleSignin.getTokens();
+
+    console.log('🎫 유튜브 accessToken:', accessToken);
+
+    // 이후 이 토큰을 Authorization 헤더에 넣어 YouTube API로 영상 업로드
+    // 예: axios.post('https://www.googleapis.com/upload/youtube/v3/videos', ...)
+
+  } catch (error) {
+    console.error('❌ 유튜브 업로드 실패:', error);
+    Alert.alert('에러', '유튜브 업로드 중 오류가 발생했습니다.');
+  }
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -180,6 +202,12 @@ const PostVideoScreen: React.FC<{navigation: NavigationProps}> = ({}) => {
             type="primary"
             style={styles.halfWidthButton}
           />
+           <CommonButton
+                      title="YOUTUBE 업로드"
+                      onPress={uploadToYouTube}
+                      type="primary"
+                      style={styles.halfWidthButton}
+                    />
         </View>
 
         {uploading && (
