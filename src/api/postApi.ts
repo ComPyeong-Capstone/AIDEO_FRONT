@@ -24,21 +24,23 @@ export interface PostResponse {
   };
 }
 
-// 🔹 게시물 등록 (FormData)
+// 🔹 게시물 등록
 export const createPost = async (
   payload: PostPayload,
-): Promise<{message: string}> => {
+): Promise<{ message: string }> => {
   const formData = new FormData();
+
   formData.append(
     'postDTO',
-    JSON.stringify({
-      title: payload.title,
-      hashtags: payload.hashtags,
-    }),
+    new Blob(
+      [JSON.stringify({ title: payload.title, hashtags: payload.hashtags })],
+      { type: 'application/json' }
+    )
   );
+
   formData.append('videoFile', payload.videoFile);
 
-  const response = await axiosInstance.post('/posts', formData, {
+  const response = await axiosInstance.post('/posts/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -46,6 +48,7 @@ export const createPost = async (
 
   return response.data;
 };
+
 
 // 🔹 전체 게시물 조회
 export const getAllPosts = async (): Promise<PostResponse[]> => {
