@@ -68,7 +68,7 @@ const AddScreenModal: React.FC<AddScreenModalProps> = ({visible, onClose}) => {
         });
         break;
       case 'upload':
-        navigation.navigate('PostVideoScreen'); // ✅ 단일 화면으로 바로 이동
+        navigation.navigate('FilePosing'); // ✅ 단일 화면으로 바로 이동
         break;
     }
     onClose();

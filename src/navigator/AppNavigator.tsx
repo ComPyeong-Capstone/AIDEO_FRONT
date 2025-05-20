@@ -7,7 +7,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import ShortsNavigator from './ShortsNavigator';
 import PhotoNavigator from './PhotoNavigator';
 import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
-import PostVideoScreen from '../screens/common/PostVideoScreen';
+import PostVideoScreen from '../screens/common/URLPosting';
 
 import {useUser} from '../context/UserContext';
 import {AppStackParamList} from './types';
