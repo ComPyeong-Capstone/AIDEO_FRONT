@@ -143,12 +143,19 @@ export const getPostsByHashtag = async (
 };
 
 // 🔹 게시물 삭제
+// postApi.ts
 export const deletePost = async (
   postId: number,
-): Promise<{message: string}> => {
-  const response = await axiosInstance.delete(`/posts/${postId}`);
+  token: string // ✅ 토큰 받기
+): Promise<{ message: string }> => {
+  const response = await axiosInstance.delete(`/posts/${postId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // ✅ 토큰 포함
+    },
+  });
   return response.data;
 };
+
 
 // 🔹 게시물 수정
 export const updatePost = async (

@@ -140,4 +140,25 @@ export const styles = StyleSheet.create({
   commentModalBackground: {
     flex: 1,
   },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+
+  moreMenu: {
+    position: 'absolute',
+    bottom: 120, // 버튼 위 위치
+    right: 20,
+    backgroundColor: '#222',
+    borderRadius: 8,
+    padding: 10,
+  },
+
+  moreMenuItem: {
+    color: 'white',
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+
 });

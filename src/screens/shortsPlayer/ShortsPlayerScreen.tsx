@@ -19,8 +19,11 @@ import {getPostDetail} from '../../api/playVideo';
 import Video from 'react-native-video';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '@env';
+import { deletePost } from '../../api/postApi';
+import { useUser } from '../../context/UserContext';
 
 const ShortsPlayerScreen: React.FC = () => {
+const { user } = useUser();
   const navigation = useNavigation();
   const route = useRoute();
   const {postId, title, creator, currentUserId, creatorUserId, showComments} =
@@ -32,6 +35,7 @@ const ShortsPlayerScreen: React.FC = () => {
       creatorUserId: number;
       showComments?: boolean;
     };
+const [isMoreMenuVisible, setIsMoreMenuVisible] = useState(false);
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -42,6 +46,33 @@ const ShortsPlayerScreen: React.FC = () => {
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
+const handleDeletePost = async () => {
+  if (currentUserId !== creatorUserId) {
+    Alert.alert('삭제 불가', '작성자만 삭제할 수 있습니다.');
+    return;
+  }
+
+  Alert.alert('게시물 삭제', '정말로 삭제하시겠어요?', [
+    {text: '취소', style: 'cancel'},
+    {
+      text: '삭제',
+      style: 'destructive',
+      onPress: async () => {
+        try {
+await deletePost(postId, user.token); // user.token은 UserContext에서 가져온 로그인 토큰
+          Alert.alert('삭제 완료', '게시물이 삭제되었습니다.');
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Main'}],
+          });
+        } catch (error) {
+          console.error('❌ 게시물 삭제 실패:', error);
+          Alert.alert('오류', '게시물 삭제 중 문제가 발생했습니다.');
+        }
+      },
+    },
+  ]);
+};
 
   const loadCounts = useCallback(async () => {
     try {
@@ -178,6 +209,10 @@ const ShortsPlayerScreen: React.FC = () => {
             <TouchableOpacity onPress={() => console.log('공유 기능')}>
               <Ionicons name="share-social-outline" size={32} color="white" />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsMoreMenuVisible(true)}>
+              <Ionicons name="ellipsis-vertical" size={32} color="white" />
+            </TouchableOpacity>
+
           </View>
 
           {currentUserId === creatorUserId && (
@@ -191,6 +226,30 @@ const ShortsPlayerScreen: React.FC = () => {
           )}
         </View>
       </SafeAreaView>
+<Modal visible={isMoreMenuVisible} transparent animationType="fade">
+  <TouchableWithoutFeedback onPress={() => setIsMoreMenuVisible(false)}>
+    <View style={styles.modalBackground} />
+  </TouchableWithoutFeedback>
+
+  <View style={styles.moreMenu}>
+    <TouchableOpacity onPress={() => {
+      console.log('링크 복사');
+      setIsMoreMenuVisible(false);
+    }}>
+      <Text style={styles.moreMenuItem}>📎 링크 복사</Text>
+    </TouchableOpacity>
+
+  <TouchableOpacity onPress={() => {
+    setIsMoreMenuVisible(false);
+    handleDeletePost();
+  }}>
+    <Text style={styles.moreMenuItem}>삭제하기</Text>
+  </TouchableOpacity>
+
+
+
+  </View>
+</Modal>
 
       <Modal visible={isCommentsVisible} animationType="slide" transparent>
         <View style={styles.commentModalOverlay}>

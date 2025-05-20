@@ -43,8 +43,8 @@ const [tagsError, setTagsError] = useState('');
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [videoURI, setVideoURI] = useState<string | null>(null);
-  const shakeTitle = useRef(new Animated.Value(0)).current;
-  const shakeTags = useRef(new Animated.Value(0)).current;
+const shakeTitle = useRef(new Animated.Value(0)).current;
+const shakeTags = useRef(new Animated.Value(0)).current;
 
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
@@ -72,6 +72,7 @@ useEffect(() => {
   };
   fetchToken();
 }, []);
+
 const startShake = (animatedValue: Animated.Value) => {
   Animated.sequence([
     Animated.timing(animatedValue, {

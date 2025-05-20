@@ -65,8 +65,8 @@ const ResultScreen: React.FC = () => {
     }
 
     try {
+      // Android 권한 요청
       if (Platform.OS === 'android') {
-        console.log('📱 Android 권한 요청 중...');
         const granted = await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -82,7 +82,6 @@ const ResultScreen: React.FC = () => {
           Alert.alert('권한 거부', '저장을 위해 권한이 필요합니다.');
           return;
         }
-        console.log('✅ 권한 허용됨');
       }
 
       const fileName = `video_${Date.now()}.mp4`;
@@ -102,21 +101,14 @@ const ResultScreen: React.FC = () => {
       }
 
       console.log('✅ 다운로드 성공:', localPath);
-      console.log('💾 갤러리 저장 시작...');
-
-      // CameraRoll 객체 로그 확인
-      console.log('📸 CameraRoll:', CameraRoll);
-      console.log('📸 CameraRoll.save:', (CameraRoll as any).save);
-
-      await (CameraRoll as any).save(localPath, {type: 'video'});
-
-      console.log('✅ 갤러리 저장 성공');
+      await CameraRoll.save(localPath, {type: 'video'});
       Alert.alert('✅ 저장 완료', '영상이 갤러리에 저장되었습니다.');
     } catch (err) {
       console.error('❌ 저장 실패:', err);
       Alert.alert('에러', '영상 저장 중 문제가 발생했습니다.');
     }
   };
+
 
 
 const handlePost = () => {

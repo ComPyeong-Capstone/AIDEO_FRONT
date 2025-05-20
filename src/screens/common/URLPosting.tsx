@@ -44,11 +44,12 @@ const [titleError, setTitleError] = useState('');
 const [tagsError, setTagsError] = useState('');
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
+  const shakeTitle = useRef(new Animated.Value(0)).current;
+  const shakeTags = useRef(new Animated.Value(0)).current;
   const [videoURI, setVideoURI] = useState<string | null>(finalVideoUrl || null);
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
-const shakeTitle = useRef(new Animated.Value(0)).current;
-const shakeTags = useRef(new Animated.Value(0)).current;
+
 
 
     const processed = words
