@@ -37,17 +37,38 @@ export const userApi = {
     return response.data;
   },
 
-  /** 🔹 프로필 이미지 파일명만 서버에 전송 */
-  updateProfileImageByName: async (fileName: string): Promise<void> => {
-    await axiosInstance.put('/users/profile-image', {
-      profileImage: fileName,
-    });
-  },
-
   /** 🔹 닉네임 변경 */
   updateNickname: async (newNickname: string): Promise<void> => {
     await axiosInstance.put('/users/nickname', {
       newNickname,
     });
+  },
+
+  /** 🔹 프로필 이미지 변경 (FormData 방식) */
+  updateProfileImage: async (file: File | Blob): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axiosInstance.put('/users/profile-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // ✅ 백엔드에서 S3 URL을 반환하면 그걸 그대로 반환
+    return response.data as string;
+  },
+
+  /** 🔹 리프레시 토큰으로 토큰 재발급 */
+  refreshAccessToken: async (
+    refreshToken: string,
+  ): Promise<{accesstoken: string}> => {
+    const response = await axiosInstance.post('/auth/refresh', {refreshToken});
+    return response.data;
+  },
+
+  /** 🔹 로그아웃 */
+  logout: async (): Promise<void> => {
+    await axiosInstance.delete('/auth/logout');
   },
 };

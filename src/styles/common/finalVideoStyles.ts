@@ -5,7 +5,7 @@ import {COLORS} from '../colors';
 const {width} = Dimensions.get('window');
 
 const VIDEO_WIDTH = width * 0.75;
-const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9) + scaleSize(20); // 여유 높이 포함
+const VIDEO_HEIGHT = VIDEO_WIDTH * (16 / 9) + scaleSize(20);
 
 export default StyleSheet.create({
   container: {
@@ -14,34 +14,31 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
-  topNavWrapper: {
-    marginTop: scaleSize(16),
+  headerContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: scaleSize(16),
-    zIndex: 10,
+    width: '90%',
+    marginTop: scaleSize(8),
   },
 
-  arrowText: {
+  navIcon: {
     fontSize: scaleFont(24),
     color: COLORS.primary,
-    fontWeight: 'bold',
+    paddingHorizontal: scaleSize(4),
   },
 
-  progressBarWrapper: {
-    marginTop: scaleSize(12),
-    width: '100%',
-    alignItems: 'center',
-    paddingVertical: scaleSize(4),
-    paddingHorizontal: width * 0.05,
-    backgroundColor: COLORS.background,
-    zIndex: 5,
+  imageNumberText: {
+    fontSize: scaleFont(15),
+    color: '#000',
+    fontWeight: '500',
+    textAlign: 'center',
+    flex: 1,
   },
 
   sliderContainer: {
     width: '100%',
-    marginTop: scaleSize(20),
+    marginTop: scaleSize(10),
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -56,6 +53,7 @@ export default StyleSheet.create({
     backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: scaleSize(10),
   },
 
   videoItem: {
@@ -84,29 +82,38 @@ export default StyleSheet.create({
     height: '100%',
   },
 
-  pagination: {
-    display: 'none', // ✅ Swiper 내부 pagination 제거
-  },
-
-  customPagination: {
+  dotWrapper: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(12), // ✅ 외부 dot 표시 복원
+    marginTop: scaleSize(12),
   },
 
-  progressDotActive: {
-    fontSize: scaleFont(18),
-    color: COLORS.primary,
+  dot: {
+    width: scaleSize(8),
+    height: scaleSize(8),
+    borderRadius: scaleSize(4),
+    marginHorizontal: scaleSize(4),
   },
 
-  progressDotInactive: {
-    fontSize: scaleFont(18),
-    color: '#888',
+  dotActive: {
+    backgroundColor: COLORS.primary,
+  },
+
+  dotInactive: {
+    backgroundColor: '#ccc',
+  },
+
+  pagination: {
+    display: 'none',
+  },
+
+  customPagination: {
+    display: 'none',
   },
 
   musicSpacing: {
-    height: scaleSize(10), // 여백 줄임
+    height: scaleSize(10),
   },
 
   musicButton: {
@@ -117,13 +124,13 @@ export default StyleSheet.create({
     borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(10), // 위로 올림
+    marginTop: scaleSize(10),
   },
 
   musicLabel: {
     fontSize: scaleFont(14),
     color: COLORS.textSecondary,
-    marginTop: scaleSize(6), // 위로 올림
+    marginTop: scaleSize(6),
     textAlign: 'center',
   },
 
@@ -137,7 +144,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '90%',
-    marginTop: scaleSize(16), // 위로 올림
+    marginTop: scaleSize(16),
   },
 
   prevButton: {
@@ -153,6 +160,10 @@ export default StyleSheet.create({
     paddingVertical: scaleSize(12),
     borderRadius: scaleSize(20),
     width: '45%',
+    alignItems: 'center',
+  },
+  titleCenterWrapper: {
+    flex: 1,
     alignItems: 'center',
   },
 });

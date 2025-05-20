@@ -36,7 +36,17 @@ const AppNavigator = () => {
               name="ShortsPlayerScreen"
               component={ShortsPlayerScreen}
             />
-            <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />
+
+            {/* ✅ 초기 파라미터 설정 */}
+            <Stack.Screen
+              name="PostVideoScreen"
+              component={PostVideoScreen}
+              initialParams={{
+                finalVideoUrl: null,
+                title: '',
+                tags: '',
+              }}
+            />
           </>
         ) : (
           // 로그인/회원가입 흐름

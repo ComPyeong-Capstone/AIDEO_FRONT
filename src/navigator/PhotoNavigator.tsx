@@ -6,29 +6,33 @@ import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PhotoPromptScreen from '../screens/photo/PhotoPromptScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
+import PostVideoScreen from '../screens/common/PostVideoScreen';
 
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {
   SelectDurationScreen: {mode: 'photo'};
   PhotoPromptScreen: {duration: number};
   FinalVideoScreen: {
-    from?: 'photo'; // ✅ 흐름 구분
+    from?: 'photo';
     prompt: string;
     images: {id: string; uri: string | null}[];
-    videos?: string[]; // ✅ 부분 영상 리스트
-    subtitles?: string[]; // ✅ 자막 리스트
-    music?: string; // ✅ 선택된 음악
-    musicTitle?: string; // ✅ 음악 제목
+    videos?: string[];
+    subtitles?: string[];
+    music?: string;
+    musicTitle?: string;
   };
   MusicSelectionScreen: {
     prompt: string;
     images: {id: string; uri: string | null}[];
     music?: string;
-    musicTitle?: string; // ✅ 음악 제목
-    videos?: string[]; // ✅ 기존 생성된 영상 (재사용 목적)
+    musicTitle?: string;
+    videos?: string[];
   };
   ResultScreen: {
-    finalVideoUrl: string; // ✅ 최종 영상 URL
+    finalVideoUrl: string;
+  };
+  PostVideoScreen: {
+    finalVideoUrl: string; // ✅ 최종 영상 URL 넘김
   };
 };
 
@@ -49,6 +53,7 @@ const PhotoNavigator: React.FC = () => {
         component={MusicSelectionScreen}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
+      <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />
     </Stack.Navigator>
   );
 };

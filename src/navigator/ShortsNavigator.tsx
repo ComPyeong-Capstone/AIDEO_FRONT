@@ -8,6 +8,7 @@ import ImageSelectionScreen from '../screens/shorts/32-ImageSelectionScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import ResultScreen from '../screens/common/ResultScreen';
+import PostVideoScreen from '../screens/common/PostVideoScreen';
 
 // ✅ Stack Param 타입 정의
 export type ShortsStackParamList = {
@@ -18,7 +19,7 @@ export type ShortsStackParamList = {
     prompt: string;
     imageUrls: string[];
     subtitles: string[];
-    videos?: string[]; // ✅ 재사용할 부분 영상 리스트
+    videos?: string[];
   };
   FinalVideoScreen: {
     from?: 'photo' | 'shorts';
@@ -28,7 +29,7 @@ export type ShortsStackParamList = {
     subtitles: string[];
     music?: string;
     musicTitle?: string;
-    videos?: string[]; // ✅ 부분 영상 리스트
+    videos?: string[];
   };
   MusicSelectionScreen: {
     duration: number;
@@ -37,12 +38,15 @@ export type ShortsStackParamList = {
     subtitles: string[];
     music?: string;
     musicTitle?: string;
-    videos?: string[]; // ✅ 부분 영상 리스트
+    videos?: string[];
   };
   ResultScreen: {
-    videos: string[]; // ✅ 최종 영상 1개일 수도 있지만 string[] 형태 유지
+    videos: string[];
     subtitles: string[];
     music?: string;
+  };
+  PostVideoScreen: {
+    finalVideoUrl: string; // ✅ 포스팅할 최종 영상 URL
   };
 };
 
@@ -67,6 +71,7 @@ const ShortsNavigator: React.FC = () => {
         component={MusicSelectionScreen}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
+      <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />
     </Stack.Navigator>
   );
 };

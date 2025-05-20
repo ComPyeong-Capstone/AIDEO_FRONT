@@ -4,10 +4,10 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Keyboard,
   SafeAreaView,
   Modal,
   FlatList,
+  Image,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {styles} from '../../styles/shortsPlayer/ShortsPlayerScreenStyles';
@@ -15,11 +15,9 @@ import CommentsScreen from './CommentsScreen';
 import {postLike, cancelLike, getLikedUsers} from '../../api/postLikeApi';
 import {getComments} from '../../api/commentsApi';
 import {createNotification} from '../../api/notificationApi';
-import {getPostDetail} from '../../api/playVideo'; // 추가
-import Video from 'react-native-video'; // 추가
+import {getPostDetail} from '../../api/playVideo';
+import Video from 'react-native-video';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Image } from 'react-native'; // ✅ 대문자 I!
 import {BASE_URL} from '@env';
 
 const ShortsPlayerScreen: React.FC = () => {
@@ -32,7 +30,7 @@ const ShortsPlayerScreen: React.FC = () => {
       creator: string;
       currentUserId: number;
       creatorUserId: number;
-      showComments?: boolean; // ✅ 선택적 파라미터 추가
+      showComments?: boolean;
     };
 
   const [isLiked, setIsLiked] = useState(false);
@@ -42,14 +40,13 @@ const ShortsPlayerScreen: React.FC = () => {
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const [isLikedUsersVisible, setIsLikedUsersVisible] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
-const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
-
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [hashtags, setHashtags] = useState<string[]>([]);
 
   const loadCounts = useCallback(async () => {
     try {
       const comments = await getComments(postId);
       setCommentCount(comments.length);
-console.log('🔥 프로필 이미지 URL:', profileImageUrl);
 
       const users = await getLikedUsers(postId);
       setLikedUsers(users);
@@ -62,36 +59,28 @@ console.log('🔥 프로필 이미지 URL:', profileImageUrl);
 
   useEffect(() => {
     loadCounts();
-
-    if (showComments) {
-      setIsCommentsVisible(true); // ✅ 댓글창 자동 열기
-    }
+    if (showComments) setIsCommentsVisible(true);
   }, [loadCounts, showComments]);
 
-useEffect(() => {
-  const fetchPostDetail = async () => {
-    try {
-      const post = await getPostDetail(postId);
-      setVideoURL(post.videoURL ?? null);
+  useEffect(() => {
+    const fetchPostDetail = async () => {
+      try {
+        const post = await getPostDetail(postId);
+        setVideoURL(post.videoURL ?? null);
+        setHashtags(post.hashtags ?? []);
 
-      const rawPath = post.author?.profileImage;
-
-   if (rawPath && typeof rawPath === 'string') {
-     setProfileImageUrl(
-       rawPath.startsWith('http')
-         ? rawPath
-         : `${BASE_URL}:8080${rawPath}`
-     );
-   }
-
-}catch (error) {
-      console.error('게시물 상세 조회 실패:', error);
-    }
-  };
-
-  fetchPostDetail();
-}, [postId]);
-
+        const rawPath = post.author?.profileImage;
+        if (rawPath && typeof rawPath === 'string') {
+          setProfileImageUrl(
+            rawPath.startsWith('http') ? rawPath : `${BASE_URL}:8080${rawPath}`,
+          );
+        }
+      } catch (error) {
+        console.error('게시물 상세 조회 실패:', error);
+      }
+    };
+    fetchPostDetail();
+  }, [postId]);
 
   const handleToggleLike = async () => {
     try {
@@ -99,7 +88,6 @@ useEffect(() => {
         await cancelLike(postId);
       } else {
         await postLike(postId);
-
         if (currentUserId !== creatorUserId) {
           await createNotification({
             receiverId: creatorUserId,
@@ -108,8 +96,7 @@ useEffect(() => {
           });
         }
       }
-
-      await loadCounts(); // 좋아요 변경 후 다시 불러오기
+      await loadCounts();
     } catch (error) {
       console.error('게시물 좋아요 실패:', error);
     }
@@ -125,130 +112,133 @@ useEffect(() => {
     }
   };
 
+  const handleEditPost = () => {
+    navigation.navigate('PostVideoScreen', {
+      finalVideoUrl: videoURL,
+      title,
+      tags: hashtags.join(' '),
+    });
+  };
+
   return (
     <>
+      <SafeAreaView style={styles.safeContainer}>
+        <View style={styles.container}>
+          {videoURL ? (
+            <Video
+              source={{uri: videoURL}}
+              style={styles.videoPlayer}
+              resizeMode="cover"
+              repeat
+              muted={false}
+              controls
+            />
+          ) : (
+            <Text style={styles.videoText}>영상 불러오는 중...</Text>
+          )}
 
-          <SafeAreaView style={styles.safeContainer}>
-            <View style={styles.container}>
+          {currentUserId === creatorUserId && (
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={handleEditPost}>
+              <Ionicons name="create-outline" size={28} color="white" />
+            </TouchableOpacity>
+          )}
 
-              {/* 📌 배경 영상 */}
-              {videoURL ? (
-                <Video
-                  source={{ uri: videoURL }}
-                  style={styles.videoPlayer} // <- absolute 위치
-                  resizeMode="cover"
-                  repeat
-                  muted={false}
-                  controls
+          <View style={styles.topBar}>
+            <View style={styles.profileTitleContainer}>
+              {profileImageUrl && (
+                <Image
+                  source={{uri: profileImageUrl}}
+                  style={styles.creatorProfile}
                 />
-              ) : (
-                <Text style={styles.videoText}>영상 불러오는 중...</Text>
               )}
-
-              {/* 📌 상단 바: 뒤로 가기 + 프로필 + 제목 (영상 위에 오버레이) */}
-              <View style={styles.topBar}>
-
-
-
-  <View style={styles.profileTitleContainer}>
-    {profileImageUrl && profileImageUrl.startsWith('http') && (
-      <Image
-        source={{ uri: profileImageUrl }}
-        style={styles.creatorProfile}
-      />
-    )}
-
-    <View style={{ marginLeft: 10 }}>
-      <Text style={styles.creator}>{creator ?? ''}</Text>
-      <Text style={styles.title}>{title ?? ''}</Text>
-    </View>
-  </View>
-
-
+              <View style={styles.creatorInfoWrapper}>
+                <Text style={styles.creator}>{creator ?? ''}</Text>
+                <Text style={styles.title}>{title ?? ''}</Text>
               </View>
-
-              {/* 📌 오른쪽 사이드 메뉴 (좋아요, 댓글 등) */}
-              <View style={styles.sideMenu}>
-                <TouchableOpacity onPress={handleToggleLike}>
-                  <Ionicons
-                    name={isLiked ? 'heart' : 'heart-outline'}
-                    size={32}
-                    color={isLiked ? 'red' : 'white'}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.count}>{likeCount}</Text>
-
-                <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
-                  <Ionicons name="chatbubble-outline" size={32} color="white" />
-                </TouchableOpacity>
-                <Text style={styles.count}>{commentCount}</Text>
-
-                <TouchableOpacity onPress={() => console.log('공유 기능')}>
-                  <Ionicons name="share-social-outline" size={32} color="white" />
-                </TouchableOpacity>
-              </View>
-
-              {/* 📌 내 게시물일 때만 좋아요 유저 보기 */}
-              {currentUserId === creatorUserId && (
-                <TouchableOpacity
-                  style={styles.likeUserButton}
-                  onPress={handleOpenLikeList}>
-                  <Text style={styles.likeUserButtonText}>
-                    ❤️ 좋아요 누른 유저 보기
-                  </Text>
-                </TouchableOpacity>
-              )}
-
             </View>
-          </SafeAreaView>
+          </View>
 
+          <View style={styles.sideMenu}>
+            <TouchableOpacity onPress={handleToggleLike}>
+              <Ionicons
+                name={isLiked ? 'heart' : 'heart-outline'}
+                size={32}
+                color={isLiked ? 'red' : 'white'}
+              />
+            </TouchableOpacity>
+            <Text style={styles.count}>{likeCount}</Text>
 
+            <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
+              <Ionicons name="chatbubble-outline" size={32} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.count}>{commentCount}</Text>
 
+            <TouchableOpacity onPress={() => console.log('공유 기능')}>
+              <Ionicons name="share-social-outline" size={32} color="white" />
+            </TouchableOpacity>
+          </View>
 
-      {/* ✅ 댓글 모달 */}
+          {currentUserId === creatorUserId && (
+            <TouchableOpacity
+              style={styles.likeUserButton}
+              onPress={handleOpenLikeList}>
+              <Text style={styles.likeUserButtonText}>
+                ❤️ 좋아요 누른 유저 보기
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </SafeAreaView>
 
-<Modal
-  visible={isCommentsVisible}
-  animationType="slide"
-  transparent={true}>
-  <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}>
-    {/* 🔹 배경 터치 감지 영역 */}
-    <TouchableWithoutFeedback onPress={() => setIsCommentsVisible(false)}>
-      <View style={{ flex: 1 }} />
-    </TouchableWithoutFeedback>
+      <Modal visible={isCommentsVisible} animationType="slide" transparent>
+        <View style={styles.commentModalOverlay}>
+          <TouchableWithoutFeedback onPress={() => setIsCommentsVisible(false)}>
+            <View style={styles.commentModalBackground} />
+          </TouchableWithoutFeedback>
 
-    {/* 🔹 실제 모달 영역: 이 안쪽은 터치해도 닫히지 않음 */}
-    <CommentsScreen
-      postId={postId}
-      currentUserId={currentUserId}
-      creatorUserId={creatorUserId}
-      onClose={() => {
-        setIsCommentsVisible(false);
-        loadCounts(); // 댓글 작성 후 다시 카운트 로드
-      }}
-    />
-  </View>
-</Modal>
+          <CommentsScreen
+            postId={postId}
+            currentUserId={currentUserId}
+            creatorUserId={creatorUserId}
+            onClose={() => {
+              setIsCommentsVisible(false);
+              loadCounts();
+            }}
+          />
+        </View>
+      </Modal>
 
-
-
-      {/* ✅ 좋아요 누른 유저 모달 */}
       <Modal visible={isLikedUsersVisible} animationType="slide">
         <SafeAreaView style={styles.likedUsersContainer}>
-          <Text style={styles.likedUsersTitle}>❤️ 좋아요 누른 사람들</Text>
-          <FlatList
-            data={likedUsers}
-            keyExtractor={item => item.userId.toString()}
-            renderItem={({item}) => (
-              <View style={styles.likedUserItem}>
-                <View style={styles.profileCircle} />
-                <Text style={styles.likedUserText}>{item.userName}</Text>
-              </View>
-            )}
-          />
-          <TouchableOpacity onPress={() => setIsLikedUsersVisible(false)}>
-            <Text style={styles.cancelReply}>닫기</Text>
-          </TouchableOpacity>
+          <View style={styles.modalInnerWrapper}>
+            <Text style={styles.likedUsersTitle}>❤️ 좋아요 누른 사람들</Text>
+            <FlatList
+              data={likedUsers}
+              keyExtractor={item => item.userId.toString()}
+              renderItem={({item}) => (
+                <View style={styles.likedUserItem}>
+                  {item.profileImage ? (
+                    <Image
+                      source={{
+                        uri: item.profileImage.startsWith('http')
+                          ? item.profileImage
+                          : `${BASE_URL}:8080${item.profileImage}`,
+                      }}
+                      style={styles.profileCircle}
+                    />
+                  ) : (
+                    <View style={styles.profileCircle} />
+                  )}
+                  <Text style={styles.likedUserText}>{item.userName}</Text>
+                </View>
+              )}
+            />
+            <TouchableOpacity onPress={() => setIsLikedUsersVisible(false)}>
+              <Text style={styles.cancelReply}>닫기</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </Modal>
     </>

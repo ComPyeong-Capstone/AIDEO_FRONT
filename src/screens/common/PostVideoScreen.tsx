@@ -118,7 +118,6 @@ const handlePickVideo = async () => {
   };
 
 
-// ✅ 올바른 수정
 const uploadToMyServer = async (
   title: string,
   tags: string,
