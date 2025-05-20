@@ -23,6 +23,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import axios from 'axios';
 import {BASE_URL} from '@env';
 import * as Progress from 'react-native-progress';
+import { useRoute } from '@react-navigation/native';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'URLPosting'>;
@@ -36,10 +37,12 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
     const [uploadProgress, setUploadProgress] = useState<number>(0); // 0~100%
     const [uploading, setUploading] = useState(false);
 const [videoLoading, setVideoLoading] = useState(false);
+  const route = useRoute();
+  const { finalVideoUrl } = route.params as { finalVideoUrl: string };
 
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
-  const [videoURI, setVideoURI] = useState<string | null>(null);
+  const [videoURI, setVideoURI] = useState<string | null>(finalVideoUrl || null);
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
 
