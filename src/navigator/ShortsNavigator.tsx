@@ -9,6 +9,7 @@ import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import ResultScreen from '../screens/common/ResultScreen';
 import PostVideoScreen from '../screens/common/PostVideoScreen';
+import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen'; // ✅ 자막 설정 화면 import
 
 // ✅ Stack Param 타입 정의
 export type ShortsStackParamList = {
@@ -40,13 +41,18 @@ export type ShortsStackParamList = {
     musicTitle?: string;
     videos?: string[];
   };
+  SubtitlesSettingScreen: {
+    videos: string[];
+    subtitles: string[];
+    music: string;
+  };
   ResultScreen: {
     videos: string[];
     subtitles: string[];
     music?: string;
   };
   PostVideoScreen: {
-    finalVideoUrl: string; // ✅ 포스팅할 최종 영상 URL
+    finalVideoUrl: string;
   };
 };
 
@@ -69,6 +75,14 @@ const ShortsNavigator: React.FC = () => {
       <Stack.Screen
         name="MusicSelectionScreen"
         component={MusicSelectionScreen}
+      />
+      <Stack.Screen
+        name="SubtitlesSettingScreen"
+        component={SubtitlesSettingScreen}
+        options={{
+          gestureEnabled: true, // ✅ 제스처 뒤로가기 활성화
+          gestureDirection: 'horizontal', // ✅ 좌우 스와이프
+        }}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
       <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />

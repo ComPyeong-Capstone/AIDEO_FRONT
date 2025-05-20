@@ -16,6 +16,8 @@ export const COLORS = {
   textcolor: '#FFFFFF',
   textDark: '#1F2C3D',
   borderStrong: '#3A9D96',
+  white: 'white',
+  gray: 'gray',
 };
 
 export const DarkColors = {

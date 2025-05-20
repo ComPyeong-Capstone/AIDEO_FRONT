@@ -44,9 +44,9 @@ export interface GenerateFinalVideoRequest {
   subtitles: string[];
   music_url: string;
   font_path: string;
-  font_effect: string;
-  font_color: string;
-  subtitle_y_position: number;
+  font_effect: string; // ⬅️ enum-like 타입 제거 → string
+  font_color: string; // ⬅️ enum-like 타입 제거 → string
+  subtitle_y_position: number; // ⬅️ 제한된 숫자 타입 제거 → number
 }
 
 export interface GenerateFinalVideoResponse {
@@ -62,7 +62,8 @@ export interface GetMusicPreviewsResponse {
   previews: MusicPreview[];
 }
 
-// ✅ 입력 프롬프트를 통한 사진 및 자막 생성
+// ✅ API 함수 정의
+
 export const generateMaterial = async (
   payload: GenerateMaterialRequest,
 ): Promise<GenerateMaterialResponse> => {
@@ -70,7 +71,6 @@ export const generateMaterial = async (
   return response.data;
 };
 
-// ✅ 이미지 하나 재생성
 export const regenerateImage = async (
   payload: RegenerateImageRequest,
 ): Promise<RegenerateImageResponse> => {
@@ -81,7 +81,6 @@ export const regenerateImage = async (
   return response.data;
 };
 
-// ✅ 사진과 자막으로 부분 영상 생성
 export const generatePartialVideo = async (
   payload: GeneratePartialVideoRequest,
 ): Promise<GeneratePartialVideoResponse> => {
@@ -92,7 +91,6 @@ export const generatePartialVideo = async (
   return response.data;
 };
 
-// ✅ 사진과 자막을 form-data로 전송하여 부분 영상 생성
 export const generatePartialVideoWithUpload = async (
   files: {uri: string; name: string; type: string}[],
   subtitles: string[],
@@ -124,7 +122,6 @@ export const generatePartialVideoWithUpload = async (
   return response.data;
 };
 
-// ✅ 부분 영상 하나 재생성
 export const regenerateSinglePartialVideo = async (
   payload: RegenerateSinglePartialVideoRequest,
 ): Promise<RegenerateSinglePartialVideoResponse> => {
@@ -135,7 +132,6 @@ export const regenerateSinglePartialVideo = async (
   return response.data;
 };
 
-// ✅ 부분 영상 + 자막 + 음악으로 최종 영상 생성
 export const generateFinalVideo = async (
   payload: GenerateFinalVideoRequest,
 ): Promise<GenerateFinalVideoResponse> => {
@@ -146,7 +142,6 @@ export const generateFinalVideo = async (
   return response.data;
 };
 
-// ✅ 음악 프리뷰 목록 호출
 export const getMusicPreviews = async (): Promise<GetMusicPreviewsResponse> => {
   const response = await videoAxiosInstance.get('/previews');
   return response.data;

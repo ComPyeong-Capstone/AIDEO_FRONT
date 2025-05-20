@@ -7,6 +7,7 @@ import PhotoPromptScreen from '../screens/photo/PhotoPromptScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import PostVideoScreen from '../screens/common/PostVideoScreen';
+import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen'; // ✅ 자막 설정 화면 import
 
 // ✅ Stack Navigator 타입 정의
 export type PhotoStackParamList = {
@@ -28,11 +29,16 @@ export type PhotoStackParamList = {
     musicTitle?: string;
     videos?: string[];
   };
+  SubtitlesSettingScreen: {
+    videos: string[];
+    subtitles: string[];
+    music: string;
+  };
   ResultScreen: {
     finalVideoUrl: string;
   };
   PostVideoScreen: {
-    finalVideoUrl: string; // ✅ 최종 영상 URL 넘김
+    finalVideoUrl: string;
   };
 };
 
@@ -51,6 +57,14 @@ const PhotoNavigator: React.FC = () => {
       <Stack.Screen
         name="MusicSelectionScreen"
         component={MusicSelectionScreen}
+      />
+      <Stack.Screen
+        name="SubtitlesSettingScreen"
+        component={SubtitlesSettingScreen}
+        options={{
+          gestureEnabled: true, // ✅ 스와이프 제스처 허용
+          gestureDirection: 'horizontal', // ✅ 좌우 스와이프 방향 설정
+        }}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
       <Stack.Screen name="PostVideoScreen" component={PostVideoScreen} />
