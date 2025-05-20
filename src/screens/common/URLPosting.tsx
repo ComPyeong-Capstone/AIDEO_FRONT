@@ -25,11 +25,11 @@ import {BASE_URL} from '@env';
 import * as Progress from 'react-native-progress';
 
 interface Props {
-  navigation: StackNavigationProp<AppStackParamList, 'PostVideoScreen'>;
+  navigation: StackNavigationProp<AppStackParamList, 'URLPosting'>;
 }
 
 
-const PostVideoScreen: React.FC<Props> = ({navigation}) => {
+const URLPosting: React.FC<Props> = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const {user} = useUser();
@@ -267,4 +267,4 @@ const uploadToMyServer = async (
   );
 };
 
-export default PostVideoScreen;
+export default URLPosting;
