@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
     useWindowDimensions,
 Platform,
 ActivityIndicator,
+Animated,
 } from 'react-native';
 import Video from 'react-native-video';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -39,12 +40,16 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
 const [videoLoading, setVideoLoading] = useState(false);
   const route = useRoute();
   const { finalVideoUrl } = route.params as { finalVideoUrl: string };
-
+const [titleError, setTitleError] = useState('');
+const [tagsError, setTagsError] = useState('');
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [videoURI, setVideoURI] = useState<string | null>(finalVideoUrl || null);
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
+const shakeTitle = useRef(new Animated.Value(0)).current;
+const shakeTags = useRef(new Animated.Value(0)).current;
+
 
     const processed = words
       .filter(word => word.length > 0) // 빈 문자열 제거
@@ -55,6 +60,35 @@ const [videoLoading, setVideoLoading] = useState(false);
 
     setTags(processed.join(' ') + (needsSpace ? ' ' : ''));
   };
+const startShake = (animatedValue: Animated.Value) => {
+  Animated.sequence([
+    Animated.timing(animatedValue, {
+      toValue: 10,
+      duration: 50,
+      useNativeDriver: true,
+    }),
+    Animated.timing(animatedValue, {
+      toValue: -10,
+      duration: 50,
+      useNativeDriver: true,
+    }),
+    Animated.timing(animatedValue, {
+      toValue: 6,
+      duration: 50,
+      useNativeDriver: true,
+    }),
+    Animated.timing(animatedValue, {
+      toValue: -6,
+      duration: 50,
+      useNativeDriver: true,
+    }),
+    Animated.timing(animatedValue, {
+      toValue: 0,
+      duration: 50,
+      useNativeDriver: true,
+    }),
+  ]).start();
+};
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -179,7 +213,29 @@ const uploadToMyServer = async (
     setUploading(false);
   }
 };
+const handleUpload = () => {
+  let valid = true;
 
+if (!title.trim()) {
+  setTitleError('제목을 입력해주세요.');
+  startShake(shakeTitle); // 흔들기 실행
+  valid = false;
+}
+
+if (!tags.trim()) {
+  setTagsError('태그를 입력해주세요.');
+  startShake(shakeTags); // 흔들기 실행
+  valid = false;
+}
+
+
+  if (!valid) return;
+
+  setUploading(true);
+  uploadToMyServer(title, tags, videoURI, user?.token).finally(() =>
+    setUploading(false),
+  );
+};
 
 
   return (
@@ -216,35 +272,42 @@ const uploadToMyServer = async (
 
    </TouchableOpacity>
 
+<Animated.View style={{ transform: [{ translateX: shakeTitle }] }}>
   <TextInput
-         style={[styles.input, {width: width * 0.9, marginTop: 0}]} // ✅ 빈 공간 제거
-         placeholder="제목"
-         placeholderTextColor="#999999"
-         value={title}
-         onChangeText={setTitle}
-       />
-    <TextInput
-      style={[styles.input, styles.inputMultiline, {width: width * 0.9}]}
-      placeholder="태그 입력  ex) #GPT, #AI"
-      placeholderTextColor="#999"
-      value={tags}
-      onChangeText={handleTagInput}
-      multiline
-    />
+    style={[styles.input, { width: width * 0.9 }]}
+    placeholder={titleError ? '제목을 입력해주세요.' : '제목'}
+    placeholderTextColor={titleError ? 'red' : '#999'}
+    value={title}
+    onChangeText={text => {
+      setTitle(text);
+      if (titleError) setTitleError('');
+    }}
+  />
+</Animated.View>
+
+<Animated.View style={{ transform: [{ translateX: shakeTags }] }}>
+  <TextInput
+    style={[styles.input, styles.inputMultiline, { width: width * 0.9 }]}
+    placeholder={tagsError ? '태그를 입력해주세요.' : '태그 입력 ex) #AI, #GPT'}
+    placeholderTextColor={tagsError ? 'red' : '#999'}
+    value={tags}
+    onChangeText={text => {
+      handleTagInput(text);
+      if (tagsError) setTagsError('');
+    }}
+    multiline
+  />
+</Animated.View>
+
 
 
         </View>
 
       <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
         <CommonButton title="YouTube 업로드" onPress={uploadToYouTube} type="secondary" style={{width: width * 0.4}} />
-        <CommonButton
+    <CommonButton
           title="AIVIDEO 업로드"
-          onPress={() => {
-            setUploading(true); // 시작
-            uploadToMyServer(title, tags, videoURI, user?.token).finally(() =>
-              setUploading(false) // 끝나면 숨기기
-            );
-          }}
+          onPress={handleUpload}
           type="primary"
           style={{width: width * 0.4}}
         />
