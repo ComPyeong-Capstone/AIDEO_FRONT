@@ -10,6 +10,7 @@ import {
   Image,
   InteractionManager,
   Alert,
+  Share,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {styles} from '../../styles/shortsPlayer/ShortsPlayerScreenStyles';
@@ -165,6 +166,28 @@ const confirmDeletePost = () => {
       tags: hashtags.join(' '),
     });
   };
+const onShare = async () => {
+  try {
+    if (!videoURL) {
+      Alert.alert('잠시만요', '영상이 아직 로드되지 않았어요.');
+      return;
+    }
+
+    const shareUrl = `https://3.35.182.180:8000/post/${postId}`; // 클라이언트나 웹뷰로 연결될 링크
+    const result = await Share.share({
+      message: `[${title}]\n\n ${creator}님의 숏츠를 확인해보세요!\n👉 ${shareUrl}`,
+      url: shareUrl, // iOS 전용
+    });
+
+    if (result.action === Share.sharedAction) {
+      console.log('✅ 공유 완료');
+    } else if (result.action === Share.dismissedAction) {
+      console.log('❌ 공유 취소');
+    }
+  } catch (error) {
+    console.error('❌ 공유 실패:', error.message);
+  }
+};
 
   return (
     <>
@@ -224,7 +247,7 @@ const confirmDeletePost = () => {
             </TouchableOpacity>
             <Text style={styles.count}>{commentCount}</Text>
 
-            <TouchableOpacity onPress={() => console.log('공유 기능')}>
+<TouchableOpacity onPress={onShare}>
               <Ionicons name="share-social-outline" size={32} color="white" />
             </TouchableOpacity>
             <View style={{ height: 20 }} />
