@@ -17,8 +17,8 @@ export default StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '90%',
+    justifyContent: 'center', // 가운데 정렬
+    width: '100%',
     marginTop: scaleSize(8),
   },
 
@@ -29,11 +29,16 @@ export default StyleSheet.create({
   },
 
   imageNumberText: {
-    fontSize: scaleFont(15),
+    fontSize: scaleFont(16),
     color: '#000',
-    fontWeight: '500',
+    fontWeight: '600',
     textAlign: 'center',
+  },
+
+  titleCenterWrapper: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   sliderContainer: {
@@ -104,27 +109,19 @@ export default StyleSheet.create({
     backgroundColor: '#ccc',
   },
 
-  pagination: {
-    display: 'none',
-  },
-
-  customPagination: {
-    display: 'none',
-  },
-
   musicSpacing: {
     height: scaleSize(10),
   },
 
   musicButton: {
-    height: scaleSize(40),
-    width: '75%',
+    height: scaleSize(42),
+    width: '90%', // ✅ 가로 최대 너비 확보
     borderRadius: scaleSize(10),
     borderWidth: scaleSize(2),
     borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(10),
+    marginTop: scaleSize(14),
   },
 
   musicLabel: {
@@ -160,10 +157,6 @@ export default StyleSheet.create({
     paddingVertical: scaleSize(12),
     borderRadius: scaleSize(20),
     width: '45%',
-    alignItems: 'center',
-  },
-  titleCenterWrapper: {
-    flex: 1,
     alignItems: 'center',
   },
 });

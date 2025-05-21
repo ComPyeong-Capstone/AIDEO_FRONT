@@ -10,18 +10,20 @@ import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
 import ShortsNavigator from './ShortsNavigator';
 import PhotoNavigator from './PhotoNavigator';
+
 import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
 import URLPosting from '../screens/common/URLPosting';
 import FilePosting from '../screens/common/FilePosting';
-import YouTubeUploadScreen from '../screens/common/YoutubeUploadScreen'; // 경로 맞게 수정
+import YouTubeUploadScreen from '../screens/common/YoutubeUploadScreen';
 
 import {useUser} from '../context/UserContext';
 import {useGenerate} from '../context/GenerateContext';
+
 import CustomButton from '../styles/button';
 import {AppStackParamList} from './types';
 import {styles} from '../styles/common/globalModalStyles';
 
-// ✅ 외부에서 접근할 수 있는 navigationRef
+// ✅ 외부에서 네비게이션 제어를 위한 Ref
 export const navigationRef = createNavigationContainerRef<AppStackParamList>();
 
 const Stack = createStackNavigator<AppStackParamList>();
@@ -41,33 +43,30 @@ const AppNavigator = () => {
     setShowModal(false);
 
     if (resultData && navigationRef.isReady()) {
+      const commonParams = {
+        prompt: resultData.prompt,
+        duration: resultData.duration,
+        imageUrls: resultData.imageUrls,
+        subtitles: resultData.subtitles,
+      };
+
       if (resultData.videos && resultData.videos.length > 0) {
-        // ✅ 영상까지 생성된 경우: FinalVideoScreen으로 이동
         navigationRef.navigate('ShortsStack', {
           screen: 'FinalVideoScreen',
           params: {
+            ...commonParams,
             from: 'shorts',
-            prompt: resultData.prompt,
-            duration: resultData.duration,
-            imageUrls: resultData.imageUrls,
-            subtitles: resultData.subtitles,
             videos: resultData.videos,
           },
         });
       } else {
-        // ✅ 영상 없으면: ImageSelectionScreen으로 이동
         navigationRef.navigate('ShortsStack', {
           screen: 'ImageSelectionScreen',
-          params: {
-            prompt: resultData.prompt,
-            duration: resultData.duration,
-            imageUrls: resultData.imageUrls,
-            subtitles: resultData.subtitles,
-          },
+          params: commonParams,
         });
       }
 
-      clearResult(); // ✅ 전역 상태 초기화
+      clearResult();
     }
   };
 
@@ -83,28 +82,10 @@ const AppNavigator = () => {
               name="ShortsPlayerScreen"
               component={ShortsPlayerScreen}
             />
+            <Stack.Screen name="URLPosting" component={URLPosting} />
+            <Stack.Screen name="FilePosting" component={FilePosting} />
             <Stack.Screen
-              name="URLPosting"
-              component={URLPosting}
-              initialParams={{
-                finalVideoUrl: '',
-                title: '',
-                tags: '',
-              }}
-            />
-
-            {/* ✅ 초기 파라미터 설정 */}
-            <Stack.Screen
-              name="FilePosting"
-              component={FilePosting}
-              initialParams={{
-                finalVideoUrl: null,
-                title: '',
-                tags: '',
-              }}
-            />
-            <Stack.Screen
-              name="YouTubeUploadScreen" // ✅ 여기가 없어서 에러 발생했던 것
+              name="YouTubeUploadScreen"
               component={YouTubeUploadScreen}
             />
           </>
@@ -113,7 +94,6 @@ const AppNavigator = () => {
         )}
       </Stack.Navigator>
 
-      {/* ✅ 전역 완료 모달 */}
       {showModal && (
         <Modal transparent animationType="fade">
           <View style={styles.overlay}>

@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
+  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  SafeAreaView,
+  PanResponder,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -51,6 +52,24 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > 20,
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > 50) {
+          navigation.navigate('ImageSelectionScreen', {
+            duration: duration ?? 0,
+            prompt,
+            imageUrls,
+            subtitles,
+            videos: videoUrls,
+          });
+        }
+      },
+    }),
+  ).current;
+
   useEffect(() => {
     if (videoUrls.length > 0) return;
 
@@ -90,24 +109,6 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
     generateVideos();
   }, [duration, imageUrls, subtitles, videoUrls.length]);
 
-  const handleBack = () => {
-    navigation.navigate('ImageSelectionScreen', {
-      duration: duration ?? 0,
-      prompt,
-      imageUrls,
-      subtitles,
-      videos: videoUrls,
-    });
-  };
-
-  const handleForward = () => {
-    navigation.navigate('ResultScreen', {
-      videos: videoUrls,
-      subtitles,
-      music,
-    });
-  };
-
   const handleGoToSubtitleSettings = () => {
     navigation.navigate('SubtitlesSettingScreen', {
       videos: videoUrls,
@@ -118,118 +119,118 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBack}>
-          <Text style={styles.navIcon}>{'<'}</Text>
-        </TouchableOpacity>
-
-        <View style={styles.titleCenterWrapper}>
-          <Text style={styles.imageNumberText}>
-            {videoUrls.length > 0 ? `${selectedIndex + 1}번 영상` : ''}
-          </Text>
+      <View style={styles.container} {...panResponder.panHandlers}>
+        {/* 상단 중앙 텍스트만 */}
+        <View style={styles.headerContainer}>
+          <View style={styles.titleCenterWrapper}>
+            <Text style={styles.imageNumberText}>
+              {videoUrls.length > 0 ? `${selectedIndex + 1}번 영상` : ''}
+            </Text>
+          </View>
         </View>
 
-        <TouchableOpacity onPress={handleForward}>
-          <Text style={styles.navIcon}>{'>'}</Text>
-        </TouchableOpacity>
-      </View>
+        {/* 영상 */}
+        <View style={styles.sliderContainer}>
+          <View style={styles.videoWrapper}>
+            {loading ? (
+              <View style={styles.videoItem}>
+                <ActivityIndicator size="large" color="#00A6FB" />
+                <Text style={styles.videoText}>영상 생성 중...</Text>
+              </View>
+            ) : (
+              <Swiper
+                loop={false}
+                showsButtons={false}
+                showsPagination={false}
+                onIndexChanged={setSelectedIndex}
+                containerStyle={styles.swiperContainer}>
+                {videoUrls.map((url, index) => (
+                  <View key={index} style={styles.videoItem}>
+                    <Video
+                      source={{uri: url}}
+                      style={styles.videoPlayer}
+                      resizeMode="cover"
+                      repeat
+                      muted
+                      controls
+                    />
+                  </View>
+                ))}
+              </Swiper>
+            )}
+          </View>
 
-      <View style={styles.sliderContainer}>
-        <View style={styles.videoWrapper}>
-          {loading ? (
-            <View style={styles.videoItem}>
-              <ActivityIndicator size="large" color="#00A6FB" />
-              <Text style={styles.videoText}>영상 생성 중...</Text>
-            </View>
-          ) : (
-            <Swiper
-              loop={false}
-              showsButtons={false}
-              showsPagination={false}
-              onIndexChanged={setSelectedIndex}
-              containerStyle={styles.swiperContainer}>
-              {videoUrls.map((url, index) => (
-                <View key={index} style={styles.videoItem}>
-                  <Video
-                    source={{uri: url}}
-                    style={styles.videoPlayer}
-                    resizeMode="cover"
-                    repeat
-                    muted
-                    controls
-                  />
-                </View>
+          {videoUrls.length > 0 && (
+            <View style={styles.dotWrapper}>
+              {videoUrls.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    index === selectedIndex
+                      ? styles.dotActive
+                      : styles.dotInactive,
+                  ]}
+                />
               ))}
-            </Swiper>
+            </View>
           )}
         </View>
 
-        {videoUrls.length > 0 && (
-          <View style={styles.dotWrapper}>
-            {videoUrls.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  index === selectedIndex
-                    ? styles.dotActive
-                    : styles.dotInactive,
-                ]}
-              />
-            ))}
-          </View>
-        )}
-      </View>
+        {/* 배경음악 선택 */}
+        <View style={styles.musicSpacing} />
+        <TouchableOpacity
+          style={styles.musicButton}
+          onPress={() =>
+            navigation.navigate('MusicSelectionScreen', {
+              duration: duration ?? 0,
+              prompt,
+              imageUrls,
+              subtitles,
+              music,
+              musicTitle,
+              videos: videoUrls,
+            })
+          }>
+          <Text style={styles.buttonText}>배경 음악</Text>
+        </TouchableOpacity>
+        <Text style={styles.musicLabel}>
+          선택된 음악: {musicTitle || '없음'}
+        </Text>
 
-      <View style={styles.musicSpacing} />
-      <TouchableOpacity
-        style={styles.musicButton}
-        onPress={() =>
-          navigation.navigate('MusicSelectionScreen', {
-            duration: duration ?? 0,
-            prompt,
-            imageUrls,
-            subtitles,
-            music,
-            musicTitle,
-            videos: videoUrls,
-          })
-        }>
-        <Text style={styles.buttonText}>배경 음악</Text>
-      </TouchableOpacity>
-      <Text style={styles.musicLabel}>선택된 음악: {musicTitle || '없음'}</Text>
-
-      <View style={styles.buttonContainer}>
-        <CustomButton
-          title="부분 영상 재생성"
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: 'ImageSelectionScreen',
-                  params: {
-                    duration,
-                    prompt,
-                    imageUrls,
-                    subtitles,
+        {/* 버튼 */}
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            title="부분 영상 재생성"
+            onPress={() => {
+              navigation.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'ImageSelectionScreen',
+                    params: {
+                      duration,
+                      prompt,
+                      imageUrls,
+                      subtitles,
+                    },
                   },
-                },
-              ],
-            });
-          }}
-          type="secondary"
-          style={styles.prevButton}
-          textStyle={styles.buttonText}
-        />
-        <CustomButton
-          title="자막 설정"
-          onPress={handleGoToSubtitleSettings}
-          disabled={loading || videoUrls.length === 0}
-          type="primary"
-          style={styles.nextButton}
-          textStyle={styles.buttonText}
-        />
+                ],
+              });
+            }}
+            type="secondary"
+            style={styles.prevButton}
+            textStyle={styles.buttonText}
+          />
+          <CustomButton
+            title="자막 설정"
+            onPress={handleGoToSubtitleSettings}
+            disabled={loading || videoUrls.length === 0}
+            type="primary"
+            style={styles.nextButton}
+            textStyle={styles.buttonText}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

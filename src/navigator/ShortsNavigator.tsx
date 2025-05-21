@@ -55,9 +55,7 @@ export type ShortsStackParamList = {
     subtitles: string[];
     music?: string;
   };
-  PostVideoScreen: {
-    finalVideoUrl: string;
-  };
+  URLPosting: undefined;
 };
 
 // ✅ Stack Navigator 생성
