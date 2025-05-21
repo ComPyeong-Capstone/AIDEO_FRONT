@@ -24,6 +24,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '@env';
 import { deletePost } from '../../api/postApi';
 import { useUser } from '../../context/UserContext';
+import Clipboard from '@react-native-clipboard/clipboard'; // 상단에 추가
 
 const ShortsPlayerScreen: React.FC = () => {
 const { user } = useUser();
@@ -268,12 +269,16 @@ const onShare = async () => {
 
   <View style={styles.moreMenu}>
     {/* 링크 복사 버튼은 항상 보이게 */}
-    <TouchableOpacity onPress={() => {
-      console.log('링크 복사');
-      setIsMoreMenuVisible(false);
-    }}>
-      <Text style={styles.moreMenuItem}>링크 복사</Text>
-    </TouchableOpacity>
+<TouchableOpacity
+  onPress={() => {
+    const shareUrl = `https://3.35.182.180:8080/post/${postId}`; // 실제 공유할 URL로 수정
+    Clipboard.setString(shareUrl);
+    setIsMoreMenuVisible(false);
+    Alert.alert('링크 복사됨', '공유 링크가 클립보드에 복사되었습니다.');
+  }}
+>
+  <Text style={styles.moreMenuItem}>링크 복사</Text>
+</TouchableOpacity>
 
     {/* 삭제하기 버튼은 본인 글일 때만 보여줌 */}
     {currentUserId === creatorUserId && (
