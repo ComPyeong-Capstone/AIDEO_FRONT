@@ -4,22 +4,22 @@ import React, {useEffect} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import AppNavigator from './src/navigator/AppNavigator';
 import {UserProvider} from './src/context/UserContext';
-import SplashScreen from 'react-native-splash-screen';
-//import {configureGoogleSignin} from './src/config/googleSignin';
 import {ThemeProvider} from './src/context/ThemeContext';
-import {VideoGenerationProvider} from './src/context/VideoGenerationContext'; // ✅ 추가
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import {iosClientId,webClientId} from '@env';
-import { configureGoogleSignin } from './src/config/googleSignin';
-import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '@env';
+import {VideoGenerationProvider} from './src/context/VideoGenerationContext';
+import {GenerateProvider} from './src/context/GenerateContext';
+import SplashScreen from 'react-native-splash-screen';
+import {configureGoogleSignin} from './src/config/googleSignin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {IOS_CLIENT_ID, WEB_CLIENT_ID} from '@env';
 
 const App = () => {
+  console.log('WEB_CLIENT_ID:', WEB_CLIENT_ID);
 
-console.log('WEB_CLIENT_ID:', WEB_CLIENT_ID);
-
-useEffect(() => {
-  configureGoogleSignin();
-
+  useEffect(() => {
+    configureGoogleSignin({
+      iosClientId: IOS_CLIENT_ID,
+      webClientId: WEB_CLIENT_ID,
+    });
 
     const timeout = setTimeout(() => {
       if (SplashScreen?.hide) {
@@ -34,10 +34,12 @@ useEffect(() => {
     <UserProvider>
       <ThemeProvider>
         <VideoGenerationProvider>
-          {/* ✅ 전역 상태 Provider 추가 */}
-          <SafeAreaProvider>
-            <AppNavigator />
-          </SafeAreaProvider>
+          <GenerateProvider>
+            {/* ✅ 이미지/자막 생성 전역 상태 관리 */}
+            <SafeAreaProvider>
+              <AppNavigator />
+            </SafeAreaProvider>
+          </GenerateProvider>
         </VideoGenerationProvider>
       </ThemeProvider>
     </UserProvider>

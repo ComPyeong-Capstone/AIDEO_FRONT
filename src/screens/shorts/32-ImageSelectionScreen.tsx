@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   TextInput,
+  Modal,
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -17,6 +18,8 @@ import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
 import ProgressBar from '../../components/ProgressBar';
 import {regenerateImage, generatePartialVideo} from '../../api/generateApi';
+import {useGenerate} from '../../context/GenerateContext';
+import {navigationRef} from '../../navigator/AppNavigator';
 
 type Props = NativeStackScreenProps<
   ShortsStackParamList,
@@ -32,6 +35,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     videos: existingVideos,
   } = route.params;
 
+  const {setResult} = useGenerate();
   const [imageUrls, setImageUrls] = useState(initialImageUrls);
   const [subtitles, setSubtitles] = useState(initialSubtitles);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -39,11 +43,9 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
 
   const handleIndexChange = (index: number) => {
-    // 현재 슬라이드 자막 저장
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
-    // 다음 슬라이드로 전환
     setSelectedIndex(index);
     setCaptionText(subtitles[index]);
   };
@@ -52,7 +54,12 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   const handleRegenerateImage = async () => {
     try {
+      const updatedSubtitles = [...subtitles];
+      updatedSubtitles[selectedIndex] = captionText;
+      setSubtitles(updatedSubtitles);
+
       setLoading(true);
+
       const result = await regenerateImage({
         text: captionText,
         number: selectedIndex + 1,
@@ -61,10 +68,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       const updatedImages = [...imageUrls];
       updatedImages[selectedIndex] = result.image_url;
       setImageUrls(updatedImages);
-
-      const updatedSubtitles = [...subtitles];
-      updatedSubtitles[selectedIndex] = captionText;
-      setSubtitles(updatedSubtitles);
     } catch {
       Alert.alert('에러', '이미지 재생성에 실패했습니다.');
     } finally {
@@ -90,28 +93,31 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       setLoading(true);
 
       if (existingVideos && existingVideos.length > 0) {
-        navigation.navigate('FinalVideoScreen', {
-          from: 'shorts',
-          duration,
+        setResult({
           prompt,
+          duration,
           imageUrls,
           subtitles: updatedSubtitles,
-          videos: existingVideos,
         });
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('Main', {screen: 'Home'});
+        }
       } else {
         const response = await generatePartialVideo({
           images: imageFilenames,
           subtitles: updatedSubtitles,
         });
 
-        navigation.navigate('FinalVideoScreen', {
-          from: 'shorts',
-          duration,
+        setResult({
           prompt,
+          duration,
           imageUrls,
           subtitles: updatedSubtitles,
           videos: response.video_urls,
         });
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('Main', {screen: 'Home'});
+        }
       }
     } catch (error) {
       console.error('영상 생성 실패:', error);
@@ -123,7 +129,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 상단 헤더 */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.navIcon}>{'<'}</Text>
@@ -134,12 +139,10 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         </TouchableOpacity>
       </View>
 
-      {/* 진행 바 */}
       <View style={styles.progressBarWrapper}>
         <ProgressBar currentStep={3} mode="shorts" />
       </View>
 
-      {/* 이미지 슬라이더 */}
       <View style={styles.sliderWrapper}>
         <Swiper
           loop={false}
@@ -169,7 +172,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         </View>
       </View>
 
-      {/* 자막 입력 */}
       <View style={styles.captionBox}>
         <TextInput
           style={styles.captionText}
@@ -180,7 +182,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         />
       </View>
 
-      {/* 버튼 */}
       <View style={styles.buttonContainer}>
         <CustomButton
           title="사진 재생성"
@@ -197,14 +198,24 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         />
       </View>
 
-      {/* 로딩 오버레이 */}
       {loading && (
-        <View style={styles.loadingOverlay}>
-          <View style={styles.loadingBox}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>처리 중...</Text>
+        <Modal transparent animationType="fade">
+          <View style={styles.loadingOverlay}>
+            <View style={styles.loadingBox}>
+              <ActivityIndicator size="large" color="#fff" />
+              <Text style={styles.loadingText}>생성 중입니다...</Text>
+              <CustomButton
+                title="앱 구경하기"
+                onPress={() => {
+                  setLoading(false);
+                  if (navigationRef.isReady()) {
+                    navigationRef.navigate('Main', {screen: 'Home'});
+                  }
+                }}
+              />
+            </View>
           </View>
-        </View>
+        </Modal>
       )}
     </SafeAreaView>
   );

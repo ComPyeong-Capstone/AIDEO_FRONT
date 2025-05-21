@@ -1,11 +1,13 @@
-//axiosInstance.ts
+// src/api/axiosInstance.ts
+
 import axios from 'axios';
 import {
   getAccessToken,
   getRefreshToken,
   saveAuthTokens,
   clearAuthTokens,
-} from '../utils/storage';import {BASE_URL} from '@env';
+} from '../utils/storage';
+import {BASE_URL} from '@env';
 
 // ✅ 환경변수 확인
 console.log('🧪 BASE_URL from .env:', BASE_URL);
@@ -28,11 +30,11 @@ export const videoAxiosInstance = axios.create({
   },
 });
 
-// ✅ 요청 인터셉터 (공통)
+// ✅ 요청 + 응답 인터셉터
 const attachInterceptors = (instance: typeof axiosInstance) => {
   instance.interceptors.request.use(
     async config => {
-      const token = getAccessToken();
+      const token = await getAccessToken(); // ✅ await 추가
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -81,19 +83,8 @@ const attachInterceptors = (instance: typeof axiosInstance) => {
     },
   );
 };
-axiosInstance.interceptors.request.use(
-  async (config) => {
-    const token = await getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-// ✅ 인터셉터 각각 적용
+
+// ✅ 인터셉터 적용
 attachInterceptors(axiosInstance);
 attachInterceptors(videoAxiosInstance);
 

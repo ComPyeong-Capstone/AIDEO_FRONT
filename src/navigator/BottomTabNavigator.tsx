@@ -5,15 +5,24 @@ import {
   BottomTabNavigationOptions,
 } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AddScreenModal from '../screens/bottomtab/3-AddScreen';
-import {COLORS} from '../styles/colors';
-import {scaleSize} from '../styles/responsive';
 
 import HomeScreen from '../screens/bottomtab/1-HomeScreen';
 import SearchScreen from '../screens/bottomtab/2-SearchScreen';
+import AddScreenModal from '../screens/bottomtab/3-AddScreen';
 import NotificationsScreen from '../screens/bottomtab/4-NotificationsScreen';
 import ProfileScreen from '../screens/bottomtab/5-ProfileScreen';
-import {BottomTabParamList} from '../types/navigation';
+
+import {COLORS} from '../styles/colors';
+import {scaleSize} from '../styles/responsive';
+
+// ✅ 여기에 타입 직접 정의 (외부에서 쓸 수 있게 export)
+export type BottomTabParamList = {
+  Home: undefined;
+  Search: undefined;
+  Add: undefined;
+  Notifications: undefined;
+  Profile: undefined;
+};
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -124,8 +133,7 @@ const styles = StyleSheet.create({
     borderRadius: scaleSize(100),
   },
   tabBarStyle: {
-    backgroundColor: COLORS.background, // 예: 검정색 배경
-
+    backgroundColor: COLORS.background,
     height: scaleSize(80),
     paddingBottom: Platform.OS === 'ios' ? scaleSize(10) : scaleSize(5),
   },

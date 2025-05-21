@@ -15,7 +15,7 @@ import Video from 'react-native-video';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import styles from '../../styles/common/finalVideoStyles';
 import CustomButton from '../../styles/button';
-import {generatePartialVideo, generateFinalVideo} from '../../api/generateApi';
+import {generatePartialVideo} from '../../api/generateApi';
 
 type NavigationProp = StackNavigationProp<
   ShortsStackParamList,
@@ -90,53 +90,6 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
     generateVideos();
   }, [duration, imageUrls, subtitles, videoUrls.length]);
 
-  const handleGenerateFinalVideo = async () => {
-    if (videoUrls.length === 0 || subtitles.length === 0) {
-      Alert.alert('에러', '영상 또는 자막이 비어 있습니다.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const cleanedVideoFilenames = videoUrls
-        .map(url => url.split('/').pop() || '')
-        .filter(Boolean);
-      const cleanedSubtitles = subtitles.filter(s => s.trim() !== '');
-      const cleanedMusic = music?.split('/').pop() || 'bgm_01.mp3';
-
-      const requestBody = {
-        videos: cleanedVideoFilenames,
-        subtitles: cleanedSubtitles,
-        music_url: cleanedMusic,
-        font_path: '../font/Cafe24Ssurround-v2.0/Cafe24Ssurround-v2.0.ttf',
-        font_effect: 'split',
-        font_color: 'white',
-        subtitle_y_position: -150,
-      };
-
-      const finalRes = await generateFinalVideo(requestBody);
-
-      const fixedFinalUrl = finalRes.final_video_url.includes(':8000')
-        ? finalRes.final_video_url
-        : finalRes.final_video_url.replace(
-            'http://3.35.182.180',
-            'http://3.35.182.180:8000',
-          );
-
-      navigation.navigate('ResultScreen', {
-        videos: [fixedFinalUrl],
-        subtitles,
-        music,
-      });
-    } catch (error) {
-      console.error('최종 영상 생성 실패:', error);
-      Alert.alert('에러', '최종 영상 생성에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleBack = () => {
     navigation.navigate('ImageSelectionScreen', {
       duration: duration ?? 0,
@@ -149,6 +102,14 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
 
   const handleForward = () => {
     navigation.navigate('ResultScreen', {
+      videos: videoUrls,
+      subtitles,
+      music,
+    });
+  };
+
+  const handleGoToSubtitleSettings = () => {
+    navigation.navigate('SubtitlesSettingScreen', {
       videos: videoUrls,
       subtitles,
       music,
@@ -262,8 +223,8 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
           textStyle={styles.buttonText}
         />
         <CustomButton
-          title="영상 생성"
-          onPress={handleGenerateFinalVideo}
+          title="자막 설정"
+          onPress={handleGoToSubtitleSettings}
           disabled={loading || videoUrls.length === 0}
           type="primary"
           style={styles.nextButton}
