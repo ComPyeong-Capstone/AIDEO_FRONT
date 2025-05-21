@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   TextInput,
@@ -26,6 +26,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   const {setResult} = useGenerate();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const {duration} = route.params;
 
   const handleGenerate = async () => {
@@ -61,10 +62,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         subtitles: res.subtitles,
       });
 
-      // ✅ 홈 화면으로 이동
-      if (navigationRef.isReady()) {
-        navigationRef.navigate('Main', {screen: 'Home'});
-      }
+      setIsCompleted(true); // ✅ 생성 완료 표시
     } catch (error: any) {
       console.error('❌ API 실패:', error);
       if (error.response) {
@@ -73,7 +71,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
       }
       Alert.alert('에러', '사진 및 자막 생성에 실패했습니다.');
     } finally {
-      setLoading(false);
+      setLoading(false); // 로딩은 꺼야 앱 탐색 가능
     }
   };
 
@@ -126,15 +124,24 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
               <CustomButton
                 title="앱 구경하기"
                 onPress={() => {
-                  setLoading(false);
                   if (navigationRef.isReady()) {
                     navigationRef.navigate('Main', {screen: 'Home'});
                   }
                 }}
+                style={{marginTop: 16}}
               />
             </View>
           </View>
         </Modal>
+      )}
+
+      {/* 완료 알림 토스트 */}
+      {isCompleted && (
+        <View style={styles.toast}>
+          <Text style={styles.toastText}>
+            ✅ 이미지 및 자막이 생성되었습니다.
+          </Text>
+        </View>
       )}
     </SafeAreaView>
   );

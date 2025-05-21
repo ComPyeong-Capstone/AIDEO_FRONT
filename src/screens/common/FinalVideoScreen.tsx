@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,44 +8,48 @@ import {
   Alert,
   PanResponder,
 } from 'react-native';
-import {useRoute} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
+import {
+  useRoute,
+  useNavigation,
+  NavigationProp,
+} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import Video from 'react-native-video';
 
-import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import styles from '../../styles/common/finalVideoStyles';
 import CustomButton from '../../styles/button';
-import {generatePartialVideo} from '../../api/generateApi';
+import {regenerateSinglePartialVideo} from '../../api/generateApi';
 
-type NavigationProp = StackNavigationProp<
-  ShortsStackParamList,
-  'FinalVideoScreen'
->;
-
-interface Props {
-  navigation: NavigationProp;
-}
-
-const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
+const FinalVideoScreen: React.FC = () => {
   const route = useRoute();
+  const navigation = useNavigation<NavigationProp<any>>();
+
   const {
+    from = 'shorts',
     duration,
     prompt,
     imageUrls = [],
+    images = [],
     subtitles = [],
     music = 'bgm_01.mp3',
     musicTitle = '',
     videos: preGeneratedVideos = [],
+    files = [],
   } = route.params as {
-    from?: 'photo' | 'shorts';
+    from?: 'shorts' | 'photo';
     duration?: number;
     prompt: string;
     imageUrls?: string[];
+    images?: {id: string; uri: string | null; name?: string}[];
     subtitles?: string[];
     music?: string;
     musicTitle?: string;
     videos?: string[];
+    files?: {
+      uri: string;
+      name: string;
+      type: string;
+    }[];
   };
 
   const [videoUrls, setVideoUrls] = useState<string[]>(preGeneratedVideos);
@@ -58,69 +62,123 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
         Math.abs(gestureState.dx) > 20,
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dx > 50) {
-          navigation.navigate('ImageSelectionScreen', {
-            duration: duration ?? 0,
-            prompt,
-            imageUrls,
-            subtitles,
-            videos: videoUrls,
-          });
+          if (from === 'photo') {
+            navigation.navigate('PhotoStack', {
+              screen: 'PhotoPromptScreen',
+              params: {duration: duration ?? 0},
+            });
+          } else {
+            navigation.navigate('ShortsStack', {
+              screen: 'ImageSelectionScreen',
+              params: {
+                duration: duration ?? 0,
+                prompt,
+                imageUrls,
+                subtitles,
+                videos: videoUrls,
+              },
+            });
+          }
         }
       },
     }),
   ).current;
 
-  useEffect(() => {
-    if (videoUrls.length > 0) return;
+  const regenerateSelectedVideo = async () => {
+    const subtitle = subtitles[selectedIndex] || '';
+    let imageFileName = '';
 
-    const generateVideos = async () => {
-      try {
-        setLoading(true);
-        const count = Math.floor((duration ?? 0) / 5);
-        const trimmedImages = imageUrls.slice(0, count);
-        const trimmedSubs = subtitles.slice(0, count);
-
-        if (trimmedImages.length !== count || trimmedSubs.length !== count) {
-          Alert.alert(
-            '데이터 부족',
-            `${count}개의 이미지와 자막이 필요합니다.`,
-          );
-          return;
-        }
-
-        const imageFilenames = trimmedImages.map(
-          url => url.split('/').pop() || '',
-        );
-
-        const response = await generatePartialVideo({
-          images: imageFilenames,
-          subtitles: trimmedSubs,
-        });
-
-        setVideoUrls(response.video_urls);
-      } catch (error) {
-        console.error('부분 영상 생성 실패:', error);
-        Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
-      } finally {
-        setLoading(false);
+    if (from === 'photo') {
+      const file = files[selectedIndex];
+      if (!file || !file.name) {
+        Alert.alert('에러', '파일 이름을 찾을 수 없습니다.');
+        return;
       }
-    };
+      imageFileName = file.name;
+    } else {
+      const selectedImage = imageUrls[selectedIndex];
+      if (!selectedImage) {
+        Alert.alert('에러', '이미지를 찾을 수 없습니다.');
+        return;
+      }
+      imageFileName = selectedImage.split('/').pop() || '';
+    }
 
-    generateVideos();
-  }, [duration, imageUrls, subtitles, videoUrls.length]);
+    try {
+      setLoading(true);
+      const response = await regenerateSinglePartialVideo({
+        image: imageFileName,
+        subtitle,
+        number: selectedIndex + 1,
+      });
+
+      const updated = [...videoUrls];
+      updated[selectedIndex] = response.video_url;
+      setVideoUrls(updated);
+    } catch (error) {
+      console.error('❌ 부분 영상 재생성 실패:', error);
+      Alert.alert('에러', '부분 영상 재생성에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoToSubtitleSettings = () => {
-    navigation.navigate('SubtitlesSettingScreen', {
+    const subtitleParams = {
       videos: videoUrls,
       subtitles,
       music,
-    });
+    };
+
+    if (from === 'photo') {
+      navigation.navigate('PhotoStack', {
+        screen: 'SubtitlesSettingScreen',
+        params: {
+          from: 'photo',
+          ...subtitleParams,
+        },
+      });
+    } else {
+      navigation.navigate('ShortsStack', {
+        screen: 'SubtitlesSettingScreen',
+        params: subtitleParams,
+      });
+    }
+  };
+
+  const handleNavigateToMusic = () => {
+    const musicParams = {
+      prompt,
+      music,
+      musicTitle,
+      videos: videoUrls,
+    };
+
+    if (from === 'photo') {
+      navigation.navigate('PhotoStack', {
+        screen: 'MusicSelectionScreen',
+        params: {
+          from: 'photo',
+          images,
+          ...musicParams,
+        },
+      });
+    } else {
+      navigation.navigate('ShortsStack', {
+        screen: 'MusicSelectionScreen',
+        params: {
+          duration: duration ?? 0,
+          imageUrls,
+          subtitles,
+          ...musicParams,
+        },
+      });
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container} {...panResponder.panHandlers}>
-        {/* 상단 중앙 텍스트만 */}
         <View style={styles.headerContainer}>
           <View style={styles.titleCenterWrapper}>
             <Text style={styles.imageNumberText}>
@@ -129,7 +187,6 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
           </View>
         </View>
 
-        {/* 영상 */}
         <View style={styles.sliderContainer}>
           <View style={styles.videoWrapper}>
             {loading ? (
@@ -177,50 +234,24 @@ const FinalVideoScreen: React.FC<Props> = ({navigation}) => {
           )}
         </View>
 
-        {/* 배경음악 선택 */}
         <View style={styles.musicSpacing} />
         <TouchableOpacity
           style={styles.musicButton}
-          onPress={() =>
-            navigation.navigate('MusicSelectionScreen', {
-              duration: duration ?? 0,
-              prompt,
-              imageUrls,
-              subtitles,
-              music,
-              musicTitle,
-              videos: videoUrls,
-            })
-          }>
+          onPress={handleNavigateToMusic}>
           <Text style={styles.buttonText}>배경 음악</Text>
         </TouchableOpacity>
         <Text style={styles.musicLabel}>
           선택된 음악: {musicTitle || '없음'}
         </Text>
 
-        {/* 버튼 */}
         <View style={styles.buttonContainer}>
           <CustomButton
             title="부분 영상 재생성"
-            onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: 'ImageSelectionScreen',
-                    params: {
-                      duration,
-                      prompt,
-                      imageUrls,
-                      subtitles,
-                    },
-                  },
-                ],
-              });
-            }}
+            onPress={regenerateSelectedVideo}
             type="secondary"
             style={styles.prevButton}
             textStyle={styles.buttonText}
+            disabled={loading}
           />
           <CustomButton
             title="자막 설정"

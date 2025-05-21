@@ -35,13 +35,13 @@ export default StyleSheet.create({
   swiperContainer: {
     width: '100%',
     aspectRatio: 9 / 16,
-    maxHeight: height * 0.55, // ✅ 최대 높이 제한으로 화면 넘침 방지
+    maxHeight: height * 0.55,
   },
 
   slide: {
     width: '100%',
     aspectRatio: 9 / 16,
-    maxHeight: height * 0.55, // ✅ Swiper 내 슬라이드도 동일 제한
+    maxHeight: height * 0.55,
     borderRadius: scaleSize(12),
     backgroundColor: COLORS.imagebox,
     alignItems: 'center',
@@ -115,5 +115,47 @@ export default StyleSheet.create({
 
   buttonSpacing: {
     width: '48%',
+  },
+
+  // ✅ 완료 알림 토스트 스타일
+  toast: {
+    position: 'absolute',
+    top: scaleSize(90),
+    left: scaleSize(20),
+    right: scaleSize(20),
+    backgroundColor: '#333',
+    padding: scaleSize(12),
+    borderRadius: scaleSize(8),
+    zIndex: 999,
+    elevation: 5,
+  },
+
+  toastText: {
+    color: '#fff',
+    fontSize: scaleFont(14),
+    textAlign: 'center',
+  },
+
+  // ✅ 로딩 오버레이
+  loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  loadingBox: {
+    backgroundColor: '#222',
+    padding: scaleSize(20),
+    borderRadius: scaleSize(10),
+    alignItems: 'center',
+    width: '70%',
+  },
+
+  loadingText: {
+    color: '#fff',
+    fontSize: scaleFont(16),
+    marginVertical: scaleSize(12),
+    textAlign: 'center',
   },
 });
