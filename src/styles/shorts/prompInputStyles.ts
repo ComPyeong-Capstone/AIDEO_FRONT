@@ -1,8 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../../styles/colors';
-
-const {height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -15,28 +13,30 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: '100%',
-    paddingTop: scaleSize(10),
+    paddingTop: scaleSize(12),
+    paddingBottom: scaleSize(8),
     backgroundColor: COLORS.background,
     alignItems: 'center',
     zIndex: 10,
   },
 
-  // 프롬프트 입력 필드 포함하는 영역
+  // 입력 영역 전체
   contentWrapper: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: scaleSize(20),
-    paddingTop: scaleSize(60), // 진행바 공간 확보
+    paddingTop: scaleSize(70), // 상단 진행바 공간 확보
   },
 
   inputContainer: {
     borderWidth: scaleSize(2),
     borderColor: COLORS.primary,
-    borderRadius: scaleSize(10),
+    borderRadius: scaleSize(12),
     width: '100%',
-    height: height * 0.25,
+    height: scaleSize(160),
     paddingHorizontal: scaleSize(12),
     justifyContent: 'center',
+    backgroundColor: '#fff',
   },
 
   input: {
@@ -48,7 +48,7 @@ export const styles = StyleSheet.create({
     padding: scaleSize(10),
   },
 
-  // ✅ 고정된 하단 버튼 컨테이너
+  // 하단 버튼 영역
   fixedButtonWrapper: {
     position: 'absolute',
     bottom: 0,
@@ -91,10 +91,41 @@ export const styles = StyleSheet.create({
     gap: scaleSize(10),
   },
 
-  // 로딩 텍스트
   loadingText: {
     marginTop: scaleSize(5),
     color: '#fff',
     fontSize: scaleFont(14),
+  },
+
+  // 완료 모달 오버레이
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: scaleSize(20),
+  },
+
+  // 모달 박스
+  modalBox: {
+    width: '90%',
+    backgroundColor: '#fff',
+    padding: scaleSize(20),
+    borderRadius: scaleSize(12),
+    alignItems: 'center',
+  },
+
+  modalTitle: {
+    fontSize: scaleFont(18),
+    fontWeight: 'bold',
+    marginBottom: scaleSize(10),
+    color: COLORS.primary,
+  },
+
+  modalMessage: {
+    fontSize: scaleFont(14),
+    color: '#444',
+    textAlign: 'center',
+    marginBottom: scaleSize(20),
   },
 });

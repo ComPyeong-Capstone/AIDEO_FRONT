@@ -4,12 +4,12 @@ import React, {useEffect} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import AppNavigator from './src/navigator/AppNavigator';
 import {UserProvider} from './src/context/UserContext';
-import SplashScreen from 'react-native-splash-screen';
-//import {configureGoogleSignin} from './src/config/googleSignin';
 import {ThemeProvider} from './src/context/ThemeContext';
-import {VideoGenerationProvider} from './src/context/VideoGenerationContext'; // ✅ 추가
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {VideoGenerationProvider} from './src/context/VideoGenerationContext';
+import {GenerateProvider} from './src/context/GenerateContext';
+import SplashScreen from 'react-native-splash-screen';
 import {configureGoogleSignin} from './src/config/googleSignin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {IOS_CLIENT_ID, WEB_CLIENT_ID} from '@env';
 
 const App = () => {
@@ -34,10 +34,12 @@ const App = () => {
     <UserProvider>
       <ThemeProvider>
         <VideoGenerationProvider>
-          {/* ✅ 전역 상태 Provider 추가 */}
-          <SafeAreaProvider>
-            <AppNavigator />
-          </SafeAreaProvider>
+          <GenerateProvider>
+            {/* ✅ 이미지/자막 생성 전역 상태 관리 */}
+            <SafeAreaProvider>
+              <AppNavigator />
+            </SafeAreaProvider>
+          </GenerateProvider>
         </VideoGenerationProvider>
       </ThemeProvider>
     </UserProvider>

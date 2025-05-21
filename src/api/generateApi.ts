@@ -3,8 +3,8 @@ import {videoAxiosInstance} from './axiosInstance';
 // ✅ Request / Response 타입 정의
 
 export interface GenerateMaterialRequest {
-  text: string;
-  number: number;
+  title: string;
+  duration: number;
 }
 
 export interface GenerateMaterialResponse {
