@@ -55,12 +55,12 @@ export const styles = StyleSheet.create({
     marginLeft: scaleSize(10),
   },
   creator: {
-    fontSize: scaleFont(16),
+    fontSize: scaleFont(15),
     fontWeight: 'bold',
     color: 'white',
   },
   title: {
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(23),
     color: 'white',
   },
   sideMenu: {
