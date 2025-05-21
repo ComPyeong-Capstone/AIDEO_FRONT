@@ -1,9 +1,10 @@
 import {videoAxiosInstance} from './axiosInstance';
 
 // ✅ Request / Response 타입 정의
+
 export interface GenerateMaterialRequest {
-  title: string;
-  duration: number;
+  text: string;
+  number: number;
 }
 
 export interface GenerateMaterialResponse {
@@ -44,9 +45,9 @@ export interface GenerateFinalVideoRequest {
   subtitles: string[];
   music_url: string;
   font_path: string;
-  font_effect: string; // ⬅️ enum-like 타입 제거 → string
-  font_color: string; // ⬅️ enum-like 타입 제거 → string
-  subtitle_y_position: number; // ⬅️ 제한된 숫자 타입 제거 → number
+  font_effect: string;
+  font_color: string;
+  subtitle_y_position: number;
 }
 
 export interface GenerateFinalVideoResponse {

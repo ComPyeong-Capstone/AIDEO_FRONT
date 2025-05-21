@@ -43,7 +43,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
-    // 다음 슬라이드로 전환
     setSelectedIndex(index);
     setCaptionText(subtitles[index]);
   };
@@ -52,7 +51,13 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   const handleRegenerateImage = async () => {
     try {
+      // 최신 자막 먼저 저장
+      const updatedSubtitles = [...subtitles];
+      updatedSubtitles[selectedIndex] = captionText;
+      setSubtitles(updatedSubtitles);
+
       setLoading(true);
+
       const result = await regenerateImage({
         text: captionText,
         number: selectedIndex + 1,
@@ -61,10 +66,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       const updatedImages = [...imageUrls];
       updatedImages[selectedIndex] = result.image_url;
       setImageUrls(updatedImages);
-
-      const updatedSubtitles = [...subtitles];
-      updatedSubtitles[selectedIndex] = captionText;
-      setSubtitles(updatedSubtitles);
     } catch {
       Alert.alert('에러', '이미지 재생성에 실패했습니다.');
     } finally {
