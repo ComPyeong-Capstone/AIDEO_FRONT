@@ -8,6 +8,8 @@ import {
   Modal,
   FlatList,
   Image,
+  InteractionManager,
+  Alert,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {styles} from '../../styles/shortsPlayer/ShortsPlayerScreenStyles';
@@ -47,32 +49,45 @@ const [isMoreMenuVisible, setIsMoreMenuVisible] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
 const handleDeletePost = async () => {
-  if (currentUserId !== creatorUserId) {
-    Alert.alert('삭제 불가', '작성자만 삭제할 수 있습니다.');
-    return;
-  }
+  try {
+    console.log('🧨 삭제 요청 시작');
+    console.log('🆔 postId:', postId);
+    console.log('🔐 token:', user.token);
 
-  Alert.alert('게시물 삭제', '정말로 삭제하시겠어요?', [
-    {text: '취소', style: 'cancel'},
-    {
-      text: '삭제',
-      style: 'destructive',
-      onPress: async () => {
-        try {
-await deletePost(postId, user.token); // user.token은 UserContext에서 가져온 로그인 토큰
-          Alert.alert('삭제 완료', '게시물이 삭제되었습니다.');
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Main'}],
-          });
-        } catch (error) {
-          console.error('❌ 게시물 삭제 실패:', error);
-          Alert.alert('오류', '게시물 삭제 중 문제가 발생했습니다.');
-        }
-      },
-    },
-  ]);
+    const res = await deletePost(postId, user.token);
+    console.log('✅ 응답 결과:', res);
+
+    Alert.alert('삭제 완료', '게시물이 삭제되었습니다.');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Main' }],
+    });
+  } catch (error) {
+    console.error('❌ 삭제 실패:', error?.response?.data || error.message);
+    Alert.alert('오류', '게시물 삭제 중 문제가 발생했습니다.');
+  }
 };
+
+const confirmDeletePost = () => {
+  Alert.alert(
+    '정말 삭제하시겠어요?',
+    '삭제한 게시물은 복구할 수 없습니다.',
+    [
+      { text: '아니요', style: 'cancel' },
+      {
+        text: '예',
+        style: 'destructive',
+        onPress: () => {
+          InteractionManager.runAfterInteractions(() => {
+            handleDeletePost();
+          });
+        },
+      },
+    ]
+  );
+};
+
+
 
   const loadCounts = useCallback(async () => {
     try {
@@ -144,7 +159,7 @@ await deletePost(postId, user.token); // user.token은 UserContext에서 가져�
   };
 
   const handleEditPost = () => {
-    navigation.navigate('PostVideoScreen', {
+    navigation.navigate('URLPosting', {
       finalVideoUrl: videoURL,
       title,
       tags: hashtags.join(' '),
@@ -192,14 +207,17 @@ await deletePost(postId, user.token); // user.token은 UserContext에서 가져�
           </View>
 
           <View style={styles.sideMenu}>
-            <TouchableOpacity onPress={handleToggleLike}>
-              <Ionicons
-                name={isLiked ? 'heart' : 'heart-outline'}
-                size={32}
-                color={isLiked ? 'red' : 'white'}
-              />
-            </TouchableOpacity>
-            <Text style={styles.count}>{likeCount}</Text>
+    <TouchableOpacity onPress={handleToggleLike}>
+      <Ionicons
+        name={isLiked ? 'heart' : 'heart-outline'}
+        size={32}
+        color={isLiked ? 'red' : 'white'}
+      />
+    </TouchableOpacity>
+
+    <TouchableOpacity onPress={handleOpenLikeList}>
+      <Text style={styles.count}>{likeCount}</Text>
+    </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setIsCommentsVisible(true)}>
               <Ionicons name="chatbubble-outline" size={32} color="white" />
@@ -209,21 +227,15 @@ await deletePost(postId, user.token); // user.token은 UserContext에서 가져�
             <TouchableOpacity onPress={() => console.log('공유 기능')}>
               <Ionicons name="share-social-outline" size={32} color="white" />
             </TouchableOpacity>
+            <View style={{ height: 20 }} />
+
             <TouchableOpacity onPress={() => setIsMoreMenuVisible(true)}>
               <Ionicons name="ellipsis-vertical" size={32} color="white" />
             </TouchableOpacity>
 
           </View>
 
-          {currentUserId === creatorUserId && (
-            <TouchableOpacity
-              style={styles.likeUserButton}
-              onPress={handleOpenLikeList}>
-              <Text style={styles.likeUserButtonText}>
-                ❤️ 좋아요 누른 유저 보기
-              </Text>
-            </TouchableOpacity>
-          )}
+
         </View>
       </SafeAreaView>
 <Modal visible={isMoreMenuVisible} transparent animationType="fade">
@@ -232,24 +244,33 @@ await deletePost(postId, user.token); // user.token은 UserContext에서 가져�
   </TouchableWithoutFeedback>
 
   <View style={styles.moreMenu}>
+    {/* 링크 복사 버튼은 항상 보이게 */}
     <TouchableOpacity onPress={() => {
       console.log('링크 복사');
       setIsMoreMenuVisible(false);
     }}>
-      <Text style={styles.moreMenuItem}>📎 링크 복사</Text>
+      <Text style={styles.moreMenuItem}>링크 복사</Text>
     </TouchableOpacity>
 
-  <TouchableOpacity onPress={() => {
-    setIsMoreMenuVisible(false);
-    handleDeletePost();
-  }}>
-    <Text style={styles.moreMenuItem}>삭제하기</Text>
-  </TouchableOpacity>
-
-
-
+    {/* 삭제하기 버튼은 본인 글일 때만 보여줌 */}
+    {currentUserId === creatorUserId && (
+      <>
+        <View style={{ height: 5 }} />
+        <TouchableOpacity
+          onPress={() => {
+            setIsMoreMenuVisible(false);
+            setTimeout(() => {
+              confirmDeletePost();
+            }, 300);
+          }}
+        >
+          <Text style={styles.moreMenuItem}>삭제하기</Text>
+        </TouchableOpacity>
+      </>
+    )}
   </View>
 </Modal>
+
 
       <Modal visible={isCommentsVisible} animationType="slide" transparent>
         <View style={styles.commentModalOverlay}>

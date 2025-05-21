@@ -144,17 +144,17 @@ export const getPostsByHashtag = async (
 
 // 🔹 게시물 삭제
 // postApi.ts
-export const deletePost = async (
-  postId: number,
-  token: string // ✅ 토큰 받기
-): Promise<{ message: string }> => {
+export const deletePost = async (postId: number, token: string) => {
+  console.log('📡 deletePost 호출됨');
   const response = await axiosInstance.delete(`/posts/${postId}`, {
     headers: {
-      Authorization: `Bearer ${token}`, // ✅ 토큰 포함
+      Authorization: `Bearer ${token}`,
     },
   });
   return response.data;
 };
+
+
 
 
 // 🔹 게시물 수정
