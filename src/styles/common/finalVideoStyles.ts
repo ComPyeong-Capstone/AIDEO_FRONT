@@ -115,7 +115,7 @@ export default StyleSheet.create({
 
   musicButton: {
     height: scaleSize(42),
-    width: '90%', // ✅ 가로 최대 너비 확보
+    width: scaleSize(350),
     borderRadius: scaleSize(10),
     borderWidth: scaleSize(2),
     borderColor: COLORS.primary,

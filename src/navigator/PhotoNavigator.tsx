@@ -1,49 +1,75 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import ResultScreen from '../screens/common/ResultScreen';
+// ✅ Screens
 import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PhotoPromptScreen from '../screens/photo/PhotoPromptScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
+import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen';
+import ResultScreen from '../screens/common/ResultScreen';
 import URLPosting from '../screens/common/URLPosting';
-import PostVideoScreen from '../screens/common/PostVideoScreen';
-import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen'; // ✅ 자막 설정 화면 import
 
-// ✅ Stack Navigator 타입 정의
+// ✅ Stack Param 타입 정의
 export type PhotoStackParamList = {
   SelectDurationScreen: {mode: 'photo'};
-  PhotoPromptScreen: {duration: number};
+
+  PhotoPromptScreen: {
+    duration: number;
+  };
+
   FinalVideoScreen: {
-    from?: 'photo';
+    from: 'photo';
     prompt: string;
-    images: {id: string; uri: string | null}[];
+    images: {
+      id: string;
+      uri: string | null;
+      name?: string; // ✅ 이미지 파일명 전달용 (선택적)
+    }[];
     videos?: string[];
     subtitles?: string[];
     music?: string;
     musicTitle?: string;
+
+    // ✅ 파일 객체 목록 (서버 요청용)
+    files?: {
+      uri: string;
+      name: string;
+      type: string;
+    }[];
   };
+
   MusicSelectionScreen: {
+    from: 'photo';
     prompt: string;
-    images: {id: string; uri: string | null}[];
+    images: {
+      id: string;
+      uri: string | null;
+    }[];
     music?: string;
     musicTitle?: string;
     videos?: string[];
   };
+
   SubtitlesSettingScreen: {
+    from: 'photo';
     videos: string[];
     subtitles: string[];
     music: string;
   };
+
   ResultScreen: {
     finalVideoUrl: string;
   };
+
   PostVideoScreen: {
     finalVideoUrl: string;
   };
+
+  URLPosting: undefined;
 };
 
-// ✅ Stack Navigator 생성
+// ✅ Stack 생성
 const Stack = createStackNavigator<PhotoStackParamList>();
 
 const PhotoNavigator: React.FC = () => {
