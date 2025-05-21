@@ -80,8 +80,8 @@ const ShortsNavigator: React.FC = () => {
         name="SubtitlesSettingScreen"
         component={SubtitlesSettingScreen}
         options={{
-          gestureEnabled: true, // ✅ 제스처 뒤로가기 활성화
-          gestureDirection: 'horizontal', // ✅ 좌우 스와이프
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
         }}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />

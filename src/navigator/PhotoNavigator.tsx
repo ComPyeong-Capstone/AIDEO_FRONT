@@ -62,8 +62,8 @@ const PhotoNavigator: React.FC = () => {
         name="SubtitlesSettingScreen"
         component={SubtitlesSettingScreen}
         options={{
-          gestureEnabled: true, // ✅ 스와이프 제스처 허용
-          gestureDirection: 'horizontal', // ✅ 좌우 스와이프 방향 설정
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
         }}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />

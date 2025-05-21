@@ -7,28 +7,28 @@ import {
   Alert,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, CommonActions} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {authStyles} from '../../styles/auth/AuthScreenStyles';
 import {userApi} from '../../api/userApi';
 import {useUser} from '../../context/UserContext';
-import {saveAuthTokens, getAccessToken} from '../../utils/storage';
+import {saveAuthTokens} from '../../utils/storage';
 import {RootStackParamList} from '../../types/navigation';
-import {googleLoginApi} from '../../api/oauthApi'; // 필요한 경우 추가
-import { oauthApi } from '../../api/oauthApi'; // POST /oauth/google with idToken
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { CommonActions } from '@react-navigation/native';
+import {oauthApi} from '../../api/oauthApi';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const AuthScreen = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const {setUser} = useUser();
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    // ❗️ null/undefined 방어 추가
+    if (!email?.trim() || !password?.trim()) {
       Alert.alert('입력 오류', '이메일과 비밀번호를 모두 입력해주세요.');
       return;
     }
@@ -37,7 +37,7 @@ const AuthScreen = () => {
     const normalizedPassword = password.trim();
 
     try {
-      const { accesstoken, refreshToken, user } = await userApi.login(
+      const {accesstoken, refreshToken, user} = await userApi.login(
         normalizedEmail,
         normalizedPassword,
       );
@@ -58,11 +58,7 @@ const AuthScreen = () => {
       const status = error?.response?.status;
       const message = error?.response?.data?.message ?? error?.message;
 
-      console.error('❌ 로그인 실패:', {
-        status,
-        message,
-        error,
-      });
+      console.error('❌ 로그인 실패:', {status, message, error});
 
       let errorMsg = '로그인 중 오류가 발생했습니다.';
       if (status === 403 || status === 404) {
@@ -75,41 +71,35 @@ const AuthScreen = () => {
 
       Alert.alert('로그인 실패', errorMsg);
     }
-
   };
 
-const handleGoogleLogin = async () => {
-  try {
-    await GoogleSignin.hasPlayServices();
+  const handleGoogleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('🟢 Google user info:', userInfo);
 
-    const userInfo = await GoogleSignin.signIn();
-    console.log('🟢 Google user info:', userInfo);
+      const idToken = userInfo.idToken || userInfo?.data?.idToken;
 
-    // 여기가 핵심!
-    const idToken = userInfo.idToken || userInfo?.data?.idToken;
+      if (!idToken) {
+        throw new Error('Google 로그인 토큰을 가져오지 못했습니다.');
+      }
 
-    console.log('🟢 idToken:', idToken);
+      const response = await oauthApi.googleLogin(idToken, 'ios');
 
-    if (!idToken) {
-      throw new Error('Google 로그인 토큰을 가져오지 못했습니다.');
+      if (response.needSignup) {
+        navigation.navigate('GoogleSignup', {email: response.email});
+      } else {
+        const {accessToken, refreshToken, user} = response;
+        await saveAuthTokens(accessToken);
+        setUser({...user, token: accessToken});
+        Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
+      }
+    } catch (error) {
+      console.error('❌ Google 로그인 실패:', error);
+      Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');
     }
-
-    const response = await oauthApi.googleLogin(idToken, 'ios');
-
-    if (response.needSignup) {
-      navigation.navigate('GoogleSignup', { email: response.email });
-    } else {
-      const { accessToken, refreshToken, user } = response;
-      await saveAuthTokens(accessToken);
-      setUser({ ...user, token: accessToken });
-      Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-  }
-  } catch (error) {
-    console.error('❌ Google 로그인 실패:', error);
-    Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');
-  }
-};
-
+  };
 
   return (
     <SafeAreaView style={authStyles.container}>
@@ -117,15 +107,16 @@ const handleGoogleLogin = async () => {
 
       <TextInput
         placeholder="이메일"
-        value={email}
+        value={email || ''}
         onChangeText={text => setEmail(text.replace(/\s/g, ''))}
         style={authStyles.input}
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <TextInput
         placeholder="비밀번호"
-        value={password}
+        value={password || ''}
         onChangeText={text => setPassword(text.replace(/\s/g, ''))}
         style={authStyles.input}
         secureTextEntry
@@ -147,13 +138,19 @@ const handleGoogleLogin = async () => {
         <View style={authStyles.line} />
       </View>
 
-    <TouchableOpacity style={authStyles.googleButton} onPress={handleGoogleLogin}>
-      <View style={authStyles.googleButtonContent}>
-        <Icon name="google" size={20} color="#fff" style={authStyles.googleIcon} />
-        <Text style={authStyles.buttonText}>Google로 로그인</Text>
-      </View>
-    </TouchableOpacity>
-
+      <TouchableOpacity
+        style={authStyles.googleButton}
+        onPress={handleGoogleLogin}>
+        <View style={authStyles.googleButtonContent}>
+          <Icon
+            name="google"
+            size={20}
+            color="#fff"
+            style={authStyles.googleIcon}
+          />
+          <Text style={authStyles.buttonText}>Google로 로그인</Text>
+        </View>
+      </TouchableOpacity>
 
       <TouchableOpacity style={authStyles.kakaoButton}>
         <View style={authStyles.kakaoButtonContent}>

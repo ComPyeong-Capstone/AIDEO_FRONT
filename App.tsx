@@ -8,18 +8,18 @@ import SplashScreen from 'react-native-splash-screen';
 //import {configureGoogleSignin} from './src/config/googleSignin';
 import {ThemeProvider} from './src/context/ThemeContext';
 import {VideoGenerationProvider} from './src/context/VideoGenerationContext'; // ✅ 추가
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import {iosClientId,webClientId} from '@env';
-import { configureGoogleSignin } from './src/config/googleSignin';
-import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '@env';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {configureGoogleSignin} from './src/config/googleSignin';
+import {IOS_CLIENT_ID, WEB_CLIENT_ID} from '@env';
 
 const App = () => {
+  console.log('WEB_CLIENT_ID:', WEB_CLIENT_ID);
 
-console.log('WEB_CLIENT_ID:', WEB_CLIENT_ID);
-
-useEffect(() => {
-  configureGoogleSignin();
-
+  useEffect(() => {
+    configureGoogleSignin({
+      iosClientId: IOS_CLIENT_ID,
+      webClientId: WEB_CLIENT_ID,
+    });
 
     const timeout = setTimeout(() => {
       if (SplashScreen?.hide) {

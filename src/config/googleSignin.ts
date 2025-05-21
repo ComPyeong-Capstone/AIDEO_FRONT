@@ -1,11 +1,18 @@
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '@env';
-
 // src/config/googleSignin.ts
-export const configureGoogleSignin = () => {
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+
+export const configureGoogleSignin = ({
+  iosClientId,
+  webClientId,
+}: {
+  iosClientId: string;
+  webClientId: string;
+}) => {
+  console.log('🧪 전달받은 Client ID:', iosClientId, webClientId); // 디버깅용
+
   GoogleSignin.configure({
-    iosClientId: IOS_CLIENT_ID,
-    webClientId: WEB_CLIENT_ID, // ✅ 반드시 필요
+    iosClientId,
+    webClientId,
     offlineAccess: true,
   });
 };
