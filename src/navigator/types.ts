@@ -32,4 +32,7 @@ export type AppStackParamList = {
     title: string;
     tags: string;
   };
+   YouTubeUploadScreen: {
+      videoURI: string;
+    };
 };

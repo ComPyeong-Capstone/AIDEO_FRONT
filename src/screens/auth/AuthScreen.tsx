@@ -77,33 +77,36 @@ const AuthScreen = () => {
     }
 
   };
-
 const handleGoogleLogin = async () => {
   try {
     await GoogleSignin.hasPlayServices();
 
     const userInfo = await GoogleSignin.signIn();
-    console.log('🟢 Google user info:', userInfo);
 
-    // 여기가 핵심!
-    const idToken = userInfo.idToken || userInfo?.data?.idToken;
+    if (!userInfo || userInfo.type === 'cancelled') {
+      Alert.alert('로그인 취소됨', 'Google 로그인이 취소되었습니다.');
+      return;
+    }
+
+    const { accessToken: googleAccessToken, idToken } = await GoogleSignin.getTokens();
+
+    if (!idToken || !googleAccessToken) {
+      throw new Error('Google 토큰을 가져오지 못했습니다.');
+    }
 
     console.log('🟢 idToken:', idToken);
-
-    if (!idToken) {
-      throw new Error('Google 로그인 토큰을 가져오지 못했습니다.');
-    }
+    console.log('🟢 accessToken:', googleAccessToken);
 
     const response = await oauthApi.googleLogin(idToken, 'ios');
 
     if (response.needSignup) {
       navigation.navigate('GoogleSignup', { email: response.email });
     } else {
-      const { accessToken, refreshToken, user } = response;
+      const { accessToken, user } = response;
       await saveAuthTokens(accessToken);
-      setUser({ ...user, token: accessToken });
+      setUser({ ...user, token: accessToken, googleAccessToken });
       Alert.alert('로그인 성공', `${user.userName}님 환영합니다!`);
-  }
+    }
   } catch (error) {
     console.error('❌ Google 로그인 실패:', error);
     Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');

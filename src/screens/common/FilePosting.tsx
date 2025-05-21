@@ -22,7 +22,7 @@ import CommonButton from '../../styles/button';
 import Icon from 'react-native-vector-icons/Feather';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import axios from 'axios';
-import {BASE_URL} from '@env';
+import {BASE_URL,WEB_CLIENT_ID} from '@env';
 import * as Progress from 'react-native-progress';
 
 interface Props {
@@ -31,6 +31,9 @@ interface Props {
 
 
 const FilePosting: React.FC<Props> = ({navigation}) => {
+    const [youtubeTitle, setYoutubeTitle] = useState('');
+    const [youtubeDescription, setYoutubeDescription] = useState('');
+    const [privacyStatus, setPrivacyStatus] = useState<'public' | 'unlisted' | 'private'>('unlisted');
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const {user} = useUser();
@@ -59,12 +62,7 @@ const shakeTags = useRef(new Animated.Value(0)).current;
     setTags(processed.join(' ') + (needsSpace ? ' ' : ''));
   };
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/youtube.upload'],
-      webClientId: 'YOUR_WEB_CLIENT_ID',
-    });
-  }, []);
+
 useEffect(() => {
   const fetchToken = async () => {
     const savedToken = await getAccessToken();
@@ -119,39 +117,28 @@ const handlePickVideo = async () => {
 };
 
   const uploadToYouTube = async () => {
+    if (!videoURI || !user?.token) {
+      Alert.alert('에러', '영상 또는 토큰이 없습니다.');
+      return;
+    }
+
     try {
-      await GoogleSignin.hasPlayServices();
-      await GoogleSignin.signIn();
-      const token = (await GoogleSignin.getTokens()).accessToken;
+      const response = await axios.post(`${BASE_URL}:8080/youtube/upload`, {
+        YoutubeaccessToken: user.token,
+        videoUrl: videoURI, // videoURI가 실제 S3 주소일 경우
+        title: youtubeTitle || 'AI Generated Video',
+        description: youtubeDescription || 'AI 영상입니다.',
+        privacyStatus,
+      });
 
-      const form = new FormData();
-      form.append('video', {
-        uri: videoURI,
-        type: 'video/mp4',
-        name: 'upload.mp4',
-      } as any);
-      form.append('snippet', JSON.stringify({ title: title || 'Untitled', description: tags }));
-      form.append('status', JSON.stringify({ privacyStatus: 'unlisted' }));
-
-      const response = await axios.post(
-        'https://www.googleapis.com/upload/youtube/v3/videos?part=snippet,status',
-        form,
-        {
-          headers: {
-  Authorization: `Bearer ${user?.token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-          params: { uploadType: 'multipart' },
-        }
-      );
-
-      Alert.alert('YouTube 업로드 완료', '영상이 YouTube에 업로드되었습니다.');
-      console.log('YouTube 업로드 성공:', response.data);
-    } catch (error: any) {
-      console.error('YouTube 업로드 실패:', error?.response || error);
-      Alert.alert('에러', 'YouTube 업로드에 실패했습니다.');
+      Alert.alert('YouTube 업로드 완료', 'YouTube에 영상이 업로드되었습니다.');
+      console.log('✅ 유튜브 업로드 결과:', response.data);
+    } catch (err) {
+      console.error('❌ 유튜브 업로드 실패:', err?.response?.data || err.message);
+      Alert.alert('업로드 실패', 'YouTube 업로드 중 오류가 발생했습니다.');
     }
   };
+
 
 const handleUpload = () => {
   let valid = true;
@@ -175,6 +162,14 @@ if (!tags.trim()) {
     setUploading(false),
   );
 };
+  const goToYouTubeUpload = () => {
+    if (!videoURI) {
+      Alert.alert('영상 없음', 'YouTube에 업로드할 영상을 먼저 선택해주세요.');
+      return;
+    }
+
+navigation.navigate('YouTubeUploadScreen', { videoURI: videoURI });
+  };
 
 // ✅ 올바른 수정
 const uploadToMyServer = async (
@@ -298,18 +293,15 @@ const uploadToMyServer = async (
 </Animated.View>
 
 
+
+
+
         </View>
 
-      <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
-        <CommonButton title="YouTube 업로드" onPress={uploadToYouTube} type="secondary" style={{width: width * 0.4}} />
-    <CommonButton
-      title="AIVIDEO 업로드"
-      onPress={handleUpload}
-      type="primary"
-      style={{width: width * 0.4}}
-    />
-
-      </View>
+  <View style={[styles.buttonContainer, { width: width * 0.9, marginBottom: insets.bottom + 10 }]}>
+           <CommonButton title="YouTube 업로드" onPress={goToYouTubeUpload} type="secondary" style={{ width: width * 0.4 }} />
+           <CommonButton title="AIVIDEO 업로드" onPress={handleUpload} type="primary" style={{ width: width * 0.4 }} />
+         </View>
 
       {uploading && (
         <View style={{marginTop: 10, alignItems: 'center'}}>

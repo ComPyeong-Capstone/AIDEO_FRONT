@@ -9,6 +9,7 @@ import PhotoNavigator from './PhotoNavigator';
 import ShortsPlayerScreen from '../screens/shortsPlayer/ShortsPlayerScreen';
 import URLPosting from '../screens/common/URLPosting';
 import FilePosting from '../screens/common/FilePosting';
+import YouTubeUploadScreen from '../screens/common/YoutubeUploadScreen'; // 경로 맞게 수정
 
 import {useUser} from '../context/UserContext';
 import {AppStackParamList} from './types';
@@ -56,6 +57,10 @@ const AppNavigator = () => {
                 title: '',
                 tags: '',
               }}
+            />
+            <Stack.Screen
+              name="YouTubeUploadScreen" // ✅ 여기가 없어서 에러 발생했던 것
+              component={YouTubeUploadScreen}
             />
           </>
         ) : (
