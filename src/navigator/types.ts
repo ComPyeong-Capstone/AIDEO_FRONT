@@ -45,29 +45,18 @@ export type AppStackParamList = {
     videoURI: string;
   };
 
-  // ✅ 결과 영상 미리보기 화면 (숏츠 또는 사진 기반)
+  // ✅ 결과 영상 미리보기 화면 (공통 구조로 통일)
   FinalVideoScreen: {
-    from?: 'photo' | 'shorts';
-    duration: number;
+    from: 'photo' | 'shorts';
     prompt: string;
-
-    // 숏츠 기반
-    imageUrls?: string[];
-
-    // 사진 기반
-    images?: {
+    images: {
       id: string;
       uri: string | null;
       name?: string;
     }[];
-
+    videos: string[];
     subtitles: string[];
-    music?: string;
-    musicTitle?: string;
-    videos?: string[];
-
-    // 선택적: 파일 정보 전달
-    files?: {
+    files: {
       uri: string;
       name: string;
       type: string;

@@ -89,12 +89,20 @@ const FinalVideoScreen: React.FC = () => {
     let imageFileName = '';
 
     if (from === 'photo') {
-      const file = files[selectedIndex];
-      if (!file || !file.name) {
+      const file = files?.[selectedIndex];
+      const image = images?.[selectedIndex];
+
+      if (file?.name) {
+        imageFileName = file.name;
+      } else if (image?.name) {
+        imageFileName = image.name;
+      } else if (image?.uri) {
+        imageFileName =
+          image.uri.split('/').pop() || `image_${selectedIndex}.jpg`;
+      } else {
         Alert.alert('에러', '파일 이름을 찾을 수 없습니다.');
         return;
       }
-      imageFileName = file.name;
     } else {
       const selectedImage = imageUrls[selectedIndex];
       if (!selectedImage) {

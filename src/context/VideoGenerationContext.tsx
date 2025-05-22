@@ -1,16 +1,26 @@
-// context/VideoGenerationContext.tsx
 import React, {createContext, useContext, useState} from 'react';
+
+// 영상 데이터 전체 타입 정의
+interface VideoData {
+  from: 'photo' | 'shorts';
+  prompt: string;
+  videos: string[];
+  subtitles: string[];
+  images: any[];
+  files: any[];
+}
 
 interface VideoGenerationContextProps {
   isReady: boolean;
-  videoUrl: string | null;
-  notifyReady: (url: string) => void;
+  videoData: VideoData | null;
+  notifyReady: (data: VideoData) => void;
   resetStatus: () => void;
 }
 
+// 기본값 설정
 const VideoGenerationContext = createContext<VideoGenerationContextProps>({
   isReady: false,
-  videoUrl: null,
+  videoData: null,
   notifyReady: () => {},
   resetStatus: () => {},
 });
@@ -19,24 +29,25 @@ export const VideoGenerationProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
   const [isReady, setIsReady] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoData, setVideoData] = useState<VideoData | null>(null);
 
-  const notifyReady = (url: string) => {
-    setVideoUrl(url);
+  const notifyReady = (data: VideoData) => {
+    setVideoData(data);
     setIsReady(true);
   };
 
   const resetStatus = () => {
     setIsReady(false);
-    setVideoUrl(null);
+    setVideoData(null);
   };
 
   return (
     <VideoGenerationContext.Provider
-      value={{isReady, videoUrl, notifyReady, resetStatus}}>
+      value={{isReady, videoData, notifyReady, resetStatus}}>
       {children}
     </VideoGenerationContext.Provider>
   );
 };
 
+// 훅으로 사용
 export const useVideoGeneration = () => useContext(VideoGenerationContext);

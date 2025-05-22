@@ -10,6 +10,13 @@ import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen';
 import ResultScreen from '../screens/common/ResultScreen';
 import URLPosting from '../screens/common/URLPosting';
 
+// ✅ ImageItem 타입 정의
+type ImageItem = {
+  id: string;
+  uri: string | null;
+  name?: string;
+};
+
 // ✅ Stack Param 타입 정의
 export type PhotoStackParamList = {
   SelectDurationScreen: {mode: 'photo'};
@@ -19,20 +26,12 @@ export type PhotoStackParamList = {
   };
 
   FinalVideoScreen: {
-    from: 'photo';
+    from: 'photo' | 'shorts'; // ✅ 수정
     prompt: string;
-    images: {
-      id: string;
-      uri: string | null;
-      name?: string; // ✅ 이미지 파일명 전달용 (선택적)
-    }[];
-    videos?: string[];
-    subtitles?: string[];
-    music?: string;
-    musicTitle?: string;
-
-    // ✅ 파일 객체 목록 (서버 요청용)
-    files?: {
+    images: ImageItem[];
+    videos: string[];
+    subtitles: string[];
+    files: {
       uri: string;
       name: string;
       type: string;

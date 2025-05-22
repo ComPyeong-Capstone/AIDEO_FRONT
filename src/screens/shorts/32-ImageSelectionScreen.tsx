@@ -129,14 +129,17 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container} {...panResponder.panHandlers}>
+        {/* 진행바 */}
         <View style={styles.progressBarWrapper}>
           <ProgressBar currentStep={3} mode="shorts" />
         </View>
 
+        {/* 이미지 번호 */}
         <View style={styles.headerContainer}>
           <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
         </View>
 
+        {/* 이미지 스와이퍼 */}
         <View style={styles.sliderWrapper}>
           <Swiper
             loop={false}
@@ -166,6 +169,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
           </View>
         </View>
 
+        {/* 자막 입력창 */}
         <View style={styles.captionBox}>
           <TextInput
             style={styles.captionText}
@@ -181,8 +185,8 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
           </Text>
         </View>
 
-        {/* ✅ 하단 고정 버튼 */}
-        <View style={styles.fixedButtonWrapper}>
+        {/* 하단 고정 버튼 */}
+        <View style={styles.fixedBottom}>
           <CustomButton
             title="사진 재생성"
             onPress={handleRegenerateImage}
@@ -199,6 +203,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
           />
         </View>
 
+        {/* 로딩 */}
         {loading && (
           <Modal transparent animationType="fade">
             <View style={styles.loadingOverlay}>

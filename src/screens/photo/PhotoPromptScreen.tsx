@@ -1,4 +1,5 @@
-import React, {useRef, useState, useEffect} from 'react';
+// ✅ 모든 import 동일
+import React, {useRef, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -9,6 +10,7 @@ import {
   Alert,
   Modal,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
@@ -29,7 +31,10 @@ import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
 import {generatePartialVideoWithUpload} from '../../api/generateApi';
 import {navigationRef} from '../../navigator/AppNavigator';
 
-let completeModalTimer: NodeJS.Timeout | null = null;
+import {useFocusEffect} from '@react-navigation/native';
+import {useVideoGeneration} from '../../context/VideoGenerationContext';
+
+const {width} = Dimensions.get('window');
 
 type PhotoPromptScreenNavigationProp = StackNavigationProp<
   PhotoStackParamList,
@@ -56,14 +61,12 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
-  const [videoData, setVideoData] = useState<{
-    files: any[];
-    videos: string[];
-  } | null>(null);
-  const [completedInBackground, setCompletedInBackground] = useState(false);
+  const [generated, setGenerated] = useState(false);
 
   const insets = useSafeAreaInsets();
   const swiperRef = useRef<Swiper>(null);
+
+  const {notifyReady, isReady, videoData, resetStatus} = useVideoGeneration();
 
   const pickImage = (index: number) => {
     launchImageLibrary(
@@ -102,12 +105,17 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handleGeneratePartialVideos = async () => {
+    if (generated && videoData?.videos?.length === maxCount) {
+      console.log('⚡ 이미 생성된 영상이 있으므로 API 재호출 없이 이동합니다.');
+      navigation.navigate('FinalVideoScreen', videoData);
+      return;
+    }
+
     const selectedImages = images.filter(img => img.uri !== null) as {
       id: string;
       uri: string;
       name?: string;
     }[];
-
     const filledCaptions = subtitles.filter(s => s.trim() !== '');
 
     if (selectedImages.length < maxCount || filledCaptions.length < maxCount) {
@@ -122,34 +130,37 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
       setLoading(true);
 
       const files = selectedImages.map(img => {
-        const name =
-          img.name || img.uri.split('/').pop() || `image_${img.id}.jpg`;
+        const originalName = img.name || img.uri.split('/').pop() || '';
+        const name = originalName || `image_${img.id}.jpg`;
         const type = name.endsWith('.png')
           ? 'image/png'
           : name.endsWith('.jpg') || name.endsWith('.jpeg')
           ? 'image/jpeg'
           : 'application/octet-stream';
 
-        return {
-          uri: img.uri,
-          name,
-          type,
-        };
+        console.log(
+          `📁 이미지 ${img.id}: 원본 파일명: ${originalName}, 최종 저장명: ${name}`,
+        );
+
+        return {uri: img.uri, name, type};
       });
 
       const response = await generatePartialVideoWithUpload(files, subtitles);
+      setLoading(false);
 
-      setVideoData({files, videos: response.video_urls});
+      notifyReady({
+        from: 'photo',
+        prompt: '',
+        images,
+        subtitles,
+        videos: response.video_urls,
+        files,
+      });
 
-      if (!navigation.isFocused() && navigationRef.isReady()) {
-        setCompletedInBackground(true); // 백그라운드에서 완료됨
-      } else {
-        setShowCompleteModal(true);
-      }
+      setGenerated(true);
     } catch (error) {
       console.error('❌ 부분 영상 생성 실패:', error);
       Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
-    } finally {
       setLoading(false);
     }
   };
@@ -157,33 +168,17 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
   const goToFinalVideo = () => {
     if (!videoData) return;
     setShowCompleteModal(false);
-    if (completeModalTimer) clearTimeout(completeModalTimer);
-    navigation.navigate('FinalVideoScreen', {
-      from: 'photo',
-      prompt: '',
-      images,
-      videos: videoData.videos,
-      subtitles,
-      files: videoData.files,
-    });
+    resetStatus();
+    navigation.navigate('FinalVideoScreen', videoData);
   };
 
-  useEffect(() => {
-    // 포커스로 돌아왔을 때 자동 알림 모달 표시
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (completedInBackground && videoData) {
-        completeModalTimer = setTimeout(() => {
-          setShowCompleteModal(true);
-          setCompletedInBackground(false);
-        }, 300); // 약간의 딜레이 후 모달 표시
+  useFocusEffect(
+    useCallback(() => {
+      if (isReady && videoData?.from === 'photo' && generated) {
+        setTimeout(() => setShowCompleteModal(true), 300);
       }
-    });
-
-    return () => {
-      if (completeModalTimer) clearTimeout(completeModalTimer);
-      unsubscribe();
-    };
-  }, [completedInBackground, videoData, navigation]);
+    }, [isReady, videoData, generated]),
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -199,14 +194,18 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
             <Swiper
               ref={swiperRef}
               key={images.length}
-              showsButtons={false}
+              horizontal
+              scrollEnabled
               loop={false}
+              showsButtons={false}
               activeDotColor={COLORS.primary}
               dotColor={COLORS.dotInactive}
               paginationStyle={styles.pagination}
               onIndexChanged={setSelectedIndex}>
               {images.map((item, index) => (
-                <View key={item.id} style={styles.slide}>
+                <View key={item.id} style={[styles.slide, {width}]}>
+                  {' '}
+                  {/* ✅ swiper slide width 지정 */}
                   {item.uri ? (
                     <Image
                       source={{uri: item.uri}}
@@ -244,8 +243,8 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
 
       <View style={fixedButtonWrapperWithPadding(insets.bottom)}>
         <CustomButton
-          title="이전"
-          onPress={() => navigation.goBack()}
+          title="사진 변경"
+          onPress={() => pickImage(selectedIndex)}
           type="secondary"
           style={styles.buttonSpacing}
         />
@@ -258,7 +257,6 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
         />
       </View>
 
-      {/* 로딩 인디케이터 */}
       {loading && (
         <Modal transparent animationType="fade">
           <View style={styles.loadingOverlay}>
@@ -268,10 +266,11 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
               <CustomButton
                 title="앱 구경하기"
                 onPress={() => {
-                  setLoading(false);
-                  if (navigationRef.isReady()) {
-                    navigationRef.navigate('Main', {screen: 'Home'});
-                  }
+                  setTimeout(() => {
+                    if (navigationRef.isReady()) {
+                      navigationRef.navigate('Main', {screen: 'Home'});
+                    }
+                  }, 200);
                 }}
               />
             </View>
@@ -279,7 +278,6 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
         </Modal>
       )}
 
-      {/* 완료 모달 */}
       {showCompleteModal && (
         <Modal transparent animationType="fade">
           <View style={styles.loadingOverlay}>
