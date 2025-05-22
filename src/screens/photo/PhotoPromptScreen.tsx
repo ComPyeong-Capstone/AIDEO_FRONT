@@ -1,295 +1,213 @@
-// ✅ 모든 import 동일
-import React, {useRef, useState, useCallback} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  SafeAreaView,
   Image,
-  TextInput,
-  ScrollView,
+  TouchableOpacity,
   Alert,
-  Modal,
   ActivityIndicator,
-  Dimensions,
+  TextInput,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import styles from '../../styles/photo/PhotoPromptStyles';
-import {
-  progressBarWrapperWithTop,
-  fixedButtonWrapperWithPadding,
-} from '../../styles/photo/PhotoPromptDynamicStyles';
-import {COLORS} from '../../styles/colors';
+import {styles} from '../../styles/shorts/imageSelectionStyles';
+import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
 import ProgressBar from '../../components/ProgressBar';
-import {ImageItem} from '../../types/common';
+import {regenerateImage, generatePartialVideo} from '../../api/generateApi';
 
-import {StackNavigationProp} from '@react-navigation/stack';
-import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
-import {generatePartialVideoWithUpload} from '../../api/generateApi';
-import {navigationRef} from '../../navigator/AppNavigator';
-
-import {useFocusEffect} from '@react-navigation/native';
-import {useVideoGeneration} from '../../context/VideoGenerationContext';
-
-const {width} = Dimensions.get('window');
-
-type PhotoPromptScreenNavigationProp = StackNavigationProp<
-  PhotoStackParamList,
-  'PhotoPromptScreen'
+type Props = NativeStackScreenProps<
+  ShortsStackParamList,
+  'ImageSelectionScreen'
 >;
 
-interface Props {
-  navigation: PhotoPromptScreenNavigationProp;
-  route: {
-    params: {
-      duration: number;
-    };
-  };
-}
+const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
+  const {
+    imageUrls: initialImageUrls,
+    subtitles: initialSubtitles,
+    duration,
+    prompt,
+    videos: existingVideos,
+  } = route.params;
 
-const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
-  const {duration} = route.params;
-  const maxCount = Math.floor(duration / 5);
-
-  const [images, setImages] = useState<ImageItem[]>([
-    {id: '0', uri: null, name: ''},
-  ]);
-  const [subtitles, setSubtitles] = useState<string[]>(['']);
+  const [imageUrls, setImageUrls] = useState(initialImageUrls);
+  const [subtitles, setSubtitles] = useState(initialSubtitles);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [captionText, setCaptionText] = useState(initialSubtitles[0]);
   const [loading, setLoading] = useState(false);
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
-  const [generated, setGenerated] = useState(false);
 
-  const insets = useSafeAreaInsets();
-  const swiperRef = useRef<Swiper>(null);
-
-  const {notifyReady, isReady, videoData, resetStatus} = useVideoGeneration();
-
-  const pickImage = (index: number) => {
-    launchImageLibrary(
-      {
-        mediaType: 'photo',
-        maxWidth: 1920,
-        maxHeight: 1080,
-        quality: 1,
-      },
-      response => {
-        const asset = response.assets?.[0];
-        const uri = asset?.uri ?? null;
-        const name = asset?.fileName ?? asset?.uri?.split('/').pop() ?? '';
-
-        if (!response.didCancel && uri) {
-          const updated = [...images];
-          updated[index] = {id: String(index), uri, name};
-          setImages(updated);
-
-          if (images.length < maxCount && index === images.length - 1) {
-            setImages(prev => [
-              ...prev,
-              {id: String(prev.length), uri: null, name: ''},
-            ]);
-            setSubtitles(prev => [...prev, '']);
-          }
-        }
-      },
+  const handleIndexChange = (index: number) => {
+    // 현재 슬라이드 자막 저장
+    setSubtitles(prev =>
+      prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
+    // 다음 슬라이드로 전환
+    setSelectedIndex(index);
+    setCaptionText(subtitles[index]);
   };
 
-  const handleCaptionChange = (text: string) => {
-    const updated = [...subtitles];
-    updated[selectedIndex] = text;
-    setSubtitles(updated);
-  };
+  const handleCaptionChange = (text: string) => setCaptionText(text);
 
-  const handleGeneratePartialVideos = async () => {
-    if (generated && videoData?.videos?.length === maxCount) {
-      console.log('⚡ 이미 생성된 영상이 있으므로 API 재호출 없이 이동합니다.');
-      navigation.navigate('FinalVideoScreen', videoData);
-      return;
+  const handleRegenerateImage = async () => {
+    try {
+      setLoading(true);
+      const result = await regenerateImage({
+        text: captionText,
+        number: selectedIndex + 1,
+      });
+
+      const updatedImages = [...imageUrls];
+      updatedImages[selectedIndex] = result.image_url;
+      setImageUrls(updatedImages);
+
+      const updatedSubtitles = [...subtitles];
+      updatedSubtitles[selectedIndex] = captionText;
+      setSubtitles(updatedSubtitles);
+    } catch {
+      Alert.alert('에러', '이미지 재생성에 실패했습니다.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const selectedImages = images.filter(img => img.uri !== null) as {
-      id: string;
-      uri: string;
-      name?: string;
-    }[];
-    const filledCaptions = subtitles.filter(s => s.trim() !== '');
+  const handleGenerateVideo = async () => {
+    const updatedSubtitles = [...subtitles];
+    updatedSubtitles[selectedIndex] = captionText;
+    setSubtitles(updatedSubtitles);
 
-    if (selectedImages.length < maxCount || filledCaptions.length < maxCount) {
-      Alert.alert(
-        '입력 오류',
-        `${maxCount}장의 사진과 자막을 모두 입력해주세요.`,
-      );
+    const imageFilenames = imageUrls.map(url => url.split('/').pop() || '');
+    const isValidImages = imageFilenames.every(name => name !== '');
+    const isValidSubtitles = updatedSubtitles.every(s => s.trim() !== '');
+
+    if (!isValidImages || !isValidSubtitles) {
+      Alert.alert('입력 오류', '모든 이미지와 자막을 입력해주세요.');
       return;
     }
 
     try {
       setLoading(true);
 
-      const files = selectedImages.map(img => {
-        const originalName = img.name || img.uri.split('/').pop() || '';
-        const name = originalName || `image_${img.id}.jpg`;
-        const type = name.endsWith('.png')
-          ? 'image/png'
-          : name.endsWith('.jpg') || name.endsWith('.jpeg')
-          ? 'image/jpeg'
-          : 'application/octet-stream';
+      if (existingVideos && existingVideos.length > 0) {
+        navigation.navigate('FinalVideoScreen', {
+          from: 'shorts',
+          duration,
+          prompt,
+          imageUrls,
+          subtitles: updatedSubtitles,
+          videos: existingVideos,
+        });
+      } else {
+        const response = await generatePartialVideo({
+          images: imageFilenames,
+          subtitles: updatedSubtitles,
+        });
 
-        console.log(
-          `📁 이미지 ${img.id}: 원본 파일명: ${originalName}, 최종 저장명: ${name}`,
-        );
-
-        return {uri: img.uri, name, type};
-      });
-
-      const response = await generatePartialVideoWithUpload(files, subtitles);
-      setLoading(false);
-
-      notifyReady({
-        from: 'photo',
-        prompt: '',
-        images,
-        subtitles,
-        videos: response.video_urls,
-        files,
-      });
-
-      setGenerated(true);
+        navigation.navigate('FinalVideoScreen', {
+          from: 'shorts',
+          duration,
+          prompt,
+          imageUrls,
+          subtitles: updatedSubtitles,
+          videos: response.video_urls,
+        });
+      }
     } catch (error) {
-      console.error('❌ 부분 영상 생성 실패:', error);
+      console.error('영상 생성 실패:', error);
       Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
+    } finally {
       setLoading(false);
     }
   };
 
-  const goToFinalVideo = () => {
-    if (!videoData) return;
-    setShowCompleteModal(false);
-    resetStatus();
-    navigation.navigate('FinalVideoScreen', videoData);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      if (isReady && videoData?.from === 'photo' && generated) {
-        setTimeout(() => setShowCompleteModal(true), 300);
-      }
-    }, [isReady, videoData, generated]),
-  );
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={progressBarWrapperWithTop(insets.top)}>
-        <ProgressBar currentStep={2} mode="photo" />
+      {/* 상단 헤더 */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.navIcon}>{'<'}</Text>
+        </TouchableOpacity>
+        <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
+        <TouchableOpacity onPress={handleGenerateVideo}>
+          <Text style={styles.navIcon}>{'>'}</Text>
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.contentWrapper}>
-          <View style={styles.swiperContainer}>
-            <Swiper
-              ref={swiperRef}
-              key={images.length}
-              horizontal
-              scrollEnabled
-              loop={false}
-              showsButtons={false}
-              activeDotColor={COLORS.primary}
-              dotColor={COLORS.dotInactive}
-              paginationStyle={styles.pagination}
-              onIndexChanged={setSelectedIndex}>
-              {images.map((item, index) => (
-                <View key={item.id} style={[styles.slide, {width}]}>
-                  {' '}
-                  {/* ✅ swiper slide width 지정 */}
-                  {item.uri ? (
-                    <Image
-                      source={{uri: item.uri}}
-                      style={styles.image}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={() => pickImage(index)}>
-                      <Text style={styles.addButtonText}>+</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </Swiper>
-          </View>
+      {/* 진행 바 */}
+      <View style={styles.progressBarWrapper}>
+        <ProgressBar currentStep={3} mode="shorts" />
+      </View>
 
-          <View style={styles.paginationSpacing} />
+      {/* 이미지 슬라이더 */}
+      <View style={styles.sliderWrapper}>
+        <Swiper
+          loop={false}
+          showsButtons={false}
+          showsPagination={false}
+          onIndexChanged={handleIndexChange}
+          containerStyle={styles.swiperContainer}>
+          {imageUrls.map((uri, index) => (
+            <View key={index} style={styles.imageBox}>
+              <Image source={{uri}} style={styles.image} resizeMode="cover" />
+            </View>
+          ))}
+        </Swiper>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.promptInput}
-              placeholder={`자막 입력 (${selectedIndex + 1}/${maxCount})`}
-              placeholderTextColor="#aaa"
-              value={subtitles[selectedIndex]}
-              onChangeText={handleCaptionChange}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
+        <View style={styles.customPagination}>
+          {imageUrls.map((_, index) => (
+            <Text
+              key={index}
+              style={
+                index === selectedIndex
+                  ? styles.progressDotActive
+                  : styles.progressDotInactive
+              }>
+              ●
+            </Text>
+          ))}
         </View>
-      </ScrollView>
+      </View>
 
-      <View style={fixedButtonWrapperWithPadding(insets.bottom)}>
+      {/* 자막 입력 */}
+      <View style={styles.captionBox}>
+        <TextInput
+          style={styles.captionText}
+          multiline
+          numberOfLines={2}
+          value={captionText}
+          onChangeText={handleCaptionChange}
+        />
+      </View>
+
+      {/* 버튼 */}
+      <View style={styles.buttonContainer}>
         <CustomButton
-          title="사진 변경"
-          onPress={() => pickImage(selectedIndex)}
+          title="사진 재생성"
+          onPress={handleRegenerateImage}
           type="secondary"
+          disabled={loading}
           style={styles.buttonSpacing}
         />
         <CustomButton
           title="영상 생성"
-          onPress={handleGeneratePartialVideos}
+          onPress={handleGenerateVideo}
           type="primary"
           style={styles.buttonSpacing}
-          disabled={loading}
         />
       </View>
 
+      {/* 로딩 오버레이 */}
       {loading && (
-        <Modal transparent animationType="fade">
-          <View style={styles.loadingOverlay}>
-            <View style={styles.loadingBox}>
-              <ActivityIndicator size="large" color="#fff" />
-              <Text style={styles.loadingText}>영상 생성 중입니다...</Text>
-              <CustomButton
-                title="앱 구경하기"
-                onPress={() => {
-                  setTimeout(() => {
-                    if (navigationRef.isReady()) {
-                      navigationRef.navigate('Main', {screen: 'Home'});
-                    }
-                  }, 200);
-                }}
-              />
-            </View>
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingBox}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loadingText}>처리 중...</Text>
           </View>
-        </Modal>
-      )}
-
-      {showCompleteModal && (
-        <Modal transparent animationType="fade">
-          <View style={styles.loadingOverlay}>
-            <View style={styles.loadingBox}>
-              <Text style={styles.loadingText}>✅ 영상 생성 완료!</Text>
-              <CustomButton title="확인" onPress={goToFinalVideo} />
-            </View>
-          </View>
-        </Modal>
+        </View>
       )}
     </SafeAreaView>
   );
 };
 
-export default PhotoPromptScreen;
+export default ImageSelectionScreen;

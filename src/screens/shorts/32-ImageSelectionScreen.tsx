@@ -1,13 +1,13 @@
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   Image,
+  TouchableOpacity,
+  Alert,
   ActivityIndicator,
   TextInput,
-  Modal,
-  PanResponder,
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -17,14 +17,11 @@ import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
 import ProgressBar from '../../components/ProgressBar';
 import {regenerateImage, generatePartialVideo} from '../../api/generateApi';
-import {useGenerate} from '../../context/GenerateContext';
 
 type Props = NativeStackScreenProps<
   ShortsStackParamList,
   'ImageSelectionScreen'
 >;
-
-const MAX_CHAR = 45;
 
 const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const {
@@ -35,43 +32,26 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     videos: existingVideos,
   } = route.params;
 
-  const {setResult} = useGenerate();
   const [imageUrls, setImageUrls] = useState(initialImageUrls);
   const [subtitles, setSubtitles] = useState(initialSubtitles);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [captionText, setCaptionText] = useState(initialSubtitles[0]);
   const [loading, setLoading] = useState(false);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) =>
-        Math.abs(gestureState.dx) > 20,
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > 50) {
-          navigation.navigate('PromptInputScreen', {duration});
-        }
-      },
-    }),
-  ).current;
-
   const handleIndexChange = (index: number) => {
+    // 현재 슬라이드 자막 저장
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
+    // 다음 슬라이드로 전환
     setSelectedIndex(index);
     setCaptionText(subtitles[index]);
   };
 
-  const handleCaptionChange = (text: string) => {
-    if (text.length <= MAX_CHAR) setCaptionText(text);
-  };
+  const handleCaptionChange = (text: string) => setCaptionText(text);
 
   const handleRegenerateImage = async () => {
     try {
-      const updatedSubtitles = [...subtitles];
-      updatedSubtitles[selectedIndex] = captionText;
-      setSubtitles(updatedSubtitles);
-
       setLoading(true);
       const result = await regenerateImage({
         text: captionText,
@@ -81,8 +61,12 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       const updatedImages = [...imageUrls];
       updatedImages[selectedIndex] = result.image_url;
       setImageUrls(updatedImages);
+
+      const updatedSubtitles = [...subtitles];
+      updatedSubtitles[selectedIndex] = captionText;
+      setSubtitles(updatedSubtitles);
     } catch {
-      console.log('이미지 재생성 실패');
+      Alert.alert('에러', '이미지 재생성에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -94,33 +78,44 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     setSubtitles(updatedSubtitles);
 
     const imageFilenames = imageUrls.map(url => url.split('/').pop() || '');
-    const isValid =
-      imageFilenames.every(n => n !== '') &&
-      updatedSubtitles.every(s => s.trim() !== '');
-    if (!isValid) return;
+    const isValidImages = imageFilenames.every(name => name !== '');
+    const isValidSubtitles = updatedSubtitles.every(s => s.trim() !== '');
+
+    if (!isValidImages || !isValidSubtitles) {
+      Alert.alert('입력 오류', '모든 이미지와 자막을 입력해주세요.');
+      return;
+    }
 
     try {
       setLoading(true);
 
       if (existingVideos && existingVideos.length > 0) {
-        setResult({prompt, duration, imageUrls, subtitles: updatedSubtitles});
-        navigation.navigate('Main', {screen: 'Home'});
+        navigation.navigate('FinalVideoScreen', {
+          from: 'shorts',
+          duration,
+          prompt,
+          imageUrls,
+          subtitles: updatedSubtitles,
+          videos: existingVideos,
+        });
       } else {
-        const res = await generatePartialVideo({
+        const response = await generatePartialVideo({
           images: imageFilenames,
           subtitles: updatedSubtitles,
         });
-        setResult({
-          prompt,
+
+        navigation.navigate('FinalVideoScreen', {
+          from: 'shorts',
           duration,
+          prompt,
           imageUrls,
           subtitles: updatedSubtitles,
-          videos: res.video_urls,
+          videos: response.video_urls,
         });
-        navigation.navigate('Main', {screen: 'Home'});
       }
-    } catch (e) {
-      console.log('영상 생성 실패:', e);
+    } catch (error) {
+      console.error('영상 생성 실패:', error);
+      Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -128,93 +123,89 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container} {...panResponder.panHandlers}>
-        {/* 진행바 */}
-        <View style={styles.progressBarWrapper}>
-          <ProgressBar currentStep={3} mode="shorts" />
+      {/* 상단 헤더 */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.navIcon}>{'<'}</Text>
+        </TouchableOpacity>
+        <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
+        <TouchableOpacity onPress={handleGenerateVideo}>
+          <Text style={styles.navIcon}>{'>'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 진행 바 */}
+      <View style={styles.progressBarWrapper}>
+        <ProgressBar currentStep={3} mode="shorts" />
+      </View>
+
+      {/* 이미지 슬라이더 */}
+      <View style={styles.sliderWrapper}>
+        <Swiper
+          loop={false}
+          showsButtons={false}
+          showsPagination={false}
+          onIndexChanged={handleIndexChange}
+          containerStyle={styles.swiperContainer}>
+          {imageUrls.map((uri, index) => (
+            <View key={index} style={styles.imageBox}>
+              <Image source={{uri}} style={styles.image} resizeMode="cover" />
+            </View>
+          ))}
+        </Swiper>
+
+        <View style={styles.customPagination}>
+          {imageUrls.map((_, index) => (
+            <Text
+              key={index}
+              style={
+                index === selectedIndex
+                  ? styles.progressDotActive
+                  : styles.progressDotInactive
+              }>
+              ●
+            </Text>
+          ))}
         </View>
+      </View>
 
-        {/* 이미지 번호 */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
-        </View>
+      {/* 자막 입력 */}
+      <View style={styles.captionBox}>
+        <TextInput
+          style={styles.captionText}
+          multiline
+          numberOfLines={2}
+          value={captionText}
+          onChangeText={handleCaptionChange}
+        />
+      </View>
 
-        {/* 이미지 스와이퍼 */}
-        <View style={styles.sliderWrapper}>
-          <Swiper
-            loop={false}
-            showsButtons={false}
-            showsPagination={false}
-            onIndexChanged={handleIndexChange}
-            containerStyle={styles.swiperContainer}>
-            {imageUrls.map((uri, index) => (
-              <View key={index} style={styles.imageBox}>
-                <Image source={{uri}} style={styles.image} resizeMode="cover" />
-              </View>
-            ))}
-          </Swiper>
+      {/* 버튼 */}
+      <View style={styles.buttonContainer}>
+        <CustomButton
+          title="사진 재생성"
+          onPress={handleRegenerateImage}
+          type="secondary"
+          disabled={loading}
+          style={styles.buttonSpacing}
+        />
+        <CustomButton
+          title="영상 생성"
+          onPress={handleGenerateVideo}
+          type="primary"
+          style={styles.buttonSpacing}
+        />
+      </View>
 
-          <View style={styles.customPagination}>
-            {imageUrls.map((_, index) => (
-              <Text
-                key={index}
-                style={
-                  index === selectedIndex
-                    ? styles.progressDotActive
-                    : styles.progressDotInactive
-                }>
-                ●
-              </Text>
-            ))}
+      {/* 로딩 오버레이 */}
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingBox}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loadingText}>처리 중...</Text>
           </View>
         </View>
-
-        {/* 자막 입력창 */}
-        <View style={styles.captionBox}>
-          <TextInput
-            style={styles.captionText}
-            multiline
-            numberOfLines={2}
-            value={captionText}
-            onChangeText={handleCaptionChange}
-            placeholder="자막을 입력하세요 (최대 45자)"
-            placeholderTextColor="#aaa"
-          />
-          <Text style={styles.captionCount}>
-            {captionText.length} / {MAX_CHAR}
-          </Text>
-        </View>
-
-        {/* 하단 고정 버튼 */}
-        <View style={styles.fixedBottom}>
-          <CustomButton
-            title="사진 재생성"
-            onPress={handleRegenerateImage}
-            type="secondary"
-            style={styles.buttonSpacing}
-            disabled={loading}
-          />
-          <CustomButton
-            title="영상 생성"
-            onPress={handleGenerateVideo}
-            type="primary"
-            style={styles.buttonSpacing}
-            disabled={loading}
-          />
-        </View>
-
-        {/* 로딩 */}
-        {loading && (
-          <Modal transparent animationType="fade">
-            <View style={styles.loadingOverlay}>
-              <View style={styles.loadingBox}>
-                <ActivityIndicator size="large" color="#fff" />
-                <Text style={styles.loadingText}>생성 중입니다...</Text>
-              </View>
-            </View>
-          </Modal>
-        )}
-      </View>
+      )}
     </SafeAreaView>
   );
 };

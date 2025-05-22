@@ -4,9 +4,8 @@ import {COLORS} from '../colors';
 
 const {width, height} = Dimensions.get('window');
 
-// ✅ 이미지 박스 넓게 (전체 너비의 90% 사용)
-const IMAGE_WIDTH = width * 0.7;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // 16:9 비율 유지
+const IMAGE_WIDTH = width * 0.75;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9) + scaleSize(20);
 
 export const styles = StyleSheet.create({
   container: {
@@ -15,29 +14,51 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  progressBarWrapper: {
-    width: '100%',
-    paddingHorizontal: scaleSize(20),
-    marginTop: scaleSize(12),
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '90%',
+    marginTop: scaleSize(8),
   },
 
-  headerContainer: {
-    width: '100%',
+  titleAndBarWrapper: {
     alignItems: 'center',
-    marginTop: scaleSize(6),
+    justifyContent: 'center',
+  },
+
+  navIcon: {
+    fontSize: scaleFont(24),
+    color: COLORS.primary,
+    paddingHorizontal: scaleSize(4),
   },
 
   imageNumberText: {
-    fontSize: scaleFont(16),
-    color: COLORS.black,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontSize: scaleFont(15),
+    color: '#000',
+    fontWeight: '500',
+  },
+
+  progressBarWrapper: {
+    marginTop: scaleSize(4),
+    width: '100%',
+    paddingHorizontal: '5%',
+    backgroundColor: COLORS.background,
+  },
+
+  progressDotActive: {
+    fontSize: scaleFont(18),
+    color: COLORS.primary,
+  },
+  progressDotInactive: {
+    fontSize: scaleFont(18),
+    color: COLORS.textSecondary,
   },
 
   sliderWrapper: {
     marginTop: height * 0.02,
+    height: IMAGE_HEIGHT + scaleSize(30),
     width: '100%',
-    height: IMAGE_HEIGHT + scaleSize(50), // 여유 있는 높이 확보
     alignItems: 'center',
   },
 
@@ -47,20 +68,20 @@ export const styles = StyleSheet.create({
 
   imageBox: {
     width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
+    height: IMAGE_HEIGHT + scaleSize(20),
     backgroundColor: COLORS.primary,
-    borderRadius: scaleSize(12),
+    borderRadius: scaleSize(10),
     overflow: 'hidden',
+    alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: scaleSize(10),
+    marginTop: scaleSize(24),
   },
 
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain', // ✅ 이미지가 전체 높이까지 잘리지 않도록 유지
+    resizeMode: 'contain',
   },
 
   customPagination: {
@@ -70,60 +91,31 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(12),
   },
 
-  progressDotActive: {
-    fontSize: scaleFont(18),
-    color: COLORS.primary,
-  },
-
-  progressDotInactive: {
-    fontSize: scaleFont(18),
-    color: COLORS.textSecondary,
-  },
-
   captionBox: {
     width: '90%',
-    alignSelf: 'center',
-    marginTop: scaleSize(12),
-  },
-
-  captionText: {
-    width: '100%',
-    minHeight: scaleSize(50),
-    maxHeight: scaleSize(80),
+    height: scaleSize(60),
     borderColor: COLORS.primary,
     borderWidth: scaleSize(2),
     borderRadius: scaleSize(10),
+    paddingHorizontal: scaleSize(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: scaleSize(8),
+  },
+
+  captionText: {
     color: COLORS.primary,
     fontSize: scaleFont(16),
     fontWeight: 'bold',
-    paddingHorizontal: scaleSize(10),
-    paddingVertical: scaleSize(8),
-    textAlignVertical: 'top',
-    textAlign: 'left',
-    backgroundColor: '#fff',
+    textAlign: 'center',
   },
 
-  captionCount: {
-    alignSelf: 'flex-end',
-    marginTop: scaleSize(4),
-    marginRight: scaleSize(4),
-    fontSize: scaleFont(12),
-    color: COLORS.textSecondary,
-  },
-
-  fixedButtonWrapper: {
+  buttonContainer: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    bottom: scaleSize(40),
+    width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.background,
-    paddingHorizontal: scaleSize(20),
-    paddingVertical: scaleSize(14),
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    zIndex: 10,
   },
 
   buttonSpacing: {
@@ -154,5 +146,10 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(10),
     color: '#fff',
     fontSize: scaleFont(14),
+  },
+
+  hiddenPagination: {
+    display: 'none',
+    height: 0,
   },
 });
