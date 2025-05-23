@@ -16,7 +16,7 @@ import {
 } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from '../../styles/common/selectDurationStyles';
-import ProgressBar from '../../components/ProgressBar';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import { PhotoStackParamList } from '../../navigator/PhotoNavigator';
 import { ShortsStackParamList } from '../../navigator/ShortsNavigator';
 import { AppStackParamList } from '../../types/navigation';
@@ -85,7 +85,7 @@ const SelectDurationScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={[styles.progressBarWrapper, { marginTop: insets.top }]}>
-        <ProgressBar currentStep={1} mode={mode} />
+<AnimatedProgressBar progress={1 / 3} />
       </View>
 
       <View style={styles.contentWrapper}>
