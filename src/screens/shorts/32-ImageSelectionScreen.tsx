@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   Image,
-  TouchableOpacity,
   Alert,
   ActivityIndicator,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -15,8 +15,15 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {styles} from '../../styles/shorts/imageSelectionStyles';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
-import ProgressBar from '../../components/ProgressBar';
 import {regenerateImage, generatePartialVideo} from '../../api/generateApi';
+
+interface RouteParams {
+  imageUrls: string[];
+  subtitles: string[];
+  duration: number;
+  prompt: string;
+  videos?: string[];
+}
 
 type Props = NativeStackScreenProps<
   ShortsStackParamList,
@@ -30,33 +37,57 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     duration,
     prompt,
     videos: existingVideos,
-  } = route.params;
+  }: RouteParams = route.params;
 
-  const [imageUrls, setImageUrls] = useState(initialImageUrls);
-  const [subtitles, setSubtitles] = useState(initialSubtitles);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [subtitles, setSubtitles] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [captionText, setCaptionText] = useState(initialSubtitles[0]);
+  const [captionText, setCaptionText] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    console.log('📥 [ImageSelectionScreen] 전달받은 props');
+    console.log('🖼️ imageUrls:', initialImageUrls);
+    console.log('📝 subtitles:', initialSubtitles);
+    console.log('⏱️ duration:', duration);
+    console.log('💬 prompt:', prompt);
+    console.log('🎞️ videos:', existingVideos);
+
+    setImageUrls(initialImageUrls);
+    setSubtitles(initialSubtitles);
+    setCaptionText(initialSubtitles[0] || '');
+  }, [initialImageUrls, initialSubtitles, duration, prompt, existingVideos]);
+
   const handleIndexChange = (index: number) => {
-    // 현재 슬라이드 자막 저장
+    console.log('➡️ Swiper 인덱스 변경:', index);
+
+    // 현재 자막 저장
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
-    // 다음 슬라이드로 전환
+
+    // 다음 자막 로드
     setSelectedIndex(index);
-    setCaptionText(subtitles[index]);
+    setCaptionText(subtitles[index] || '');
   };
 
-  const handleCaptionChange = (text: string) => setCaptionText(text);
+  const handleCaptionChange = (text: string) => {
+    setCaptionText(text);
+  };
 
   const handleRegenerateImage = async () => {
     try {
       setLoading(true);
+      console.log(
+        `🔄 ${selectedIndex + 1}번 이미지 재생성 요청 (자막: ${captionText})`,
+      );
+
       const result = await regenerateImage({
         text: captionText,
         number: selectedIndex + 1,
       });
+
+      console.log('✅ 이미지 재생성 결과:', result.image_url);
 
       const updatedImages = [...imageUrls];
       updatedImages[selectedIndex] = result.image_url;
@@ -65,7 +96,8 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       const updatedSubtitles = [...subtitles];
       updatedSubtitles[selectedIndex] = captionText;
       setSubtitles(updatedSubtitles);
-    } catch {
+    } catch (error) {
+      console.error('❌ 이미지 재생성 실패:', error);
       Alert.alert('에러', '이미지 재생성에 실패했습니다.');
     } finally {
       setLoading(false);
@@ -81,6 +113,10 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     const isValidImages = imageFilenames.every(name => name !== '');
     const isValidSubtitles = updatedSubtitles.every(s => s.trim() !== '');
 
+    console.log('🎬 영상 생성 유효성 검사');
+    console.log('✅ 이미지 파일명:', imageFilenames);
+    console.log('✅ 자막 목록:', updatedSubtitles);
+
     if (!isValidImages || !isValidSubtitles) {
       Alert.alert('입력 오류', '모든 이미지와 자막을 입력해주세요.');
       return;
@@ -90,6 +126,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       setLoading(true);
 
       if (existingVideos && existingVideos.length > 0) {
+        console.log('🟢 기존 영상 존재 → FinalVideoScreen 이동');
         navigation.navigate('FinalVideoScreen', {
           from: 'shorts',
           duration,
@@ -99,10 +136,13 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
           videos: existingVideos,
         });
       } else {
+        console.log('📡 부분 영상 생성 요청');
         const response = await generatePartialVideo({
           images: imageFilenames,
           subtitles: updatedSubtitles,
         });
+
+        console.log('🎥 부분 영상 생성 완료:', response.video_urls);
 
         navigation.navigate('FinalVideoScreen', {
           from: 'shorts',
@@ -114,7 +154,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         });
       }
     } catch (error) {
-      console.error('영상 생성 실패:', error);
+      console.error('❌ 영상 생성 실패:', error);
       Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
     } finally {
       setLoading(false);
@@ -123,64 +163,66 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 상단 헤더 */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.navIcon}>{'<'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
-        <TouchableOpacity onPress={handleGenerateVideo}>
-          <Text style={styles.navIcon}>{'>'}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* 진행 바 */}
-      <View style={styles.progressBarWrapper}>
-        <ProgressBar currentStep={3} mode="shorts" />
-      </View>
-
-      {/* 이미지 슬라이더 */}
-      <View style={styles.sliderWrapper}>
-        <Swiper
-          loop={false}
-          showsButtons={false}
-          showsPagination={false}
-          onIndexChanged={handleIndexChange}
-          containerStyle={styles.swiperContainer}>
-          {imageUrls.map((uri, index) => (
-            <View key={index} style={styles.imageBox}>
-              <Image source={{uri}} style={styles.image} resizeMode="cover" />
-            </View>
-          ))}
-        </Swiper>
-
-        <View style={styles.customPagination}>
-          {imageUrls.map((_, index) => (
-            <Text
-              key={index}
-              style={
-                index === selectedIndex
-                  ? styles.progressDotActive
-                  : styles.progressDotInactive
-              }>
-              ●
-            </Text>
-          ))}
+      <ScrollView
+        contentContainerStyle={{alignItems: 'center', paddingBottom: 100}}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
         </View>
-      </View>
 
-      {/* 자막 입력 */}
-      <View style={styles.captionBox}>
-        <TextInput
-          style={styles.captionText}
-          multiline
-          numberOfLines={2}
-          value={captionText}
-          onChangeText={handleCaptionChange}
-        />
-      </View>
+        <View style={styles.sliderWrapper}>
+          <Swiper
+            loop={false}
+            showsButtons={false}
+            showsPagination={false}
+            onIndexChanged={handleIndexChange}
+            containerStyle={styles.swiperContainer}>
+            {imageUrls.map((uri, index) => (
+              <View key={index} style={styles.imageBox}>
+                <Image
+                  source={{uri}}
+                  style={styles.image}
+                  resizeMode="contain"
+                  onError={e => {
+                    console.error(
+                      `🛑 이미지 로딩 실패 (index: ${index})`,
+                      e.nativeEvent,
+                    );
+                  }}
+                  onLoad={() => {
+                    console.log(`✅ 이미지 로딩 성공 (index: ${index})`);
+                  }}
+                />
+              </View>
+            ))}
+          </Swiper>
 
-      {/* 버튼 */}
+          <View style={styles.customPagination}>
+            {imageUrls.map((_, index) => (
+              <Text
+                key={index}
+                style={
+                  index === selectedIndex
+                    ? styles.progressDotActive
+                    : styles.progressDotInactive
+                }>
+                ●
+              </Text>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.captionBox}>
+          <TextInput
+            style={styles.captionText}
+            multiline
+            numberOfLines={2}
+            value={captionText}
+            onChangeText={handleCaptionChange}
+          />
+        </View>
+      </ScrollView>
+
       <View style={styles.buttonContainer}>
         <CustomButton
           title="사진 재생성"
@@ -197,7 +239,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         />
       </View>
 
-      {/* 로딩 오버레이 */}
       {loading && (
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingBox}>
