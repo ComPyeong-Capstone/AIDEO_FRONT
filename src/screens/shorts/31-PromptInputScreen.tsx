@@ -62,10 +62,30 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
       console.log('🖼️ image_urls:', res.image_urls);
       console.log('📝 subtitles:', res.subtitles);
 
+      // ✅ 유효한 이미지 URL 필터링
+      const filteredImageUrls = res.image_urls.filter(
+        url => typeof url === 'string' && url.startsWith('http'),
+      );
+
+      if (filteredImageUrls.length !== res.image_urls.length) {
+        Alert.alert(
+          '⚠️ 일부 이미지 제외',
+          '유효하지 않은 이미지 URL이 감지되어 제외되었습니다.',
+        );
+      }
+
+      if (filteredImageUrls.length !== res.subtitles.length) {
+        Alert.alert(
+          '데이터 불일치',
+          '이미지 수와 자막 수가 맞지 않습니다. 다시 시도해주세요.',
+        );
+        return;
+      }
+
       const resultData: ShortsStackParamList['ImageSelectionScreen'] = {
         prompt: trimmedPrompt,
         duration,
-        imageUrls: res.image_urls,
+        imageUrls: filteredImageUrls,
         subtitles: res.subtitles,
       };
 
@@ -134,12 +154,10 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 진행바 */}
       <View style={[styles.progressBarWrapper, {marginTop: insets.top + 10}]}>
         <ProgressBar currentStep={2} />
       </View>
 
-      {/* 프롬프트 입력 */}
       <View style={styles.contentWrapper}>
         <View style={styles.inputContainer}>
           <TextInput
@@ -154,7 +172,6 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         </View>
       </View>
 
-      {/* 하단 버튼 */}
       <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
           title="이전"
@@ -171,7 +188,6 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         />
       </View>
 
-      {/* 로딩 모달 */}
       {loading && (
         <Modal transparent animationType="fade">
           <View style={styles.loadingOverlay}>
@@ -188,7 +204,6 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         </Modal>
       )}
 
-      {/* 생성 완료 모달 */}
       {showCompleteModal && nextData && (
         <Modal transparent animationType="fade">
           <View style={styles.loadingOverlay}>
