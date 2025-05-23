@@ -17,6 +17,7 @@ import CameraRoll from '@react-native-camera-roll/camera-roll';
 import RNFS from 'react-native-fs';
 import {useUser} from '../../context/UserContext'; // 사용자 토큰용
 import {createPostWithUrl} from '../../api/postApi';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 // ▶️ Stack Param Type
 type ShortsStackParamList = {
@@ -125,6 +126,8 @@ const handlePost = () => {
   return (
     <View style={styles.container}>
       {/* ▶️ 비디오 미리보기 */}
+      <AnimatedProgressBar progress={4 / 5} />
+
       <View style={styles.videoBox}>
         {finalVideoUrl ? (
           <Video

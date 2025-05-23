@@ -15,6 +15,7 @@ import {
 } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import Video from 'react-native-video';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 import styles from '../../styles/common/finalVideoStyles';
 import CustomButton from '../../styles/button';
@@ -186,6 +187,8 @@ const FinalVideoScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+    <AnimatedProgressBar progress={3 / 5} />
+
       <View style={styles.container} {...panResponder.panHandlers}>
         <View style={styles.headerContainer}>
           <View style={styles.titleCenterWrapper}>

@@ -15,6 +15,7 @@ import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
 import {generateFinalVideo} from '../../api/generateApi';
 import styles from '../../styles/common/subtitlesSettingStyles';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 type NavigationProp = StackNavigationProp<
   ShortsStackParamList,
@@ -106,6 +107,7 @@ const SubtitlesSettingScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+        <AnimatedProgressBar progress={3 / 5} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoiding}>

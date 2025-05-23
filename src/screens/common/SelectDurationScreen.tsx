@@ -85,7 +85,7 @@ const SelectDurationScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={[styles.progressBarWrapper, { marginTop: insets.top }]}>
-<AnimatedProgressBar progress={1 / 3} />
+<AnimatedProgressBar progress={1 / 5} />
       </View>
 
       <View style={styles.contentWrapper}>

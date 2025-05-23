@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 import {styles} from '../../styles/shorts/imageSelectionStyles';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
@@ -169,6 +170,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         <View style={styles.headerContainer}>
           <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
         </View>
+     <AnimatedProgressBar progress={3 / 5} />
 
         <View style={styles.sliderWrapper}>
           <Swiper
@@ -197,7 +199,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
             ))}
           </Swiper>
 
-          <View style={styles.customPagination}>
+    /*       <View style={styles.customPagination}>
             {imageUrls.map((_, index) => (
               <Text
                 key={index}
@@ -209,7 +211,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
                 ●
               </Text>
             ))}
-          </View>
+          </View> */
         </View>
 
         <View style={styles.captionBox}>

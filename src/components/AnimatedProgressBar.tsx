@@ -12,14 +12,12 @@ const AnimatedProgressBar: React.FC<Props> = ({ progress }) => {
   const [barWidth, setBarWidth] = useState(0);
 
   useEffect(() => {
-    // width (JS driver)
     Animated.timing(widthAnim, {
       toValue: progress,
       duration: 300,
-      useNativeDriver: true, // ⚠️ width는 JS만 가능
+      useNativeDriver: false, // width는 JS 드라이버만 가능
     }).start();
 
-    // scale (Native driver)
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 1.05,
@@ -34,35 +32,47 @@ const AnimatedProgressBar: React.FC<Props> = ({ progress }) => {
     ]).start();
   }, [progress]);
 
+  const percentPosition = barWidth * progress;
+
   return (
-    <View style={styles.wrapper}>
-      <View
-        style={styles.barBackground}
-        onLayout={(e: LayoutChangeEvent) =>
-          setBarWidth(e.nativeEvent.layout.width)
-        }
+<View style={styles.wrapper}>
+
+
+  <View
+    style={styles.barBackground}
+    onLayout={(e: LayoutChangeEvent) =>
+      setBarWidth(e.nativeEvent.layout.width)
+    }
+  >
+    {barWidth > 0 && (
+      <Animated.View
+        style={[
+          styles.barFill,
+          {
+            width: percentPosition,
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
       >
-        {barWidth > 0 && (
-          <Animated.View
-            style={[
-              styles.barFill,
-              {
-      width: barWidth * progress, // 여기 수정!
-                transform: [{ scale: scaleAnim }],
-              },
-            ]}
-          >
-            <LinearGradient
-              colors={['#51BCB4', '#6ED4C8']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={StyleSheet.absoluteFill}
-            />
-          </Animated.View>
-        )}
-      </View>
-      <Text style={styles.label}>{Math.round(progress * 100)}%</Text>
-    </View>
+        <LinearGradient
+          colors={['#51BCB4', '#6ED4C8']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={StyleSheet.absoluteFill}
+        />
+      </Animated.View>
+    )}
+  </View>
+    <View
+          style={styles.percentWrapperOuter}
+        >
+          <View style={[styles.percentWrapper, { left: percentPosition - 22 }]}>
+            <View style={styles.arrow} />
+            <Text style={styles.percentText}>{Math.round(progress * 100)}%</Text>
+          </View>
+        </View>
+</View>
+
   );
 };
 
@@ -79,16 +89,41 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
   },
+  percentWrapperOuter: {
+    width: '90%',
+    height: 20,
+    position: 'relative',
+  },
+
   barFill: {
     height: '100%',
     borderRadius: 5,
     overflow: 'hidden',
   },
-  label: {
-    marginTop: 4,
+  percentWrapper: {
+    position: 'absolute',
+    top: 10,
+    alignItems: 'center',
+  },
+  arrow: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderBottomWidth: 6,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: '#51BCB4',
+    marginBottom: 2,
+  },
+  percentText: {
     fontSize: 12,
-    color: '#333',
     fontWeight: 'bold',
+    color: '#333',
+    backgroundColor: '#E6FAF9',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
 });
 

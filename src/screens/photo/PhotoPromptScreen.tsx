@@ -25,6 +25,7 @@ import {COLORS} from '../../styles/colors';
 import CustomButton from '../../styles/button';
 import ProgressBar from '../../components/ProgressBar';
 import {ImageItem} from '../../types/common';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 import {StackNavigationProp} from '@react-navigation/stack';
 import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
@@ -182,9 +183,8 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={progressBarWrapperWithTop(insets.top)}>
-        <ProgressBar currentStep={2} mode="photo" />
-      </View>
+
+<AnimatedProgressBar progress={2 / 5} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -204,7 +204,7 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
               onIndexChanged={setSelectedIndex}>
               {images.map((item, index) => (
                 <View key={item.id} style={[styles.slide, {width}]}>
-                  {' '}
+
                   {/* ✅ swiper slide width 지정 */}
                   {item.uri ? (
                     <Image

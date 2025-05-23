@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../styles/common/musicSelectionStyles';
 import CustomButton from '../../styles/button';
 import {getMusicPreviews} from '../../api/generateApi';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
@@ -145,6 +146,8 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={[styles.container, {paddingTop: insets.top}]}>
+        <AnimatedProgressBar progress={3 / 5} />
+
       {loading ? (
         <ActivityIndicator size="large" color="#00A6FB" />
       ) : (
