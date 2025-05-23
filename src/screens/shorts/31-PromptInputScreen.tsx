@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   TextInput,
@@ -19,6 +19,8 @@ import {generateMaterial} from '../../api/generateApi';
 import {useGenerate} from '../../context/GenerateContext';
 import {navigationRef} from '../../navigator/AppNavigator';
 
+let backgroundTimer: NodeJS.Timeout | null = null;
+
 type Props = NativeStackScreenProps<ShortsStackParamList, 'PromptInputScreen'>;
 
 const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
@@ -26,10 +28,19 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   const {setResult} = useGenerate();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [nextData, setNextData] = useState<
+    ShortsStackParamList['ImageSelectionScreen'] | null
+  >(null);
+  const [backgroundMode, setBackgroundMode] = useState(false);
   const {duration} = route.params;
 
   const handleGenerate = async () => {
     const trimmedPrompt = prompt.trim();
+
+    console.log('📤 [handleGenerate] 호출됨');
+    console.log('📝 프롬프트:', trimmedPrompt);
+    console.log('⏱️ 영상 길이:', duration);
 
     if (!trimmedPrompt) {
       Alert.alert('입력 오류', '프롬프트를 입력해주세요.');
@@ -43,37 +54,81 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
 
     try {
       setLoading(true);
-      console.log('📤 요청 보냄:', {title: trimmedPrompt, duration});
+      console.log('📡 API 요청 시작 → /generate/material');
 
-      const res = await generateMaterial({
-        title: trimmedPrompt,
-        duration: duration,
-      });
+      const res = await generateMaterial({title: trimmedPrompt, duration});
 
-      console.log('✅ 응답 성공');
-      console.log('🖼️ 이미지 목록:', res.image_urls);
-      console.log('📝 자막 목록:', res.subtitles);
+      console.log('✅ API 응답 수신 완료');
+      console.log('🖼️ image_urls:', res.image_urls);
+      console.log('📝 subtitles:', res.subtitles);
 
-      setResult({
+      const resultData: ShortsStackParamList['ImageSelectionScreen'] = {
         prompt: trimmedPrompt,
         duration,
         imageUrls: res.image_urls,
         subtitles: res.subtitles,
-      });
+      };
 
-      // ✅ 홈 화면으로 이동
-      if (navigationRef.isReady()) {
-        navigationRef.navigate('Main', {screen: 'Home'});
+      console.log('📦 resultData 구성 완료:', resultData);
+      setResult(resultData);
+
+      if (backgroundMode) {
+        console.log('🕶️ 백그라운드 모드: true');
+        setNextData(resultData);
+        backgroundTimer = setTimeout(() => {
+          console.log('🎉 생성 완료 모달 표시');
+          setShowCompleteModal(true);
+        }, 500);
+      } else {
+        console.log('🚀 ImageSelectionScreen 으로 이동');
+        navigation.navigate('ImageSelectionScreen', resultData);
       }
     } catch (error: any) {
-      console.error('❌ API 실패:', error);
+      console.error('❌ API 호출 실패:', error);
       if (error.response) {
-        console.error('🔍 응답 상태:', error.response.status);
+        console.error('🔍 응답 상태코드:', error.response.status);
         console.error('📦 응답 데이터:', error.response.data);
       }
       Alert.alert('에러', '사진 및 자막 생성에 실패했습니다.');
     } finally {
       setLoading(false);
+      console.log('🔚 로딩 종료');
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (backgroundTimer) {
+        clearTimeout(backgroundTimer);
+        backgroundTimer = null;
+      }
+    };
+  }, []);
+
+  const handleExplore = () => {
+    console.log('🧭 [앱 구경하기] 버튼 클릭됨');
+    setBackgroundMode(true);
+    setLoading(false);
+
+    if (navigationRef.isReady()) {
+      console.log('📍 navigationRef 통해 Main(Home)으로 이동');
+      navigationRef.navigate('Main', {screen: 'Home'});
+    }
+  };
+
+  const handleModalConfirm = () => {
+    console.log('📦 [생성 완료 모달] → 확인 버튼 클릭됨');
+    console.log('➡️ nextData:', nextData);
+    setShowCompleteModal(false);
+
+    if (nextData) {
+      console.log('🚀 ShortsStack → ImageSelectionScreen으로 이동');
+      navigationRef.navigate('ShortsStack', {
+        screen: 'ImageSelectionScreen',
+        params: nextData,
+      });
+    } else {
+      console.warn('⚠️ nextData가 null입니다. 이동 생략');
     }
   };
 
@@ -84,7 +139,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         <ProgressBar currentStep={2} />
       </View>
 
-      {/* 입력 */}
+      {/* 프롬프트 입력 */}
       <View style={styles.contentWrapper}>
         <View style={styles.inputContainer}>
           <TextInput
@@ -99,7 +154,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         </View>
       </View>
 
-      {/* 버튼 */}
+      {/* 하단 버튼 */}
       <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
           title="이전"
@@ -125,13 +180,21 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
               <Text style={styles.loadingText}>생성 중입니다...</Text>
               <CustomButton
                 title="앱 구경하기"
-                onPress={() => {
-                  setLoading(false);
-                  if (navigationRef.isReady()) {
-                    navigationRef.navigate('Main', {screen: 'Home'});
-                  }
-                }}
+                onPress={handleExplore}
+                type="primary"
               />
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* 생성 완료 모달 */}
+      {showCompleteModal && nextData && (
+        <Modal transparent animationType="fade">
+          <View style={styles.loadingOverlay}>
+            <View style={styles.loadingBox}>
+              <Text style={styles.loadingText}>✅ 생성 완료!</Text>
+              <CustomButton title="확인" onPress={handleModalConfirm} />
             </View>
           </View>
         </Modal>

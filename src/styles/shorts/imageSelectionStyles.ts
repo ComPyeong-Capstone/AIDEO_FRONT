@@ -2,48 +2,37 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {scaleFont, scaleSize} from '../responsive';
 import {COLORS} from '../colors';
 
-const {width, height} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
-const IMAGE_WIDTH = width * 0.75;
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9) + scaleSize(20);
+// ✅ 이미지 비율 9:16 유지 + 높이 조절로 전체 보이게
+const IMAGE_HEIGHT = height * 0.6;
+const IMAGE_WIDTH = IMAGE_HEIGHT * (9 / 16);
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
     alignItems: 'center',
+    justifyContent: 'flex-start', // ✅ 위에서 아래로 정렬
   },
 
   headerContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '90%',
+    justifyContent: 'center',
+    width: '100%',
     marginTop: scaleSize(8),
   },
 
-  titleAndBarWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  navIcon: {
-    fontSize: scaleFont(24),
-    color: COLORS.primary,
-    paddingHorizontal: scaleSize(4),
-  },
-
   imageNumberText: {
-    fontSize: scaleFont(15),
+    fontSize: scaleFont(16),
     color: '#000',
-    fontWeight: '500',
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: scaleSize(12),
   },
 
   progressBarWrapper: {
-    marginTop: scaleSize(4),
-    width: '100%',
-    paddingHorizontal: '5%',
-    backgroundColor: COLORS.background,
+    display: 'none',
   },
 
   progressDotActive: {
@@ -55,40 +44,41 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
 
+  // ✅ 이미지 슬라이더 wrapper
   sliderWrapper: {
-    marginTop: height * 0.02,
-    height: IMAGE_HEIGHT + scaleSize(30),
+    marginTop: scaleSize(12),
+    height: IMAGE_HEIGHT + scaleSize(36),
     width: '100%',
     alignItems: 'center',
   },
 
   swiperContainer: {
     width: '100%',
+    height: '100%',
   },
 
   imageBox: {
     width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT + scaleSize(20),
+    height: IMAGE_HEIGHT,
     backgroundColor: COLORS.primary,
-    borderRadius: scaleSize(10),
+    borderRadius: scaleSize(12),
     overflow: 'hidden',
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(24),
   },
 
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'contain', // ✅ 이미지 전체 보이도록
   },
 
   customPagination: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(12),
+    marginTop: scaleSize(8),
   },
 
   captionBox: {
@@ -100,7 +90,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(8),
+    marginTop: scaleSize(12),
   },
 
   captionText: {
@@ -110,12 +100,13 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // ✅ 버튼은 아래쪽에 자연스럽게 배치
   buttonContainer: {
-    position: 'absolute',
-    bottom: scaleSize(40),
     width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: scaleSize(20),
+    marginBottom: scaleSize(24),
   },
 
   buttonSpacing: {
