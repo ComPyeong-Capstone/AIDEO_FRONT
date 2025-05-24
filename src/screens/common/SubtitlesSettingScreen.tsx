@@ -51,8 +51,8 @@ const FONT_COLORS = [
 type FontColor = (typeof FONT_COLORS)[number];
 
 const SUBTITLE_POSITIONS: {label: string; value: -150 | -450}[] = [
-  {label: '하단 (-150)', value: -150},
-  {label: '중앙 (-450)', value: -450},
+  {label: '하단', value: -150},
+  {label: '중앙', value: -450},
 ];
 
 const SubtitlesSettingScreen: React.FC = () => {
@@ -134,69 +134,71 @@ bottom: subtitleY === -150 ? 30 : SCREEN_HEIGHT * 0.5 / 2 - 10,
    </View>
  </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboardAvoiding}>
+
 <ScrollView
-  contentContainerStyle={styles.scrollContainer}
+  contentContainerStyle={[styles.scrollContainer, { position: 'relative' }]} // ✅ 핵심!
   keyboardShouldPersistTaps="handled"
   nestedScrollEnabled
 >
-<View style={{ flex: 1, zIndex: 10 }}>
-           <Text style={styles.smallLabel}>폰트</Text>
-           <Dropdown
-             style={styles.dropdownHalf}
-             containerStyle={styles.dropdownContainer}
-             placeholderStyle={styles.placeholderStyle}
-             selectedTextStyle={styles.selectedTextStyle}
-             data={FONT_PATHS}
-             labelField="label"
-             valueField="value"
-             placeholder="폰트 선택"
-             value={fontPath}
-             onChange={item => setFontPath(item.value)}
-           />
-         </View>
 
 
-     <View style={styles.inlineDropdownWrapper}>
+<View style={styles.firstDropdownWrapper}>
+  <Text style={styles.smallLabel}>폰트</Text>
+  <Dropdown
+    style={styles.dropdownHalf}
+    containerStyle={styles.dropdownContainer}
+    placeholderStyle={styles.placeholderStyle}
+    selectedTextStyle={styles.selectedTextStyle}
+    data={FONT_PATHS}
+    labelField="label"
+    valueField="value"
+    placeholder="폰트 선택"
+    value={fontPath}
+    onChange={item => setFontPath(item.value)}
+    dropdownPosition="bottom"
+    renderAboveOverlay={false}
+  />
+</View>
 
-       {/* 자막 효과 */}
-       <View style={{ flex: 1 }}>
-         <Text style={styles.smallLabel}>효과</Text>
-         <Dropdown
-           style={styles.dropdownHalf}
-                        containerStyle={styles.dropdownContainer}
 
-           data={FONT_EFFECTS.map(effect => ({
-             label: effect,
-             value: effect,
-           }))}
-           labelField="label"
-           valueField="value"
-           value={fontEffect}
-           onChange={item => setFontEffect(item.value)}
-           placeholder="효과"
-         />
-       </View>
+
+<View style={styles.inlineDropdownWrapper}>
+  <View style={{ zIndex: 70, position: 'relative', flex: 1 }}>
+    <Text style={styles.smallLabel}>효과</Text>
+    <Dropdown
+      style={styles.dropdownHalf}
+      containerStyle={styles.dropdownContainer}
+      data={FONT_EFFECTS.map(effect => ({
+        label: effect,
+        value: effect,
+      }))}
+      labelField="label"
+      valueField="value"
+      value={fontEffect}
+      onChange={item => setFontEffect(item.value)}
+      placeholder="효과"
+      dropdownPosition="bottom"
+      renderAboveOverlay={false}
+    />
+  </View>
 
        {/* 자막 위치 */}
-       <View style={{ flex: 1 }}>
-         <Text style={styles.smallLabel}>위치</Text>
-         <Dropdown
-           style={styles.dropdownHalf}
-                        containerStyle={styles.dropdownContainer}
-
-           data={SUBTITLE_POSITIONS}
-           labelField="label"
-           valueField="value"
-           value={subtitleY}
-           onChange={item => setSubtitleY(item.value)}
-           placeholder="위치"
-         />
-       </View>
-
-     </View>
+  <View style={{ zIndex: 80, position: 'relative', flex: 1 }}>
+    <Text style={styles.smallLabel}>위치</Text>
+    <Dropdown
+      style={styles.dropdownHalf}
+      containerStyle={styles.dropdownContainer}
+      data={SUBTITLE_POSITIONS}
+      labelField="label"
+      valueField="value"
+      value={subtitleY}
+      onChange={item => setSubtitleY(item.value)}
+      placeholder="위치"
+      dropdownPosition="bottom"
+      renderAboveOverlay={false}
+    />
+  </View>
+</View>
 
 
 
@@ -225,7 +227,6 @@ bottom: subtitleY === -150 ? 30 : SCREEN_HEIGHT * 0.5 / 2 - 10,
             />
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
