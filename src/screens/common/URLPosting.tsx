@@ -25,6 +25,7 @@ import axios from 'axios';
 import {BASE_URL} from '@env';
 import * as Progress from 'react-native-progress';
 import { useRoute } from '@react-navigation/native';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'URLPosting'>;
@@ -235,6 +236,8 @@ if (!tags.trim()) {
 
   return (
 <SafeAreaView style={[styles.container, {paddingTop: 0, flex: 1}]}>
+<AnimatedProgressBar progress={5 / 5} />
+
       <View style={{flex: 1, justifyContent: 'space-between', alignItems: 'center'}}>
 
         <View style={{alignItems: 'center'}}>

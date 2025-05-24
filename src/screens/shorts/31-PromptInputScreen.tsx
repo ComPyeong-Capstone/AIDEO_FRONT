@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 import {styles} from '../../styles/shorts/prompInputStyles';
 import CustomButton from '../../styles/button';
@@ -154,6 +155,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* 진행바 */}
       <View style={[styles.progressBarWrapper, {marginTop: insets.top + 10}]}>
         <ProgressBar currentStep={2} />
       </View>

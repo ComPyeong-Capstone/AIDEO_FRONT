@@ -1,92 +1,120 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, TouchableOpacity, SafeAreaView} from 'react-native';
-import Slider from '@react-native-community/slider';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import React, { useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  FlatList,
+  Animated,
+  Dimensions
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useNavigation,
   useRoute,
   CompositeNavigationProp,
 } from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { styles } from '../../styles/common/selectDurationStyles';
+import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import { PhotoStackParamList } from '../../navigator/PhotoNavigator';
+import { ShortsStackParamList } from '../../navigator/ShortsNavigator';
+import { AppStackParamList } from '../../types/navigation';
 
-import {styles} from '../../styles/common/selectDurationStyles';
-import ProgressBar from '../../components/ProgressBar';
-import {PhotoStackParamList} from '../../navigator/PhotoNavigator';
-import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
-import {AppStackParamList} from '../../types/navigation';
+const { height } = Dimensions.get('window');
+const ITEM_HEIGHT = 50;
 
-// 공용 Param 정의
-type CommonParamList = {
-  SelectDurationScreen: {mode: 'photo' | 'shorts'};
-};
-
-// 네비게이션 타입 조합
-type NavigationProps = CompositeNavigationProp<
-  NativeStackNavigationProp<CommonParamList, 'SelectDurationScreen'>,
-  NativeStackNavigationProp<AppStackParamList>
->;
+const durationOptions = Array.from({ length: 12 }, (_, i) => (i + 1) * 5);
 
 const SelectDurationScreen: React.FC = () => {
-  const [duration, setDuration] = useState<number>(5);
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NavigationProps>();
-  const route = useRoute();
-  const {mode} = route.params as CommonParamList['SelectDurationScreen'];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
-  // 🔽 슬라이드(back gesture) 시에도 Main(Home)으로 이동
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', e => {
-      e.preventDefault();
-      navigation.navigate('Main', {screen: 'Home'});
-    });
-    return unsubscribe;
-  }, [navigation]);
+  const duration = durationOptions[selectedIndex];
+  console.log('✅ 선택된 duration:', duration);
+
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<CompositeNavigationProp<
+    NativeStackNavigationProp<
+      { SelectDurationScreen: { mode: 'photo' | 'shorts' } },
+      'SelectDurationScreen'
+    >,
+    NativeStackNavigationProp<AppStackParamList>
+  >>();
+  const route = useRoute();
+  const { mode } = route.params as { mode: 'photo' | 'shorts' };
 
   const handleNext = () => {
+    const param = { duration };
     if (mode === 'photo') {
-      (navigation as any).navigate(
-        'PhotoPromptScreen' satisfies keyof PhotoStackParamList,
-        {duration} satisfies PhotoStackParamList['PhotoPromptScreen'],
-      );
+      (navigation as any).navigate('PhotoPromptScreen', param);
     } else {
-      (navigation as any).navigate(
-        'PromptInputScreen' satisfies keyof ShortsStackParamList,
-        {duration} satisfies ShortsStackParamList['PromptInputScreen'],
-      );
+      (navigation as any).navigate('PromptInputScreen', param);
     }
   };
 
   const handleBack = () => {
-    navigation.navigate('Main', {screen: 'Home'});
+    navigation.navigate('Main', { screen: 'Home' });
+  };
+
+  const renderItem = ({ item, index }: { item: number; index: number }) => {
+    const inputRange = [
+      (index - 2) * ITEM_HEIGHT,
+      index * ITEM_HEIGHT,
+      (index + 2) * ITEM_HEIGHT,
+    ];
+    const scale = scrollY.interpolate({
+      inputRange,
+      outputRange: [0.8, 1.2, 0.8],
+      extrapolate: 'clamp',
+    });
+    const opacity = scrollY.interpolate({
+      inputRange,
+      outputRange: [0.4, 1, 0.4],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <Animated.View style={{ height: ITEM_HEIGHT, justifyContent: 'center', alignItems: 'center', transform: [{ scale }], opacity, paddingHorizontal: 16 }}>
+        <Text style={{ fontSize: 20, color: '#333' }}>{item}초</Text>
+      </Animated.View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.progressBarWrapper, {marginTop: insets.top}]}>
-        <ProgressBar currentStep={1} mode={mode} />
+      <View style={[styles.progressBarWrapper, { marginTop: insets.top }]}>
+<AnimatedProgressBar progress={1 / 5} />
       </View>
 
       <View style={styles.contentWrapper}>
         <Text style={styles.title}>영상 길이를 선택하세요</Text>
 
-        <View style={styles.sliderWrapper}>
-          <Text style={styles.sliderValueText}>{duration}초</Text>
-
-          <Slider
-            style={styles.slider}
-            minimumValue={5}
-            maximumValue={60}
-            step={5}
-            value={duration}
-            minimumTrackTintColor="#51BCB4"
-            maximumTrackTintColor="#ccc"
-            thumbTintColor="#51BCB4"
-            onValueChange={value => setDuration(value)}
+        <View style={{ height: ITEM_HEIGHT * 5, paddingHorizontal: 32 }}>
+          <Animated.FlatList
+            ref={flatListRef}
+            data={durationOptions}
+            keyExtractor={(item) => item.toString()}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            snapToInterval={ITEM_HEIGHT}
+            decelerationRate="fast"
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true }
+            )}
+            onMomentumScrollEnd={(e) => {
+              const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
+              setSelectedIndex(index);
+            }}
+            contentContainerStyle={{ paddingVertical: (ITEM_HEIGHT * 2) }}
           />
         </View>
       </View>
 
-      <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
+      <View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom }]}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Text style={styles.nextButtonText}>이전</Text>
         </TouchableOpacity>
