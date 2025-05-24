@@ -17,11 +17,15 @@ import Swiper from 'react-native-swiper';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import styles from '../../styles/photo/PhotoPromptStyles';
-import {fixedButtonWrapperWithPadding} from '../../styles/photo/PhotoPromptDynamicStyles';
+import {
+  progressBarWrapperWithTop,
+  fixedButtonWrapperWithPadding,
+} from '../../styles/photo/PhotoPromptDynamicStyles';
 import {COLORS} from '../../styles/colors';
 import CustomButton from '../../styles/button';
 import {ImageItem} from '../../types/common';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import ProgressBar from '../../components/ProgressBar';
 
 import {StackNavigationProp} from '@react-navigation/stack';
 import {PhotoStackParamList} from '../../navigator/PhotoNavigator';

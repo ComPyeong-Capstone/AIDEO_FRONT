@@ -15,7 +15,6 @@ import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import {styles} from '../../styles/shorts/prompInputStyles';
 import CustomButton from '../../styles/button';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
-import ProgressBar from '../../components/ProgressBar';
 import {generateMaterial} from '../../api/generateApi';
 import {useGenerate} from '../../context/GenerateContext';
 import {navigationRef} from '../../navigator/AppNavigator';
