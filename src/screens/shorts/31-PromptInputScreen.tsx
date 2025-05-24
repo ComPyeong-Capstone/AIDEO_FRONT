@@ -15,7 +15,6 @@ import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import {styles} from '../../styles/shorts/prompInputStyles';
 import CustomButton from '../../styles/button';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
-import ProgressBar from '../../components/ProgressBar';
 import {generateMaterial} from '../../api/generateApi';
 import {useGenerate} from '../../context/GenerateContext';
 import {navigationRef} from '../../navigator/AppNavigator';
@@ -156,9 +155,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* 진행바 */}
-      <View style={[styles.progressBarWrapper, {marginTop: insets.top + 10}]}>
-        <ProgressBar currentStep={2} />
-      </View>
+      <AnimatedProgressBar progress={2 / 5} />
 
       <View style={styles.contentWrapper}>
         <View style={styles.inputContainer}>

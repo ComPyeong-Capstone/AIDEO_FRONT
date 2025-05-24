@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Animated, StyleSheet, LayoutChangeEvent } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  View,
+  Text,
+  Animated,
+  StyleSheet,
+  LayoutChangeEvent,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   progress: number; // 0 ~ 1
 }
 
-const AnimatedProgressBar: React.FC<Props> = ({ progress }) => {
+const AnimatedProgressBar: React.FC<Props> = ({progress}) => {
   const widthAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [barWidth, setBarWidth] = useState(0);
@@ -30,49 +36,42 @@ const AnimatedProgressBar: React.FC<Props> = ({ progress }) => {
         useNativeDriver: true,
       }),
     ]).start();
-  }, [progress]);
+  }, [progress, scaleAnim, widthAnim]);
 
   const percentPosition = barWidth * progress;
 
   return (
-<View style={styles.wrapper}>
-
-
-  <View
-    style={styles.barBackground}
-    onLayout={(e: LayoutChangeEvent) =>
-      setBarWidth(e.nativeEvent.layout.width)
-    }
-  >
-    {barWidth > 0 && (
-      <Animated.View
-        style={[
-          styles.barFill,
-          {
-            width: percentPosition,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        <LinearGradient
-          colors={['#51BCB4', '#6ED4C8']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
-    )}
-  </View>
-    <View
-          style={styles.percentWrapperOuter}
-        >
-          <View style={[styles.percentWrapper, { left: percentPosition - 22 }]}>
-            <View style={styles.arrow} />
-            <Text style={styles.percentText}>{Math.round(progress * 100)}%</Text>
-          </View>
+    <View style={styles.wrapper}>
+      <View
+        style={styles.barBackground}
+        onLayout={(e: LayoutChangeEvent) =>
+          setBarWidth(e.nativeEvent.layout.width)
+        }>
+        {barWidth > 0 && (
+          <Animated.View
+            style={[
+              styles.barFill,
+              {
+                width: percentPosition,
+                transform: [{scale: scaleAnim}],
+              },
+            ]}>
+            <LinearGradient
+              colors={['#51BCB4', '#6ED4C8']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+        )}
+      </View>
+      <View style={styles.percentWrapperOuter}>
+        <View style={[styles.percentWrapper, {left: percentPosition - 22}]}>
+          <View style={styles.arrow} />
+          <Text style={styles.percentText}>{Math.round(progress * 100)}%</Text>
         </View>
-</View>
-
+      </View>
+    </View>
   );
 };
 
