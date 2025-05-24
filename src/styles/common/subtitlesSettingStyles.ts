@@ -3,6 +3,10 @@
 import {StyleSheet} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../colors';
+import { Dimensions } from 'react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const VIDEO_RATIO_HEIGHT = SCREEN_WIDTH * (16 / 9); // 9:16 세로 비율 (반대로 계산)
 
 export default StyleSheet.create({
   safeArea: {
@@ -39,4 +43,90 @@ export default StyleSheet.create({
     marginTop: scaleSize(30),
     marginBottom: scaleSize(20),
   },
+  previewContainer: {
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  previewBox: {
+width: SCREEN_WIDTH,
+  height: SCREEN_WIDTH * (16 / 9), // 세로 비율
+    backgroundColor: '#000',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  previewText: {
+    position: 'absolute',
+    left: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+dropdown: {
+  height: 50,
+  borderColor: '#ccc',
+  borderWidth: 1,
+  borderRadius: 40,
+  paddingHorizontal: 12,
+  backgroundColor: '#f4f7fa',
+},
+dropdownContainer: {
+  borderTopLeftRadius: 30,
+  borderTopRightRadius: 30,
+  borderBottomLeftRadius: 30,
+  borderBottomRightRadius: 30,
+  borderWidth: 1,
+  borderColor: '#d6dee6',
+  backgroundColor: '#fff',
+  overflow: 'hidden', // ✅ 핵심: 안쪽 내용도 둥글게
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.08,
+  shadowRadius: 8,
+  elevation: 2,
+},
+
+dropdownHalf: {
+    flex: 1,
+    height: 46,
+    backgroundColor: '#EEEEEE',
+    borderRadius: 30,
+    paddingHorizontal: 8,
+  },
+placeholderStyle: {
+  fontSize: 14,
+  color: '#9098B1',
+},
+
+selectedTextStyle: {
+  fontSize: 14,
+  color: '#1e1e1e',
+},inlineDropdownWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8, // 혹은 marginRight/marginLeft 등
+  },
+
+
+
+  selectedTextStyle: {
+    fontSize: 14,
+    marginLeft: 8,
+  },
+
+  placeholderStyle: {
+    fontSize: 14,
+    color: '#999',
+  },smallLabel: {
+      fontSize: 13,
+      marginBottom: 4,
+      color: '#333',
+      fontWeight: '500',
+    },
+
+
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+
+
 });

@@ -16,6 +16,10 @@ import CustomButton from '../../styles/button';
 import {generateFinalVideo} from '../../api/generateApi';
 import styles from '../../styles/common/subtitlesSettingStyles';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import {Dropdown} from 'react-native-element-dropdown';
+import { SelectCountry } from 'react-native-element-dropdown/src/SelectCountry';
+import { Dimensions } from 'react-native';
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type NavigationProp = StackNavigationProp<
   ShortsStackParamList,
@@ -23,23 +27,12 @@ type NavigationProp = StackNavigationProp<
 >;
 
 const FONT_PATHS = [
-  {
-    label: 'Cafe24Ssurround',
-    value: '../font/Cafe24Ssurround-v2.0/Cafe24Ssurround-v2.0.ttf',
-  },
-  {
-    label: 'Cafe24Danjunghae',
-    value: '../font/Cafe24Danjunghae-v2.0/Cafe24Danjunghae-v2.0.ttf',
-  },
-  {
-    label: 'Cafe24Simplehae',
-    value: '../font/Cafe24Simplehae-v2.0/Cafe24Simplehae-v2.0.ttf',
-  },
-  {
-    label: 'Cafe24Ohsquare',
-    value: '../font/Cafe24Ohsquare-v2.0/Cafe24Ohsquare-v2.0.ttf',
-  },
+  { label: '폰트1', value: 'Cafe24Ssurround' },
+  { label: '폰트2', value: 'Cafe24Danjunghae' },
+  { label: '폰트3', value: 'Cafe24Simplehae' },
+  { label: '폰트4', value: 'Cafe24Ohsquare' },
 ];
+
 
 const FONT_EFFECTS = ['poping', 'split', 'custom_poping'] as const;
 type FontEffect = (typeof FONT_EFFECTS)[number];
@@ -108,39 +101,104 @@ const SubtitlesSettingScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
         <AnimatedProgressBar progress={3 / 5} />
+ <View style={styles.previewContainer}>
+   <View
+     style={[
+       styles.previewBox,
+       {
+         width: SCREEN_WIDTH * 0.8,
+         height: SCREEN_HEIGHT * 0.5,
+         alignSelf: 'center',
+       },
+     ]}
+   >
+     <Text
+       style={[
+         styles.previewText,
+         {
+                   position: 'absolute', // ← 필수!
+
+           color: fontColor,
+           fontSize: 20,
+
+           fontFamily: fontPath,
+bottom: subtitleY === -150 ? 30 : SCREEN_HEIGHT * 0.5 / 2 - 10,
+           textShadowColor: 'rgba(0, 0, 0, 0.6)',
+           textShadowOffset: { width: 1, height: 1 },
+           textShadowRadius: 1,
+         },
+       ]}
+     >
+       예시 자막입니다.
+     </Text>
+   </View>
+ </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoiding}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.row}>
-            <Text style={styles.label}>자막 폰트</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={fontPath}
-                onValueChange={value => setFontPath(value)}>
-                {FONT_PATHS.map(font => (
-                  <Picker.Item
-                    key={font.value}
-                    label={font.label}
-                    value={font.value}
-                  />
-                ))}
-              </Picker>
-            </View>
-          </View>
+<ScrollView
+  contentContainerStyle={styles.scrollContainer}
+  keyboardShouldPersistTaps="handled"
+  nestedScrollEnabled
+>
+<View style={{ flex: 1, zIndex: 10 }}>
+           <Text style={styles.smallLabel}>폰트</Text>
+           <Dropdown
+             style={styles.dropdownHalf}
+             containerStyle={styles.dropdownContainer}
+             placeholderStyle={styles.placeholderStyle}
+             selectedTextStyle={styles.selectedTextStyle}
+             data={FONT_PATHS}
+             labelField="label"
+             valueField="value"
+             placeholder="폰트 선택"
+             value={fontPath}
+             onChange={item => setFontPath(item.value)}
+           />
+         </View>
 
-          <View style={styles.row}>
-            <Text style={styles.label}>자막 효과</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={fontEffect}
-                onValueChange={value => setFontEffect(value)}>
-                {FONT_EFFECTS.map(effect => (
-                  <Picker.Item key={effect} label={effect} value={effect} />
-                ))}
-              </Picker>
-            </View>
-          </View>
+
+     <View style={styles.inlineDropdownWrapper}>
+
+       {/* 자막 효과 */}
+       <View style={{ flex: 1 }}>
+         <Text style={styles.smallLabel}>효과</Text>
+         <Dropdown
+           style={styles.dropdownHalf}
+                        containerStyle={styles.dropdownContainer}
+
+           data={FONT_EFFECTS.map(effect => ({
+             label: effect,
+             value: effect,
+           }))}
+           labelField="label"
+           valueField="value"
+           value={fontEffect}
+           onChange={item => setFontEffect(item.value)}
+           placeholder="효과"
+         />
+       </View>
+
+       {/* 자막 위치 */}
+       <View style={{ flex: 1 }}>
+         <Text style={styles.smallLabel}>위치</Text>
+         <Dropdown
+           style={styles.dropdownHalf}
+                        containerStyle={styles.dropdownContainer}
+
+           data={SUBTITLE_POSITIONS}
+           labelField="label"
+           valueField="value"
+           value={subtitleY}
+           onChange={item => setSubtitleY(item.value)}
+           placeholder="위치"
+         />
+       </View>
+
+     </View>
+
+
 
           <View style={styles.row}>
             <Text style={styles.label}>자막 색상</Text>
@@ -155,22 +213,7 @@ const SubtitlesSettingScreen: React.FC = () => {
             </View>
           </View>
 
-          <View style={styles.row}>
-            <Text style={styles.label}>자막 위치</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={subtitleY}
-                onValueChange={value => setSubtitleY(value)}>
-                {SUBTITLE_POSITIONS.map(pos => (
-                  <Picker.Item
-                    key={pos.value}
-                    label={pos.label}
-                    value={pos.value}
-                  />
-                ))}
-              </Picker>
-            </View>
-          </View>
+
 
           {/* ✅ 하단 고정 대신 스크롤에 포함 */}
           <View style={styles.buttonWrapper}>
