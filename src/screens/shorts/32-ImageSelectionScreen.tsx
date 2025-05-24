@@ -54,7 +54,15 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     console.log('💬 prompt:', prompt);
     console.log('🎞️ videos:', existingVideos);
 
-    setImageUrls(initialImageUrls);
+    const filteredImages = initialImageUrls.filter(
+      url => typeof url === 'string' && url.startsWith('http'),
+    );
+
+    if (filteredImages.length !== initialImageUrls.length) {
+      console.warn('⚠️ 유효하지 않은 이미지 URL이 필터링되었습니다.');
+    }
+
+    setImageUrls(filteredImages);
     setSubtitles(initialSubtitles);
     setCaptionText(initialSubtitles[0] || '');
   }, [initialImageUrls, initialSubtitles, duration, prompt, existingVideos]);
@@ -62,12 +70,10 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const handleIndexChange = (index: number) => {
     console.log('➡️ Swiper 인덱스 변경:', index);
 
-    // 현재 자막 저장
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
 
-    // 다음 자막 로드
     setSelectedIndex(index);
     setCaptionText(subtitles[index] || '');
   };
@@ -181,20 +187,24 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
             containerStyle={styles.swiperContainer}>
             {imageUrls.map((uri, index) => (
               <View key={index} style={styles.imageBox}>
-                <Image
-                  source={{uri}}
-                  style={styles.image}
-                  resizeMode="contain"
-                  onError={e => {
-                    console.error(
-                      `🛑 이미지 로딩 실패 (index: ${index})`,
-                      e.nativeEvent,
-                    );
-                  }}
-                  onLoad={() => {
-                    console.log(`✅ 이미지 로딩 성공 (index: ${index})`);
-                  }}
-                />
+                {uri.startsWith('http') ? (
+                  <Image
+                    source={{uri}}
+                    style={styles.image}
+                    resizeMode="contain"
+                    onError={e => {
+                      console.error(
+                        `🛑 이미지 로딩 실패 (index: ${index})`,
+                        e.nativeEvent,
+                      );
+                    }}
+                    onLoad={() => {
+                      console.log(`✅ 이미지 로딩 성공 (index: ${index})`);
+                    }}
+                  />
+                ) : (
+                  <Text style={{color: 'red'}}>잘못된 이미지 URL</Text>
+                )}
               </View>
             ))}
           </Swiper>

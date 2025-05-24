@@ -10,16 +10,6 @@ export default StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  progressBarWrapper: {
-    position: 'absolute',
-    top: 0,
-    width: '100%',
-    alignItems: 'center',
-    paddingTop: scaleSize(10),
-    backgroundColor: COLORS.background,
-    zIndex: 10,
-  },
-
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
@@ -29,19 +19,19 @@ export default StyleSheet.create({
   contentWrapper: {
     width: '80%',
     alignItems: 'center',
-    paddingTop: scaleSize(70),
+    paddingTop: scaleSize(20),
   },
 
   swiperContainer: {
     width: '100%',
     aspectRatio: 9 / 16,
-    maxHeight: height * 0.55,
+    maxHeight: height * 0.6,
   },
 
   slide: {
     width: '100%',
     aspectRatio: 9 / 16,
-    maxHeight: height * 0.55,
+    maxHeight: height * 0.6,
     borderRadius: scaleSize(12),
     backgroundColor: COLORS.imagebox,
     alignItems: 'center',
@@ -117,7 +107,6 @@ export default StyleSheet.create({
     width: '48%',
   },
 
-  // ✅ 완료 알림 토스트 스타일
   toast: {
     position: 'absolute',
     top: scaleSize(90),
@@ -136,7 +125,6 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ✅ 로딩 오버레이
   loadingOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
