@@ -25,11 +25,28 @@ type NavigationProp = StackNavigationProp<
   'SubtitlesSettingScreen'
 >;
 
+// ✅ 서버에 보낼 font_path + 앱 미리보기용 fontFamily 이름 분리
 const FONT_PATHS = [
-  {label: '폰트1', value: 'Cafe24Ssurround'},
-  {label: '폰트2', value: 'Cafe24Danjunghae'},
-  {label: '폰트3', value: 'Cafe24Simplehae'},
-  {label: '폰트4', value: 'Cafe24Ohsquare'},
+  {
+    label: '폰트1',
+    value: '../font/Cafe24Ssurround-v2.0/Cafe24Ssurround-v2.0.ttf',
+    previewFont: 'Cafe24Ssurround',
+  },
+  {
+    label: '폰트2',
+    value: '../font/Cafe24Danjunghae-v2.0/Cafe24Danjunghae-v2.0.ttf',
+    previewFont: 'Cafe24Danjunghae',
+  },
+  {
+    label: '폰트3',
+    value: '../font/Cafe24Simplehae-v2.0/Cafe24Simplehae-v2.0.ttf',
+    previewFont: 'Cafe24Simplehae',
+  },
+  {
+    label: '폰트4',
+    value: '../font/Cafe24Ohsquare-v2.0/Cafe24Ohsquare-v2.0.ttf',
+    previewFont: 'Cafe24Ohsquare',
+  },
 ];
 
 const FONT_EFFECTS = ['poping', 'split', 'custom_poping'] as const;
@@ -62,7 +79,10 @@ const SubtitlesSettingScreen: React.FC = () => {
     music: string;
   };
 
-  const [fontPath, setFontPath] = useState<string>(FONT_PATHS[0].value);
+  const [fontPath, setFontPath] = useState<string>(FONT_PATHS[0].value); // 서버용
+  const [previewFont, setPreviewFont] = useState<string>(
+    FONT_PATHS[0].previewFont,
+  ); // 앱 미리보기용
   const [fontEffect, setFontEffect] = useState<FontEffect>('poping');
   const [fontColor, setFontColor] = useState<FontColor>('white');
   const [subtitleY, setSubtitleY] = useState<'bottom' | 'center'>('bottom');
@@ -85,7 +105,6 @@ const SubtitlesSettingScreen: React.FC = () => {
         subtitle_y_position: subtitleY,
       };
 
-      // ✅ 로그 출력
       console.log('🎬 [최종 영상 생성 요청]');
       console.log('📦 요청 Payload:', payload);
 
@@ -127,7 +146,7 @@ const SubtitlesSettingScreen: React.FC = () => {
                 position: 'absolute',
                 color: fontColor,
                 fontSize: 20,
-                fontFamily: fontPath,
+                fontFamily: previewFont, // ✅ 앱에서는 previewFont 사용
                 bottom:
                   subtitleY === 'bottom' ? 30 : (SCREEN_HEIGHT * 0.5) / 2 - 10,
                 textShadowColor: 'rgba(0, 0, 0, 0.6)',
@@ -154,9 +173,11 @@ const SubtitlesSettingScreen: React.FC = () => {
             data={FONT_PATHS}
             labelField="label"
             valueField="value"
-            placeholder="폰트 선택"
             value={fontPath}
-            onChange={item => setFontPath(item.value)}
+            onChange={item => {
+              setFontPath(item.value); // 서버로 보낼 경로
+              setPreviewFont(item.previewFont); // 앱 미리보기용
+            }}
             dropdownPosition="bottom"
             renderAboveOverlay={false}
           />
