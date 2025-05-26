@@ -5,8 +5,8 @@ import {
   Alert,
   ScrollView,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
+  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {useRoute, useNavigation} from '@react-navigation/native';
@@ -17,8 +17,7 @@ import {generateFinalVideo} from '../../api/generateApi';
 import styles from '../../styles/common/subtitlesSettingStyles';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import {Dropdown} from 'react-native-element-dropdown';
-import {SelectCountry} from 'react-native-element-dropdown/src/SelectCountry';
-import {Dimensions} from 'react-native';
+
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 type NavigationProp = StackNavigationProp<
@@ -72,10 +71,11 @@ const SubtitlesSettingScreen: React.FC = () => {
   const handleGenerateFinalVideo = async () => {
     try {
       setLoading(true);
+
       const cleanedVideoFilenames = videos.map(v => v.split('/').pop() || '');
       const cleanedMusic = music.split('/').pop() || 'bgm_01.mp3';
 
-      const response = await generateFinalVideo({
+      const payload = {
         videos: cleanedVideoFilenames,
         subtitles,
         music_url: cleanedMusic,
@@ -83,7 +83,15 @@ const SubtitlesSettingScreen: React.FC = () => {
         font_effect: fontEffect,
         font_color: fontColor,
         subtitle_y_position: subtitleY,
-      });
+      };
+
+      // ✅ 로그 출력
+      console.log('🎬 [최종 영상 생성 요청]');
+      console.log('📦 요청 Payload:', payload);
+
+      const response = await generateFinalVideo(payload);
+
+      console.log('✅ [서버 응답] 최종 영상 URL:', response.final_video_url);
 
       navigation.navigate('ResultScreen', {
         videos: [response.final_video_url],
@@ -92,6 +100,7 @@ const SubtitlesSettingScreen: React.FC = () => {
       });
     } catch (e) {
       Alert.alert('에러', '최종 영상 생성 실패');
+      console.error('❌ 영상 생성 에러:', e);
     } finally {
       setLoading(false);
     }
@@ -100,6 +109,7 @@ const SubtitlesSettingScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <AnimatedProgressBar progress={3 / 5} />
+
       <View style={styles.previewContainer}>
         <View
           style={[
@@ -114,11 +124,9 @@ const SubtitlesSettingScreen: React.FC = () => {
             style={[
               styles.previewText,
               {
-                position: 'absolute', // ← 필수!
-
+                position: 'absolute',
                 color: fontColor,
                 fontSize: 20,
-
                 fontFamily: fontPath,
                 bottom:
                   subtitleY === 'bottom' ? 30 : (SCREEN_HEIGHT * 0.5) / 2 - 10,
@@ -133,7 +141,7 @@ const SubtitlesSettingScreen: React.FC = () => {
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContainer, {position: 'relative'}]} // ✅ 핵심!
+        contentContainerStyle={[styles.scrollContainer, {position: 'relative'}]}
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled>
         <View style={styles.firstDropdownWrapper}>
@@ -174,7 +182,6 @@ const SubtitlesSettingScreen: React.FC = () => {
             />
           </View>
 
-          {/* 자막 위치 */}
           <View style={{zIndex: 80, position: 'relative', flex: 1}}>
             <Text style={styles.smallLabel}>위치</Text>
             <Dropdown
@@ -205,7 +212,6 @@ const SubtitlesSettingScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* ✅ 하단 고정 대신 스크롤에 포함 */}
         <View style={styles.buttonWrapper}>
           <CustomButton
             title="최종 영상 생성"
@@ -215,6 +221,15 @@ const SubtitlesSettingScreen: React.FC = () => {
           />
         </View>
       </ScrollView>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingBox}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loadingText}>영상 생성 중...</Text>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };

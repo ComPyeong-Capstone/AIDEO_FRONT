@@ -221,7 +221,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
               </Text>
             ))}
           </View>
-          */
         </View>
 
         <View style={styles.captionBox}>
