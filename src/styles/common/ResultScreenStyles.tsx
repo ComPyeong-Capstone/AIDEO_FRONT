@@ -48,6 +48,9 @@ fixedButtonWrapper: {
   alignItems: 'center',
   marginTop: 12, // 👈 여기에 추가
   paddingHorizontal: 20,
+      position: 'absolute',
+      bottom: 0,
+      width: '100%',
 },
   // ✅ 영상이 없을 때 메시지
   errorText: {

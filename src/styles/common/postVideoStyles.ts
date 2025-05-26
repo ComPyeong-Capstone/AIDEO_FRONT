@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10, // 👈 여기에 추가
     paddingHorizontal: 20,
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
   },
   mainWrapper: {
     flex: 1,

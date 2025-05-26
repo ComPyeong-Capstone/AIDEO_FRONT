@@ -155,7 +155,7 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* 진행바 */}
-     <AnimatedProgressBar progress={2 / 5} />
+     <AnimatedProgressBar progress={2 / 6} />
 
 
       <View style={styles.contentWrapper}>
@@ -198,7 +198,8 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
               <CustomButton
                 title="앱 구경하기"
                 onPress={handleExplore}
-                type="primary"
+                          type="gradient"
+
               />
             </View>
           </View>
@@ -211,7 +212,8 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
           <View style={styles.loadingOverlay}>
             <View style={styles.loadingBox}>
               <Text style={styles.loadingText}>✅ 생성 완료!</Text>
-              <CustomButton title="확인" onPress={handleModalConfirm} />
+              <CustomButton title="확인" onPress={handleModalConfirm}
+                                        type="gradient"/>
             </View>
           </View>
         </Modal>
