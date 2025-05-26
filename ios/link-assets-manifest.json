@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Cafe24Danjunghae-v2.0.ttf",
+      "sha1": "898b7514b99a7ffb272c5097f247e92bdd49d29a"
+    },
+    {
+      "path": "assets/fonts/Cafe24Ohsquare-v2.0.ttf",
+      "sha1": "3f85412eb19d24626759efc51a66f06c600ba650"
+    },
+    {
+      "path": "assets/fonts/Cafe24Simplehae-v2.0.ttf",
+      "sha1": "40ec88c14c6466c9691c4a3ca03db7f9d40f7b56"
+    },
+    {
+      "path": "assets/fonts/Cafe24Ssurround-v2.0.ttf",
+      "sha1": "2190407dfb0804fcac3dc52f40e8e639ae2f32ea"
+    }
+  ]
+}
