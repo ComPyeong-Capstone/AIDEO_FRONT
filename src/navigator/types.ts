@@ -62,4 +62,15 @@ export type AppStackParamList = {
       type: string;
     }[];
   };
+
+  // ✅ 자막 효과 미리보기 화면
+  EffectPreviewScreen: {
+    from: 'photo' | 'shorts';
+    videos: string[];
+    subtitles: string[];
+    music: string;
+    fontPath: string;
+    fontColor: string;
+    subtitleY: 'bottom' | 'center';
+  };
 };

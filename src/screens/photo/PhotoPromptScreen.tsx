@@ -156,6 +156,8 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
         subtitles,
         videos: response.video_urls,
         files,
+        previewImage: images[0]?.uri || '',
+        previewSubtitle: subtitles[0] || '',
       });
 
       setGenerated(true);
@@ -183,8 +185,7 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-
-<AnimatedProgressBar progress={2 / 5} />
+      <AnimatedProgressBar progress={2 / 5} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -204,7 +205,6 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
               onIndexChanged={setSelectedIndex}>
               {images.map((item, index) => (
                 <View key={item.id} style={[styles.slide, {width}]}>
-
                   {/* ✅ swiper slide width 지정 */}
                   {item.uri ? (
                     <Image

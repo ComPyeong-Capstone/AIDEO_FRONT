@@ -47,7 +47,7 @@ export interface GenerateFinalVideoRequest {
   font_path: string;
   font_effect: string;
   font_color: string;
-  subtitle_y_position: number;
+  subtitle_y_position: 'bottom' | 'center'; // ✅ 수정됨
 }
 
 export interface GenerateFinalVideoResponse {

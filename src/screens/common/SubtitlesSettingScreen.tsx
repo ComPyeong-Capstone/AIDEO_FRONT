@@ -2,30 +2,28 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
-  Alert,
   ScrollView,
   SafeAreaView,
-  ActivityIndicator,
+  ImageBackground,
   Dimensions,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
 import CustomButton from '../../styles/button';
-import {generateFinalVideo} from '../../api/generateApi';
 import styles from '../../styles/common/subtitlesSettingStyles';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import {Dropdown} from 'react-native-element-dropdown';
 
-const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
+const {width: SCREEN_WIDTH} = Dimensions.get('window');
+const IMAGE_WIDTH = SCREEN_WIDTH * 0.65; // ✅ 너비 줄임
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // ✅ 16:9 비율 유지
 
 type NavigationProp = StackNavigationProp<
   ShortsStackParamList,
   'SubtitlesSettingScreen'
 >;
 
-// ✅ 서버에 보낼 font_path + 앱 미리보기용 fontFamily 이름 분리
 const FONT_PATHS = [
   {
     label: '폰트1',
@@ -49,9 +47,6 @@ const FONT_PATHS = [
   },
 ];
 
-const FONT_EFFECTS = ['poping', 'split', 'custom_poping'] as const;
-type FontEffect = (typeof FONT_EFFECTS)[number];
-
 const FONT_COLORS = [
   'white',
   'black',
@@ -65,6 +60,11 @@ const FONT_COLORS = [
 ] as const;
 type FontColor = (typeof FONT_COLORS)[number];
 
+const FONT_COLOR_OPTIONS = FONT_COLORS.map(color => ({
+  label: color,
+  value: color,
+}));
+
 const SUBTITLE_POSITIONS: {label: string; value: 'bottom' | 'center'}[] = [
   {label: '하단', value: 'bottom'},
   {label: '중앙', value: 'center'},
@@ -73,56 +73,35 @@ const SUBTITLE_POSITIONS: {label: string; value: 'bottom' | 'center'}[] = [
 const SubtitlesSettingScreen: React.FC = () => {
   const route = useRoute();
   const navigation = useNavigation<NavigationProp>();
-  const {videos, subtitles, music} = route.params as {
+  const {
+    videos,
+    subtitles,
+    music,
+    previewImage = '',
+  } = route.params as {
     videos: string[];
     subtitles: string[];
     music: string;
+    previewImage?: string;
   };
 
-  const [fontPath, setFontPath] = useState<string>(FONT_PATHS[0].value); // 서버용
-  const [previewFont, setPreviewFont] = useState<string>(
-    FONT_PATHS[0].previewFont,
-  ); // 앱 미리보기용
-  const [fontEffect, setFontEffect] = useState<FontEffect>('poping');
+  const previewSubtitle = '예시 자막입니다.';
+
+  const [fontPath, setFontPath] = useState(FONT_PATHS[0].value);
+  const [previewFont, setPreviewFont] = useState(FONT_PATHS[0].previewFont);
   const [fontColor, setFontColor] = useState<FontColor>('white');
   const [subtitleY, setSubtitleY] = useState<'bottom' | 'center'>('bottom');
-  const [loading, setLoading] = useState(false);
 
-  const handleGenerateFinalVideo = async () => {
-    try {
-      setLoading(true);
-
-      const cleanedVideoFilenames = videos.map(v => v.split('/').pop() || '');
-      const cleanedMusic = music.split('/').pop() || 'bgm_01.mp3';
-
-      const payload = {
-        videos: cleanedVideoFilenames,
-        subtitles,
-        music_url: cleanedMusic,
-        font_path: fontPath,
-        font_effect: fontEffect,
-        font_color: fontColor,
-        subtitle_y_position: subtitleY,
-      };
-
-      console.log('🎬 [최종 영상 생성 요청]');
-      console.log('📦 요청 Payload:', payload);
-
-      const response = await generateFinalVideo(payload);
-
-      console.log('✅ [서버 응답] 최종 영상 URL:', response.final_video_url);
-
-      navigation.navigate('ResultScreen', {
-        videos: [response.final_video_url],
-        subtitles,
-        music,
-      });
-    } catch (e) {
-      Alert.alert('에러', '최종 영상 생성 실패');
-      console.error('❌ 영상 생성 에러:', e);
-    } finally {
-      setLoading(false);
-    }
+  const goToEffectPreview = () => {
+    navigation.navigate('EffectPreviewScreen', {
+      videos,
+      subtitles,
+      music,
+      font_path: fontPath,
+      font_family: previewFont,
+      font_color: fontColor,
+      subtitle_y_position: subtitleY,
+    });
   };
 
   return (
@@ -130,81 +109,57 @@ const SubtitlesSettingScreen: React.FC = () => {
       <AnimatedProgressBar progress={3 / 5} />
 
       <View style={styles.previewContainer}>
-        <View
-          style={[
-            styles.previewBox,
-            {
-              width: SCREEN_WIDTH * 0.8,
-              height: SCREEN_HEIGHT * 0.5,
-              alignSelf: 'center',
-            },
-          ]}>
+        <ImageBackground
+          source={{uri: previewImage}}
+          style={{
+            width: IMAGE_WIDTH,
+            height: IMAGE_HEIGHT,
+            alignSelf: 'center',
+          }}
+          resizeMode="cover">
           <Text
             style={[
               styles.previewText,
               {
-                position: 'absolute',
                 color: fontColor,
-                fontSize: 20,
-                fontFamily: previewFont, // ✅ 앱에서는 previewFont 사용
-                bottom:
-                  subtitleY === 'bottom' ? 30 : (SCREEN_HEIGHT * 0.5) / 2 - 10,
+                fontFamily: previewFont,
+                bottom: subtitleY === 'bottom' ? 30 : IMAGE_HEIGHT / 2 - 10,
                 textShadowColor: 'rgba(0, 0, 0, 0.6)',
                 textShadowOffset: {width: 1, height: 1},
                 textShadowRadius: 1,
               },
             ]}>
-            예시 자막입니다.
+            {previewSubtitle}
           </Text>
-        </View>
+        </ImageBackground>
       </View>
 
       <ScrollView
         contentContainerStyle={[styles.scrollContainer, {position: 'relative'}]}
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled>
-        <View style={styles.firstDropdownWrapper}>
-          <Text style={styles.smallLabel}>폰트</Text>
-          <Dropdown
-            style={styles.dropdownHalf}
-            containerStyle={styles.dropdownContainer}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            data={FONT_PATHS}
-            labelField="label"
-            valueField="value"
-            value={fontPath}
-            onChange={item => {
-              setFontPath(item.value); // 서버로 보낼 경로
-              setPreviewFont(item.previewFont); // 앱 미리보기용
-            }}
-            dropdownPosition="bottom"
-            renderAboveOverlay={false}
-          />
-        </View>
-
-        <View style={styles.inlineDropdownWrapper}>
-          <View style={{zIndex: 70, position: 'relative', flex: 1}}>
-            <Text style={styles.smallLabel}>효과</Text>
+        <View style={styles.row}>
+          <View style={styles.halfWidthDropdownWrapper}>
+            <Text style={styles.smallLabel}>폰트</Text>
             <Dropdown
               style={styles.dropdownHalf}
               containerStyle={styles.dropdownContainer}
-              data={FONT_EFFECTS.map(effect => ({
-                label: effect,
-                value: effect,
-              }))}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={FONT_PATHS}
               labelField="label"
               valueField="value"
-              value={fontEffect}
-              onChange={item => setFontEffect(item.value)}
-              placeholder="효과"
+              value={fontPath}
+              onChange={item => {
+                setFontPath(item.value);
+                setPreviewFont(item.previewFont);
+              }}
               dropdownPosition="bottom"
-              renderAboveOverlay={false}
             />
           </View>
 
-          <View style={{zIndex: 80, position: 'relative', flex: 1}}>
-            <Text style={styles.smallLabel}>위치</Text>
+          <View style={styles.halfWidthDropdownWrapper}>
+            <Text style={styles.smallLabel}>자막 위치</Text>
             <Dropdown
               style={styles.dropdownHalf}
               containerStyle={styles.dropdownContainer}
@@ -213,47 +168,37 @@ const SubtitlesSettingScreen: React.FC = () => {
               valueField="value"
               value={subtitleY}
               onChange={item => setSubtitleY(item.value)}
-              placeholder="위치"
+              placeholder="위치 선택"
               dropdownPosition="bottom"
-              renderAboveOverlay={false}
             />
           </View>
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.label}>자막 색상</Text>
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={fontColor}
-              onValueChange={value => setFontColor(value)}>
-              {FONT_COLORS.map(color => (
-                <Picker.Item key={color} label={color} value={color} />
-              ))}
-            </Picker>
-          </View>
+        <View style={styles.firstDropdownWrapper}>
+          <Text style={styles.smallLabel}>자막 색상</Text>
+          <Dropdown
+            style={styles.dropdownHalf}
+            containerStyle={styles.dropdownContainer}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            data={FONT_COLOR_OPTIONS}
+            labelField="label"
+            valueField="value"
+            value={fontColor}
+            onChange={item => setFontColor(item.value)}
+            dropdownPosition="bottom"
+          />
         </View>
 
-     <View style={[styles.buttonWrapper, { marginTop: 10 }]}>
-       <CustomButton
-         title="최종 영상 생성"
-         onPress={handleGenerateFinalVideo}
-         disabled={loading}
-         type="gradient"
-          style={{ width: '95%', height: 42 }}
-
-       />
-     </View>
-
+        <View style={styles.buttonWrapper}>
+          <CustomButton
+            title="다음"
+            onPress={goToEffectPreview}
+            type="primary"
+            style={{width: '100%'}}
+          />
+        </View>
       </ScrollView>
-
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <View style={styles.loadingBox}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>영상 생성 중...</Text>
-          </View>
-        </View>
-      )}
     </SafeAreaView>
   );
 };

@@ -8,6 +8,8 @@ interface VideoData {
   subtitles: string[];
   images: any[];
   files: any[];
+  previewImage?: string;
+  previewSubtitle?: string;
 }
 
 interface VideoGenerationContextProps {

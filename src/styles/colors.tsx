@@ -18,6 +18,7 @@ export const COLORS = {
   borderStrong: '#3A9D96',
   white: 'white',
   gray: 'gray',
+  text: 'black',
 };
 
 export const DarkColors = {

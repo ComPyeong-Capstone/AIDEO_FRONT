@@ -6,6 +6,7 @@ import SelectDurationScreen from '../screens/common/SelectDurationScreen';
 import PromptInputScreen from '../screens/shorts/31-PromptInputScreen';
 import ImageSelectionScreen from '../screens/shorts/32-ImageSelectionScreen';
 import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen';
+import EffectPreviewScreen from '../screens/common/EffectPreviewScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import ResultScreen from '../screens/common/ResultScreen';
@@ -30,6 +31,17 @@ export type ShortsStackParamList = {
     videos: string[];
     subtitles: string[];
     music: string;
+    previewImage: string; // ✅ 추가
+    previewSubtitle: string; // ✅ 추가
+  };
+  EffectPreviewScreen: {
+    videos: string[];
+    subtitles: string[];
+    music: string;
+    font_path: string;
+    font_family: string;
+    font_color: string;
+    subtitle_y_position: 'bottom' | 'center';
   };
   MusicSelectionScreen: {
     duration: number;
@@ -80,6 +92,10 @@ const ShortsNavigator: React.FC = () => {
           gestureEnabled: true,
           gestureDirection: 'horizontal',
         }}
+      />
+      <Stack.Screen
+        name="EffectPreviewScreen"
+        component={EffectPreviewScreen}
       />
       <Stack.Screen
         name="MusicSelectionScreen"

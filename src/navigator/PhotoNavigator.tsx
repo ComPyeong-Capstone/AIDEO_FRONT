@@ -7,6 +7,7 @@ import PhotoPromptScreen from '../screens/photo/PhotoPromptScreen';
 import FinalVideoScreen from '../screens/common/FinalVideoScreen';
 import MusicSelectionScreen from '../screens/common/MusicSelectionScreen';
 import SubtitlesSettingScreen from '../screens/common/SubtitlesSettingScreen';
+import EffectPreviewScreen from '../screens/common/EffectPreviewScreen';
 import ResultScreen from '../screens/common/ResultScreen';
 import URLPosting from '../screens/common/URLPosting';
 
@@ -26,7 +27,7 @@ export type PhotoStackParamList = {
   };
 
   FinalVideoScreen: {
-    from: 'photo' | 'shorts'; // ✅ 수정
+    from: 'photo' | 'shorts';
     prompt: string;
     images: ImageItem[];
     videos: string[];
@@ -55,6 +56,19 @@ export type PhotoStackParamList = {
     videos: string[];
     subtitles: string[];
     music: string;
+    previewImage: string;
+    previewSubtitle: string;
+  };
+
+  EffectPreviewScreen: {
+    from: 'photo';
+    videos: string[];
+    subtitles: string[];
+    music: string;
+    font_path: string;
+    font_family: string;
+    font_color: string;
+    subtitle_y_position: 'bottom' | 'center';
   };
 
   ResultScreen: {
@@ -91,6 +105,10 @@ const PhotoNavigator: React.FC = () => {
           gestureEnabled: true,
           gestureDirection: 'horizontal',
         }}
+      />
+      <Stack.Screen
+        name="EffectPreviewScreen"
+        component={EffectPreviewScreen}
       />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
       <Stack.Screen name="URLPosting" component={URLPosting} />

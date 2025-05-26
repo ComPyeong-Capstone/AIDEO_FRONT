@@ -3,7 +3,6 @@ import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../colors';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
-const VIDEO_RATIO_HEIGHT = SCREEN_WIDTH * (16 / 9); // 9:16 세로 비율 (반대로 계산)
 
 export default StyleSheet.create({
   safeArea: {
@@ -19,6 +18,9 @@ export default StyleSheet.create({
     paddingBottom: scaleSize(6), // 버튼 포함 시 여유 여백
   },
   row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: scaleSize(8),
     marginBottom: scaleSize(26),
   },
   label: {
@@ -39,8 +41,7 @@ export default StyleSheet.create({
   buttonWrapper: {
     marginTop: scaleSize(10),
     marginBottom: scaleSize(20),
-      alignItems: 'center', // ← 이 줄 추가!
-
+    alignItems: 'center',
   },
   previewContainer: {
     alignItems: 'center',
@@ -60,7 +61,7 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // Dropdown Styles
+  // ✅ Dropdown 스타일
   dropdown: {
     height: scaleSize(50),
     borderColor: '#ccc',
@@ -98,11 +99,19 @@ export default StyleSheet.create({
     marginLeft: scaleSize(8),
     lineHeight: scaleFont(20),
   },
+
+  // ✅ 가로 드롭다운 두 개 (폰트 + 자막 위치)
   inlineDropdownWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: scaleSize(8),
+    marginBottom: scaleSize(20),
   },
+  halfWidthDropdownWrapper: {
+    flex: 1,
+  },
+
+  // ✅ 기타 라벨
   firstDropdownWrapper: {
     marginTop: scaleSize(4),
     marginBottom: scaleSize(16),
@@ -118,7 +127,7 @@ export default StyleSheet.create({
     height: scaleSize(20),
   },
 
-  // ✅ Loading Overlay
+  // ✅ 로딩 오버레이
   loadingOverlay: {
     position: 'absolute',
     top: 0,

@@ -49,13 +49,6 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    console.log('📥 [ImageSelectionScreen] 전달받은 props');
-    console.log('🖼️ imageUrls:', initialImageUrls);
-    console.log('📝 subtitles:', initialSubtitles);
-    console.log('⏱️ duration:', duration);
-    console.log('💬 prompt:', prompt);
-    console.log('🎞️ videos:', existingVideos);
-
     const filteredImages = initialImageUrls.filter(
       url => typeof url === 'string' && url.startsWith('http'),
     );
@@ -67,11 +60,9 @@ const insets = useSafeAreaInsets();
     setImageUrls(filteredImages);
     setSubtitles(initialSubtitles);
     setCaptionText(initialSubtitles[0] || '');
-  }, [initialImageUrls, initialSubtitles, duration, prompt, existingVideos]);
+  }, [initialImageUrls, initialSubtitles]);
 
   const handleIndexChange = (index: number) => {
-    console.log('➡️ Swiper 인덱스 변경:', index);
-
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
@@ -87,16 +78,11 @@ const insets = useSafeAreaInsets();
   const handleRegenerateImage = async () => {
     try {
       setLoading(true);
-      console.log(
-        `🔄 ${selectedIndex + 1}번 이미지 재생성 요청 (자막: ${captionText})`,
-      );
 
       const result = await regenerateImage({
         text: captionText,
         number: selectedIndex + 1,
       });
-
-      console.log('✅ 이미지 재생성 결과:', result.image_url);
 
       const updatedImages = [...imageUrls];
       updatedImages[selectedIndex] = result.image_url;
@@ -122,10 +108,6 @@ const insets = useSafeAreaInsets();
     const isValidImages = imageFilenames.every(name => name !== '');
     const isValidSubtitles = updatedSubtitles.every(s => s.trim() !== '');
 
-    console.log('🎬 영상 생성 유효성 검사');
-    console.log('✅ 이미지 파일명:', imageFilenames);
-    console.log('✅ 자막 목록:', updatedSubtitles);
-
     if (!isValidImages || !isValidSubtitles) {
       Alert.alert('입력 오류', '모든 이미지와 자막을 입력해주세요.');
       return;
@@ -135,7 +117,6 @@ const insets = useSafeAreaInsets();
       setLoading(true);
 
       if (existingVideos && existingVideos.length > 0) {
-        console.log('🟢 기존 영상 존재 → FinalVideoScreen 이동');
         navigation.navigate('FinalVideoScreen', {
           from: 'shorts',
           duration,
@@ -145,21 +126,17 @@ const insets = useSafeAreaInsets();
           videos: existingVideos,
         });
       } else {
-        console.log('📡 부분 영상 생성 요청');
         const response = await generatePartialVideo({
           images: imageFilenames,
           subtitles: updatedSubtitles,
         });
 
-        console.log('🎥 부분 영상 생성 완료:', response.video_urls);
-
-        navigation.navigate('FinalVideoScreen', {
-          from: 'shorts',
-          duration,
-          prompt,
-          imageUrls,
-          subtitles: updatedSubtitles,
+        navigation.navigate('SubtitlesSettingScreen', {
           videos: response.video_urls,
+          subtitles: updatedSubtitles,
+          music: 'bgm_01.mp3', // 필요 시 실제 선택된 음악으로 교체
+          previewImage: imageUrls[0],
+          previewSubtitle: updatedSubtitles[0],
         });
       }
     } catch (error) {
@@ -194,15 +171,6 @@ const insets = useSafeAreaInsets();
                     source={{uri}}
                     style={styles.image}
                     resizeMode="contain"
-                    onError={e => {
-                      console.error(
-                        `🛑 이미지 로딩 실패 (index: ${index})`,
-                        e.nativeEvent,
-                      );
-                    }}
-                    onLoad={() => {
-                      console.log(`✅ 이미지 로딩 성공 (index: ${index})`);
-                    }}
                   />
                 ) : (
                   <Text style={{color: 'red'}}>잘못된 이미지 URL</Text>
