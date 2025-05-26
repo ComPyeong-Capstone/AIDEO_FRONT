@@ -173,19 +173,18 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         ))
       )}
 
-      <View
-        style={[styles.buttonContainer, {paddingBottom: insets.bottom + 10}]}>
-        <CustomButton
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+    <CustomButton
           title="이전"
           onPress={handleBack}
-          type="secondary"
-          style={[styles.button, styles.prevButton]}
+          type="gray"
+    style={{ width: '45%', height: 42 }}
         />
         <CustomButton
           title="선택 완료"
           onPress={handleConfirm}
-          type="primary"
-          style={[styles.button, styles.nextButton]}
+          type="gradient"
+    style={{ width: '45%', height: 42 }}
         />
       </View>
     </SafeAreaView>

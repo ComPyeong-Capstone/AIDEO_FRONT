@@ -9,6 +9,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: '5%',
   },
+fixedButtonWrapper: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: 16, // 👈 여기에 추가
+  paddingHorizontal: 20,
+},
 
   musicItem: {
     flexDirection: 'row',

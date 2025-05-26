@@ -241,19 +241,19 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
         </View>
       </ScrollView>
 
-      <View style={fixedButtonWrapperWithPadding(insets.bottom)}>
-        <CustomButton
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+      <CustomButton
           title="사진 변경"
           onPress={() => pickImage(selectedIndex)}
-          type="secondary"
-          style={styles.buttonSpacing}
-        />
+    type="gray"
+  style={{flex: 1, width: '45%', height: 42 }}
+          />
         <CustomButton
           title="영상 생성"
           onPress={handleGeneratePartialVideos}
-          type="primary"
-          style={styles.buttonSpacing}
-          disabled={loading}
+    type="gradient"
+  style={{flex: 1, width: '45%', height: 42 }}
+            disabled={loading}
         />
       </View>
 

@@ -13,6 +13,13 @@ export default StyleSheet.create({
     backgroundColor: COLORS.background,
     alignItems: 'center',
   },
+fixedButtonWrapper: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: 16, // 👈 여기에 추가
+  paddingHorizontal: 20,
+},
 
   headerContainer: {
     flexDirection: 'row',

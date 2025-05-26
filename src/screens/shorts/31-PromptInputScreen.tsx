@@ -173,19 +173,18 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
       </View>
 
       {/* 하단 버튼 */}
-      <View style={[styles.fixedButtonWrapper, {paddingBottom: insets.bottom}]}>
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
         <CustomButton
           title="이전"
           onPress={() => navigation.goBack()}
-          type="secondary"
-          style={styles.buttonSpacing}
-        />
+          type="gray"
+  style={{flex: 1, width: '45%', height: 42 }}
+          />
         <CustomButton
           title="이미지 및 자막 생성"
           onPress={handleGenerate}
-          type="primary"
-          style={styles.buttonSpacing}
-          disabled={loading}
+          type="gradient"
+  style={{flex: 1, width: '45%', height: 42 }}           disabled={loading}
         />
       </View>
 

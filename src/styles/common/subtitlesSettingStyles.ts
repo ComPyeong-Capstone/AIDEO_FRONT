@@ -38,7 +38,9 @@ export default StyleSheet.create({
   },
   buttonWrapper: {
     marginTop: scaleSize(10),
-    marginBottom: scaleSize(30),
+    marginBottom: scaleSize(20),
+      alignItems: 'center', // ← 이 줄 추가!
+
   },
   previewContainer: {
     alignItems: 'center',

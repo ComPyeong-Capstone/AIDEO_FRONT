@@ -107,18 +107,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  buttonContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: scaleSize(20),
-    marginBottom: scaleSize(24),
-  },
-
-  buttonSpacing: {
-    width: '48%',
-  },
-
   loadingOverlay: {
     position: 'absolute',
     top: 0,
@@ -144,4 +132,12 @@ export const styles = StyleSheet.create({
     color: '#fff',
     fontSize: scaleFont(14),
   },
+  fixedButtonWrapper: {
+    flexDirection: 'row',          // ✅ 가로 정렬 필수
+    justifyContent: 'space-between', // ✅ 버튼 간 간격
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 16,
+  },
+
 });

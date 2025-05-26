@@ -17,6 +17,9 @@ export const styles = StyleSheet.create({
 
   // ✅ 영상 박스 (최종 미리보기)
   videoBox: {
+
+     marginTop: 10, // 👈 여기에 추가
+
     width: VIDEO_WIDTH,
     height: VIDEO_HEIGHT,
     backgroundColor: '#000',
@@ -39,7 +42,13 @@ export const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#000',
   },
-
+fixedButtonWrapper: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: 12, // 👈 여기에 추가
+  paddingHorizontal: 20,
+},
   // ✅ 영상이 없을 때 메시지
   errorText: {
     fontSize: scaleFont(14),
@@ -50,6 +59,9 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: scaleSize(10),
     alignItems: 'center',
+      width: '95%', // ✅ 전체 너비로 확장
+  marginTop: -10, // 👈 여기에 추가
+
   },
 
   postButton: {

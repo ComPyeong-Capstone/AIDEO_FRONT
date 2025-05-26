@@ -13,6 +13,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import styles from '../../styles/common/postVideoStyles';
 import CommonButton from '../../styles/button';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import IconGradientButton from '../../styles/IconGradientButton';
 
 const YouTubeUploadScreen = () => {
   const { width } = useWindowDimensions();
@@ -86,7 +87,7 @@ const YouTubeUploadScreen = () => {
 
   return (
     <SafeAreaView style={[styles.container, { flex: 1 }]}>
-      <View style={{ alignItems: 'center', marginTop: 40 }}>
+<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <TextInput
           style={[styles.input, { width: width * 0.9 }]}
           placeholder="YouTube 제목"
@@ -119,12 +120,15 @@ const YouTubeUploadScreen = () => {
           ))}
         </View>
 
-        <CommonButton
+        <IconGradientButton
           title="YouTube 업로드"
           onPress={handleSubmit}
-          type="primary"
-          style={{ width: width * 0.6 }}
+   variant="youtube"
+     iconName="logo-youtube"
+
+             style={{ width: width * 0.6 }}
         />
+
       </View>
     </SafeAreaView>
   );

@@ -212,14 +212,17 @@ const SubtitlesSettingScreen: React.FC = () => {
           </View>
         </View>
 
-        <View style={styles.buttonWrapper}>
-          <CustomButton
-            title="최종 영상 생성"
-            onPress={handleGenerateFinalVideo}
-            disabled={loading}
-            type="primary"
-          />
-        </View>
+     <View style={[styles.buttonWrapper, { marginTop: 10 }]}>
+       <CustomButton
+         title="최종 영상 생성"
+         onPress={handleGenerateFinalVideo}
+         disabled={loading}
+         type="gradient"
+          style={{ width: '95%', height: 42 }}
+
+       />
+     </View>
+
       </ScrollView>
 
       {loading && (

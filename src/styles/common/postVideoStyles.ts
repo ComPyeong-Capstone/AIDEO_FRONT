@@ -10,6 +10,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  fixedButtonWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10, // 👈 여기에 추가
+    paddingHorizontal: 20,
+  },
   mainWrapper: {
     flex: 1,
     justifyContent: 'space-between',

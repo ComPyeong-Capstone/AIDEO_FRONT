@@ -18,6 +18,8 @@ import RNFS from 'react-native-fs';
 import {useUser} from '../../context/UserContext'; // 사용자 토큰용
 import {createPostWithUrl} from '../../api/postApi';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import IconGradientButton from '../../styles/IconGradientButton';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 // ▶️ Stack Param Type
 type ShortsStackParamList = {
@@ -35,6 +37,7 @@ const ResultScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute();
   const { user } = useUser(); // 🔥 필수: 유저 정보 가져오기
+  const insets = useSafeAreaInsets();
 
   const {videos} = route.params as {
     videos: string[];
@@ -148,27 +151,32 @@ const handlePost = () => {
 
       {/* ▶️ 버튼 영역 */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.postButton} onPress={handlePost}>
-          <Icon
-            name="cloud-upload-outline"
-            size={scaleSize(24)}
-            color="white"
-          />
-          <Text style={styles.buttonText}>포스팅</Text>
-        </TouchableOpacity>
+   <IconGradientButton
+       title="포스팅"
+       iconName="cloud-upload-outline"
+       onPress={handlePost}
+           variant="primary"
+       style={{ width: '90%' }}
+     />
 
-        <View style={styles.smallButtonContainer}>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <View style={styles.iconWithText}>
-              <Icon name="save-outline" size={18} color="#fff" />
-              <Text style={styles.smallButtonText}>저장</Text>
-            </View>
-          </TouchableOpacity>
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+      <IconGradientButton
+        title="저장"
+        iconName="save-outline"
+        onPress={handleSave}
+        variant="blue"
+        style={{ flex: 1 }}
+      />
 
-          <TouchableOpacity style={styles.exitButton} onPress={handleExit}>
-            <Text style={styles.smallButtonText}>나가기</Text>
-          </TouchableOpacity>
-        </View>
+    <IconGradientButton
+      title="나가기"
+      iconName="exit"
+      onPress={handleExit}
+      variant="gray"
+      style={{ flex: 1 }}
+    />
+          </View>
+
       </View>
     </View>
   );

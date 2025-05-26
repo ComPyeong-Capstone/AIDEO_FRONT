@@ -12,6 +12,7 @@ import {
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {styles} from '../../styles/shorts/imageSelectionStyles';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
@@ -45,6 +46,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [captionText, setCaptionText] = useState('');
   const [loading, setLoading] = useState(false);
+const insets = useSafeAreaInsets();
 
   useEffect(() => {
     console.log('📥 [ImageSelectionScreen] 전달받은 props');
@@ -234,20 +236,19 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         </View>
       </ScrollView>
 
-      <View style={styles.buttonContainer}>
-        <CustomButton
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12,      marginBottom: -30, // 👈 버튼과 위 콘텐츠 사이 여백
+ }]}>
+    <CustomButton
           title="사진 재생성"
           onPress={handleRegenerateImage}
-          type="secondary"
-          disabled={loading}
-          style={styles.buttonSpacing}
-        />
+    type="gray"
+              disabled={loading}
+  style={{ width: '45%', height: 42 }}       />
         <CustomButton
           title="영상 생성"
           onPress={handleGenerateVideo}
-          type="primary"
-          style={styles.buttonSpacing}
-        />
+    type="gradient"
+  style={{ width: '45%', height: 42 }}         />
       </View>
 
       {loading && (

@@ -18,12 +18,14 @@ import {createPost} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 import {AppStackParamList} from '../../navigator/types';
 import {launchImageLibrary} from 'react-native-image-picker';
-import CommonButton from '../../styles/button';
+import CustomButton from '../../styles/button';
+
 import Icon from 'react-native-vector-icons/Feather';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import axios from 'axios';
 import {BASE_URL,WEB_CLIENT_ID} from '@env';
 import * as Progress from 'react-native-progress';
+import IconGradientButton from '../../styles/IconGradientButton';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'FilePosting'>;
@@ -42,7 +44,10 @@ const FilePosting: React.FC<Props> = ({navigation}) => {
 const [videoLoading, setVideoLoading] = useState(false);
 const [titleError, setTitleError] = useState('');
 const [tagsError, setTagsError] = useState('');
-
+const buttonStyle = {
+  width: width * 0.44,
+  height: 44,
+};
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [videoURI, setVideoURI] = useState<string | null>(null);
@@ -298,9 +303,24 @@ const uploadToMyServer = async (
 
         </View>
 
-  <View style={[styles.buttonContainer, { width: width * 0.9, marginBottom: insets.bottom + 10 }]}>
-           <CommonButton title="YouTube 업로드" onPress={goToYouTubeUpload} type="secondary" style={{ width: width * 0.4 }} />
-           <CommonButton title="AIVIDEO 업로드" onPress={handleUpload} type="primary" style={{ width: width * 0.4 }} />
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+<IconGradientButton
+  title="YouTube 업로드"
+  iconName="logo-youtube"
+  onPress={goToYouTubeUpload}
+  variant="youtube"
+  style={buttonStyle}
+/>
+
+<IconGradientButton
+  title="AIVIDEO 업로드"
+  iconName="cloud-upload-outline"
+  onPress={handleUpload}
+  variant="primary"
+ // iconSize={18} // ✅ 동일 크기
+  style={{ flex: 1, height: 44 }}
+/>
+
          </View>
 
       {uploading && (

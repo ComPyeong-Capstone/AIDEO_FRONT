@@ -16,6 +16,7 @@ import {
 import Swiper from 'react-native-swiper';
 import Video from 'react-native-video';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import styles from '../../styles/common/finalVideoStyles';
 import CustomButton from '../../styles/button';
@@ -24,6 +25,7 @@ import {regenerateSinglePartialVideo} from '../../api/generateApi';
 const FinalVideoScreen: React.FC = () => {
   const route = useRoute();
   const navigation = useNavigation<NavigationProp<any>>();
+  const insets = useSafeAreaInsets();
 
   const {
     from = 'shorts',
@@ -255,12 +257,12 @@ const FinalVideoScreen: React.FC = () => {
           선택된 음악: {musicTitle || '없음'}
         </Text>
 
-        <View style={styles.buttonContainer}>
-          <CustomButton
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+       <CustomButton
             title="부분 영상 재생성"
             onPress={regenerateSelectedVideo}
-            type="secondary"
-            style={styles.prevButton}
+            type="gray"
+  style={{ flex:1 ,width: '45%', height: 42 }}
             textStyle={styles.buttonText}
             disabled={loading}
           />
@@ -268,9 +270,9 @@ const FinalVideoScreen: React.FC = () => {
             title="자막 설정"
             onPress={handleGoToSubtitleSettings}
             disabled={loading || videoUrls.length === 0}
-            type="primary"
-            style={styles.nextButton}
-            textStyle={styles.buttonText}
+            type="gradient"
+  style={{ flex:1 ,width: '45%', height: 42 }}
+              textStyle={styles.buttonText}
           />
         </View>
       </View>

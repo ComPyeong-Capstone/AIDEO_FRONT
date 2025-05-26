@@ -26,6 +26,7 @@ import {BASE_URL} from '@env';
 import * as Progress from 'react-native-progress';
 import { useRoute } from '@react-navigation/native';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
+import IconGradientButton from '../../styles/IconGradientButton';
 
 interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'URLPosting'>;
@@ -50,7 +51,10 @@ const [tagsError, setTagsError] = useState('');
   const [videoURI, setVideoURI] = useState<string | null>(finalVideoUrl || null);
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
-
+const buttonStyle = {
+  width: width * 0.44,
+  height: 44,
+};
 
 
     const processed = words
@@ -301,15 +305,25 @@ if (!tags.trim()) {
 
         </View>
 
-      <View style={[styles.buttonContainer, {width: width * 0.9, marginBottom: insets.bottom + 10}]}>
-           <CommonButton title="YouTube 업로드" onPress={goToYouTubeUpload} type="secondary" style={{ width: width * 0.4 }} />
-    <CommonButton
-          title="AIVIDEO 업로드"
-          onPress={handleUpload}
-          type="primary"
-          style={{width: width * 0.4}}
-        />
-      </View>
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+<IconGradientButton
+  title="YouTube 업로드"
+  iconName="logo-youtube"
+  onPress={goToYouTubeUpload}
+  variant="youtube"
+  style={buttonStyle}
+/>
+
+<IconGradientButton
+  title="AIVIDEO 업로드"
+  iconName="cloud-upload-outline"
+  onPress={handleUpload}
+  variant="primary"
+ // iconSize={18} // ✅ 동일 크기
+  style={{ flex: 1, height: 44 }}
+/>
+
+         </View>
 
       {uploading && (
         <View style={{marginTop: 10, alignItems: 'center'}}>
