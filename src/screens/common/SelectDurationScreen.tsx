@@ -20,6 +20,7 @@ import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import { PhotoStackParamList } from '../../navigator/PhotoNavigator';
 import { ShortsStackParamList } from '../../navigator/ShortsNavigator';
 import { AppStackParamList } from '../../types/navigation';
+import CustomButton from '../../styles/button';
 
 const { height } = Dimensions.get('window');
 const ITEM_HEIGHT = 50;
@@ -114,15 +115,23 @@ const SelectDurationScreen: React.FC = () => {
         </View>
       </View>
 
-      <View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom }]}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.nextButtonText}>이전</Text>
-        </TouchableOpacity>
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+  <CustomButton
+    title="이전"
+    onPress={handleBack}
+    type="gray"
+  style={{flex: 1, width: '45%', height: 42 }} // ✅ 고정 높이로 깔끔하게
+  />
 
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>다음</Text>
-        </TouchableOpacity>
-      </View>
+  <CustomButton
+    title="다음"
+    onPress={handleNext}
+    type="gradient"
+  style={{flex: 1, width: '45%', height: 42 }} // ✅ 고정 높이로 깔끔하게
+  />
+</View>
+
+
     </SafeAreaView>
   );
 };

@@ -72,27 +72,19 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // 버튼
-  backButton: {
-    backgroundColor: '#ccc',
-    paddingVertical: scaleSize(14),
-    width: '48%',
-    borderRadius: scaleSize(10),
-    alignItems: 'center',
-  },
 
-  nextButton: {
+/*   nextButton: {
     backgroundColor: '#51BCB4',
     paddingVertical: scaleSize(14),
     width: '48%',
     borderRadius: scaleSize(10),
     alignItems: 'center',
-  },
+  }, */
 
-  nextButtonText: {
+/*   nextButtonText: {
     fontSize: scaleFont(16),
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
-  },
+  }, */
 });
