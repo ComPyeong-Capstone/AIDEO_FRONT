@@ -1,10 +1,12 @@
+// src/styles/shorts/imageSelectionStyles.ts
+
 import {StyleSheet, Dimensions} from 'react-native';
 import {scaleFont, scaleSize} from '../responsive';
 import {COLORS} from '../colors';
 
 const {height} = Dimensions.get('window');
 
-// ✅ 이미지 비율 9:16 유지 + 높이 조절로 전체 보이게
+// 9:16 비율 유지한 이미지 박스 크기
 const IMAGE_HEIGHT = height * 0.6;
 const IMAGE_WIDTH = IMAGE_HEIGHT * (9 / 16);
 
@@ -13,7 +15,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
     alignItems: 'center',
-    justifyContent: 'flex-start', // ✅ 위에서 아래로 정렬
+    justifyContent: 'flex-start',
+  },
+
+  scrollContent: {
+    alignItems: 'center',
+    paddingBottom: scaleSize(100),
   },
 
   headerContainer: {
@@ -31,20 +38,6 @@ export const styles = StyleSheet.create({
     marginBottom: scaleSize(12),
   },
 
-  progressBarWrapper: {
-    display: 'none',
-  },
-
-  progressDotActive: {
-    fontSize: scaleFont(18),
-    color: COLORS.primary,
-  },
-  progressDotInactive: {
-    fontSize: scaleFont(18),
-    color: COLORS.textSecondary,
-  },
-
-  // ✅ 이미지 슬라이더 wrapper
   sliderWrapper: {
     marginTop: scaleSize(12),
     height: IMAGE_HEIGHT + scaleSize(36),
@@ -60,7 +53,7 @@ export const styles = StyleSheet.create({
   imageBox: {
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.imagebox,
     borderRadius: scaleSize(12),
     overflow: 'hidden',
     alignSelf: 'center',
@@ -71,7 +64,11 @@ export const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain', // ✅ 이미지 전체 보이도록
+  },
+
+  invalidText: {
+    color: 'red',
+    fontSize: scaleFont(14),
   },
 
   customPagination: {
@@ -79,6 +76,16 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: scaleSize(8),
+  },
+
+  progressDotActive: {
+    fontSize: scaleFont(18),
+    color: COLORS.primary,
+  },
+
+  progressDotInactive: {
+    fontSize: scaleFont(18),
+    color: COLORS.textSecondary,
   },
 
   captionBox: {
@@ -100,7 +107,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ✅ 버튼은 아래쪽에 자연스럽게 배치
   buttonContainer: {
     width: '90%',
     flexDirection: 'row',
@@ -137,10 +143,5 @@ export const styles = StyleSheet.create({
     marginTop: scaleSize(10),
     color: '#fff',
     fontSize: scaleFont(14),
-  },
-
-  hiddenPagination: {
-    display: 'none',
-    height: 0,
   },
 });
