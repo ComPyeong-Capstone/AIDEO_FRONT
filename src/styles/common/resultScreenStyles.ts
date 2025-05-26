@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   // ✅ 영상 박스 (최종 미리보기)
   videoBox: {
 
-     marginTop: 10, // 👈 여기에 추가
+        marginTop: 10, // 👈 여기에 추가
 
     width: VIDEO_WIDTH,
     height: VIDEO_HEIGHT,
