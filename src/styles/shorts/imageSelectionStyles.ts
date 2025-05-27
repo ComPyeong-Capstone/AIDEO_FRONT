@@ -79,12 +79,12 @@ export const styles = StyleSheet.create({
   },
 
   progressDotActive: {
-    fontSize: scaleFont(18),
+    fontSize: scaleFont(17),
     color: COLORS.primary,
   },
 
   progressDotInactive: {
-    fontSize: scaleFont(18),
+    fontSize: scaleFont(12),
     color: COLORS.textSecondary,
   },
 
@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: scaleSize(12),
+    marginTop: scaleSize(10),
   },
 
   captionText: {
@@ -137,7 +137,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between', // ✅ 버튼 간 간격
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginTop: 16,
+        position: 'absolute',
+        bottom: 25,
+        width: '100%',
   },
 
 });

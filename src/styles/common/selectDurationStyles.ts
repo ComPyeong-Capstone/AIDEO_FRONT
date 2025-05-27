@@ -17,24 +17,26 @@ export const styles = StyleSheet.create({
     top: 0,
     width: '100%',
     alignItems: 'center',
-    paddingTop: scaleSize(10),
+    paddingTop: scaleSize(5),
     paddingHorizontal: width * 0.05,
     backgroundColor: COLORS.background,
     zIndex: 10,
   },
 
   // 콘텐츠
-  contentWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: width * 0.05,
-  },
+contentWrapper: {
+  flex: 1,
+  justifyContent: 'flex-start', // 위쪽 정렬
+  alignItems: 'center',
+  width: '100%',
+  paddingHorizontal: width * 0.05,
+  paddingTop: height * 0.2, // 여백이 필요하다면 추가
+},
+
 
   // 제목
   title: {
-    fontSize: scaleFont(20),
+    fontSize: scaleFont(24),
     marginTop: height * 0.04,
     marginBottom: height * 0.03,
     fontWeight: 'bold',
@@ -65,26 +67,17 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: width * 0.05,
-    paddingTop: scaleSize(12),
-    paddingBottom: scaleSize(12),
+    paddingTop: scaleSize(20),
+    paddingBottom: scaleSize(20),
     borderTopWidth: 1,
     borderTopColor: '#eee',
     backgroundColor: COLORS.background,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+
   },
 
 
-/*   nextButton: {
-    backgroundColor: '#51BCB4',
-    paddingVertical: scaleSize(14),
-    width: '48%',
-    borderRadius: scaleSize(10),
-    alignItems: 'center',
-  }, */
 
-/*   nextButtonText: {
-    fontSize: scaleFont(16),
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  }, */
 });

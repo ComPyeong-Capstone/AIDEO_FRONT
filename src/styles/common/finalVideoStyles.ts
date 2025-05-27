@@ -19,6 +19,9 @@ fixedButtonWrapper: {
   alignItems: 'center',
   marginTop: 16, // 👈 여기에 추가
   paddingHorizontal: 20,
+     // position: 'absolute',
+      bottom: 10,
+      width: '100%',
 },
 
   headerContainer: {

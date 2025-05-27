@@ -144,13 +144,14 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+            <AnimatedProgressBar progress={3 / 5} />
+
       <ScrollView
         contentContainerStyle={{alignItems: 'center', paddingBottom: 100}}
         showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
         </View>
-        <AnimatedProgressBar progress={3 / 5} />
 
         <View style={styles.sliderWrapper}>
           <Swiper
