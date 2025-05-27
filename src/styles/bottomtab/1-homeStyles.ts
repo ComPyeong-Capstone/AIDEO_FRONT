@@ -16,12 +16,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: scaleSize(16),
-    marginBottom: scaleSize(12),
+    marginBottom: scaleSize(11),
   },
   header: {
     fontWeight: 'bold',
     color: COLORS.black,
-    fontSize: scaleFont(20),
+    fontSize: scaleFont(21),
   },
   headerIconButton: {
     backgroundColor: COLORS.background,
@@ -30,21 +30,21 @@ export const styles = StyleSheet.create({
   },
   videoContainer: {
     backgroundColor: COLORS.videocontainer,
-    borderRadius: scaleSize(23),
+    borderRadius: scaleSize(22),
     alignItems: 'center',
-    paddingBottom: scaleSize(9),
-    marginBottom: scaleSize(6),
+    paddingBottom: scaleSize(5),
+    marginBottom: scaleSize(2),
   },
   thumbnailPlaceholder: {
     width: '100%',
-    aspectRatio: 9 / 11, // ✅ 세로 비율로 수정
+  aspectRatio: 9 / 12,
     backgroundColor: COLORS.thumbnail,
-    borderTopLeftRadius: scaleSize(12),
-    borderTopRightRadius: scaleSize(12),
+    borderTopLeftRadius: scaleSize(22),
+    borderTopRightRadius: scaleSize(22),
   },
   textContainer: {
     alignItems: 'center',
-    marginTop: scaleSize(10),
+    marginTop: scaleSize(3),
   },
   title: {
     fontWeight: 'bold',
@@ -56,14 +56,14 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: scaleSize(9),
+    marginTop: scaleSize(3),
   },
   profileImage: {
-    width: scaleSize(24),
-    height: scaleSize(24),
-    borderRadius: scaleSize(12),
+    width: scaleSize(22),
+    height: scaleSize(22),
+    borderRadius: scaleSize(22),
     backgroundColor: COLORS.maincolor,
-    marginRight: scaleSize(10),
+    marginRight: scaleSize(5),
   },
   creator: {
     color: COLORS.maincolor,
@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   contentContainer: {
-    paddingBottom: scaleSize(0),
-    paddingHorizontal: scaleSize(13),
+    paddingBottom: scaleSize(1),
+    paddingHorizontal: scaleSize(8),
   },
 });

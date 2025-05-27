@@ -13,6 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import SortModal from '../common/SortModal.tsx';
 
 import {styles} from '../../styles/bottomtab/2-searchStyles';
 import {scaleSize} from '../../styles/responsive';
@@ -38,6 +39,7 @@ const SearchScreen: React.FC = () => {
 
   const {user} = useUser();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+const [sortModalVisible, setSortModalVisible] = useState(false);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -68,6 +70,16 @@ const SearchScreen: React.FC = () => {
       console.error('검색 실패:', error);
     }
   };
+const handleSortSelect = (option: string) => {
+  const newOrder =
+    option === '최신순' ? 'latest' : option === '오래된순' ? 'oldest' : 'likes';
+
+  setSortOrder(newOrder);
+
+  // 기존 데이터를 정렬해서 다시 렌더링
+  setFilteredPosts(prev => sortPosts(prev, newOrder));
+  setSortModalVisible(false);
+};
 
   const sortPosts = (
     data: PostResponse[],
@@ -82,23 +94,10 @@ const SearchScreen: React.FC = () => {
     }
   };
 
-  const handleSortPress = () => {
-    Alert.alert('정렬 기준 선택', '', [
-      {
-        text: '최신순',
-        onPress: () => setSortOrder('latest'),
-      },
-      {
-        text: '오래된순',
-        onPress: () => setSortOrder('oldest'),
-      },
-      {
-        text: '좋아요순',
-        onPress: () => setSortOrder('likes'),
-      },
-      {text: '취소', style: 'cancel'},
-    ]);
-  };
+const handleSortPress = () => {
+  setSortModalVisible(true);
+};
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -167,6 +166,12 @@ const SearchScreen: React.FC = () => {
           </TouchableOpacity>
         )}
       />
+      <SortModal
+        visible={sortModalVisible}
+        onSelect={handleSortSelect}
+        onClose={() => setSortModalVisible(false)}
+      />
+
     </SafeAreaView>
   );
 };
