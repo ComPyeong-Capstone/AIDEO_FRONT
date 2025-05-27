@@ -130,6 +130,11 @@ const FinalVideoScreen: React.FC = () => {
         number: selectedIndex + 1,
       });
 
+      console.log(
+        `🎥 재생성된 ${selectedIndex + 1}번 영상 URL:`,
+        response.video_url,
+      );
+
       const updated = [...videoUrls];
       updated[selectedIndex] = response.video_url;
       setVideoUrls(updated);
@@ -171,7 +176,7 @@ const FinalVideoScreen: React.FC = () => {
       music,
       musicTitle,
       videos: videoUrls,
-      previewImage, // ✅ 반드시 포함
+      previewImage,
     };
 
     if (from === 'photo') {

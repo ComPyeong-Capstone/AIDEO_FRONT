@@ -1,6 +1,8 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import {scaleSize, scaleFont} from '../responsive';
 import {COLORS} from '../colors';
+
+const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   // 전체 배경
@@ -12,8 +14,6 @@ export const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
   },
-
-
 
   // 닫기 버튼
   closeButton: {
@@ -38,32 +38,33 @@ export const styles = StyleSheet.create({
     marginBottom: scaleSize(15),
   },
 
-  // 공통: 댓글 아이템 (댓글 + 대댓글)
+  // 댓글 아이템 (댓글 + 대댓글)
   commentContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    width: '100%',
   },
-
-  // 댓글
   commentItem: {
     marginBottom: scaleSize(15),
-
+    paddingHorizontal: scaleSize(12),
   },
 
-  // 대댓글
   replyItem: {
     marginTop: scaleSize(8),
-    marginLeft: scaleSize(40),
+    marginLeft: scaleSize(48),
   },
 
-  profileCircle: {
-    width: scaleSize(30),
-    height: scaleSize(30),
-    backgroundColor: '#D3D3D3',
-    borderRadius: scaleSize(15),
+  // 프로필 이미지
+  profileImage: {
+    width: scaleSize(36),
+    height: scaleSize(36),
+    borderRadius: scaleSize(18),
     marginRight: scaleSize(10),
-    marginTop: scaleSize(4),
+    backgroundColor: '#ccc',
+    marginTop: scaleSize(2),
   },
+
+  // 내부 content container
   flex1: {
     flex: 1,
   },
@@ -73,11 +74,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+
   username: {
     fontSize: scaleFont(14),
     color: COLORS.textprimary,
     fontWeight: 'bold',
   },
+
   commentText: {
     fontSize: scaleFont(14),
     color: COLORS.textprimary,
@@ -107,6 +110,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#2E3B4E',
     borderRadius: scaleSize(8),
     marginTop: scaleSize(8),
+    marginHorizontal: scaleSize(10),
   },
   replyingText: {
     color: '#ffffff',
@@ -116,49 +120,60 @@ export const styles = StyleSheet.create({
     color: '#FF6B6B',
     fontSize: scaleFont(13),
   },
-modalWrapper: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // 🔹 뒤 화면이 살짝 보이도록
+
+  // 그림자 배경 (Animated opacity)
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    zIndex: 0,
   },
 
-modalContainer: {
-  backgroundColor: 'white',
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
-  paddingHorizontal: 10,
-  paddingTop: scaleSize(16),
-    paddingBottom: scaleSize(15), // 키보드와 충돌하지 않게 약간 여유 두기
-  height: '135%', // ⬅️ 원하는 크기만큼 조절
-},
+  // 댓글 모달 컨테이너 (스크롤 시 애니메이션 높이 적용)
+  modalContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    backgroundColor: 'white',
+    borderTopLeftRadius: scaleSize(20),
+    borderTopRightRadius: scaleSize(20),
+    paddingHorizontal: scaleSize(12),
+    paddingTop: scaleSize(16),
+    paddingBottom: scaleSize(15),
+    overflow: 'hidden',
+  },
+
+  // 입력창 래퍼
+  inputWrapper: {
+    paddingHorizontal: scaleSize(10),
+    paddingVertical: scaleSize(10),
+    paddingBottom: scaleSize(5),
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderColor: '#eee',
+  },
 
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: scaleSize(16), // 🔹 아래로 여백 추가
-    marginBottom: scaleSize(0), // 기존 -40 제거하고 정상 처리
-    paddingHorizontal: scaleSize(0),
   },
-inputWrapper: {
-  paddingHorizontal: scaleSize(10),
-  paddingVertical: scaleSize(10),
-    paddingBottom: scaleSize(5), // ✅ 하단 공간 추가
-  backgroundColor: 'white',
-  borderTopWidth: 1,
-  borderColor: '#eee',
-},
 
- input: {
-   flex: 1,
-   borderWidth: 1,
-   borderColor: '#ccc',
-   borderRadius: 25,
-   paddingHorizontal: 14,
-   paddingVertical: 12,
-   backgroundColor: '#fff',
-   fontSize: 16,
-   color: '#000',
- },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: scaleSize(25),
+    paddingHorizontal: scaleSize(14),
+    paddingVertical: scaleSize(10),
+    backgroundColor: '#fff',
+    fontSize: scaleFont(15),
+    color: '#000',
+  },
 
   sendButton: {
     padding: scaleSize(10),

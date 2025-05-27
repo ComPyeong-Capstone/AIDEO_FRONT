@@ -1,14 +1,14 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import {styles} from '../styles/shortsPlayer/CommentsScreenStyles';
-import {Comment} from '../api/commentsApi'; // ✅ 통일된 타입 사용
+import {Comment} from '../api/commentsApi';
 
 interface Props {
   item: Comment;
   onToggleLike: (commentId: number, liked: boolean) => void;
   onDelete: (commentId: number) => void;
   onReplyTo: (commentId: number, username: string) => void;
-  renderReply: (reply: Comment) => React.ReactNode; // ✅ 대댓글도 Comment 타입 사용
+  renderReply: (reply: Comment) => React.ReactNode;
 }
 
 const CommentItem: React.FC<Props> = ({
@@ -20,7 +20,13 @@ const CommentItem: React.FC<Props> = ({
 }) => {
   return (
     <View style={[styles.commentContainer, styles.commentItem]}>
-      <View style={styles.profileCircle} />
+      {item.author.profileImage && (
+        <Image
+          source={{uri: item.author.profileImage}}
+          style={styles.profileImage}
+        />
+      )}
+
       <View style={styles.flex1}>
         <View style={styles.commentHeader}>
           <Text style={styles.username}>{item.author.userName}</Text>
