@@ -38,7 +38,7 @@ const FinalVideoScreen: React.FC = () => {
     musicTitle = '',
     videos: preGeneratedVideos = [],
     files = [],
-    previewImage = '', // ✅ 기본값 지정
+    previewImage = '',
   } = route.params as {
     from?: 'shorts' | 'photo';
     duration?: number;
@@ -63,7 +63,7 @@ const FinalVideoScreen: React.FC = () => {
 
   useEffect(() => {
     console.log('🎬 FinalVideoScreen mounted');
-    console.log('📸 previewImage:', previewImage);
+    console.log('🖼️ previewImage:', previewImage);
   }, []);
 
   const panResponder = useRef(
@@ -146,7 +146,7 @@ const FinalVideoScreen: React.FC = () => {
       videos: videoUrls,
       subtitles,
       music,
-      previewImage, // ✅ 꼭 전달
+      previewImage,
     };
 
     if (from === 'photo') {
@@ -171,6 +171,7 @@ const FinalVideoScreen: React.FC = () => {
       music,
       musicTitle,
       videos: videoUrls,
+      previewImage, // ✅ 반드시 포함
     };
 
     if (from === 'photo') {
@@ -179,6 +180,8 @@ const FinalVideoScreen: React.FC = () => {
         params: {
           from: 'photo',
           images,
+          subtitles,
+          files,
           ...musicParams,
         },
       });

@@ -43,6 +43,12 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log('🎶 MusicSelectionScreen mounted');
+    console.log(
+      '🖼️ route.params.previewImage:',
+      (route.params as any).previewImage,
+    );
+
     const fetchMusic = async () => {
       try {
         setLoading(true);
@@ -106,9 +112,7 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handleConfirm = () => {
-    if (!selectedMusic) {
-      return;
-    }
+    if (!selectedMusic) return;
 
     stopAndReleaseSound();
 
@@ -119,10 +123,10 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       music: selectedMusic,
       musicTitle: selectedTitle,
       videos: route.params.videos ?? [],
+      previewImage: (route.params as any).previewImage ?? '',
     };
 
     if ('imageUrls' in route.params) {
-      // Shorts 흐름
       const nav = navigation as ShortsProps['navigation'];
       nav.navigate('FinalVideoScreen', {
         ...commonParams,
@@ -133,20 +137,21 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         subtitles: route.params.subtitles,
       });
     } else {
-      // Photo 흐름
       const nav = navigation as PhotoProps['navigation'];
       nav.navigate('FinalVideoScreen', {
         ...commonParams,
         from: 'photo',
         prompt: route.params.prompt,
         images: route.params.images,
+        subtitles: route.params.subtitles ?? [],
+        files: (route.params as any).files ?? [],
       });
     }
   };
 
   return (
     <SafeAreaView style={[styles.container, {paddingTop: insets.top}]}>
-        <AnimatedProgressBar progress={3 / 5} />
+      <AnimatedProgressBar progress={3 / 5} />
 
       {loading ? (
         <ActivityIndicator size="large" color="#00A6FB" />
@@ -173,18 +178,26 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         ))
       )}
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
-    <CustomButton
+      <View
+        style={[
+          styles.fixedButtonWrapper,
+          {
+            paddingBottom: insets.bottom,
+            gap: 12,
+            justifyContent: 'center',
+          },
+        ]}>
+        <CustomButton
           title="이전"
           onPress={handleBack}
           type="gray"
-    style={{ width: '45%', height: 42 }}
+          style={{width: '45%', height: 42}}
         />
         <CustomButton
           title="선택 완료"
           onPress={handleConfirm}
           type="gradient"
-    style={{ width: '45%', height: 42 }}
+          style={{width: '45%', height: 42}}
         />
       </View>
     </SafeAreaView>

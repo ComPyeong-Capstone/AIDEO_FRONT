@@ -27,7 +27,7 @@ export type PhotoStackParamList = {
   };
 
   FinalVideoScreen: {
-    from: 'photo' | 'shorts';
+    from: 'photo';
     prompt: string;
     images: ImageItem[];
     videos: string[];
@@ -38,6 +38,8 @@ export type PhotoStackParamList = {
       type: string;
     }[];
     previewImage: string;
+    music?: string;
+    musicTitle?: string;
   };
 
   MusicSelectionScreen: {
@@ -47,9 +49,16 @@ export type PhotoStackParamList = {
       id: string;
       uri: string | null;
     }[];
+    subtitles: string[];
+    videos: string[];
+    files: {
+      uri: string;
+      name: string;
+      type: string;
+    }[]; // ✅ 추가됨
+    previewImage: string;
     music?: string;
     musicTitle?: string;
-    videos?: string[];
   };
 
   SubtitlesSettingScreen: {
