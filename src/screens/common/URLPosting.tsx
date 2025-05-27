@@ -35,6 +35,11 @@ interface Props {
 
 
 const URLPosting: React.FC<Props> = ({navigation}) => {
+    const buttonStyle = {
+      width: width * 0.44,
+      height: 44,
+    };
+
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const {user} = useUser();
@@ -56,10 +61,6 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
   );
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
-const buttonStyle = {
-  width: width * 0.44,
-  height: 44,
-};
 
 
 
