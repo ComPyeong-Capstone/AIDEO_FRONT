@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -26,8 +26,12 @@ import { deletePost } from '../../api/postApi';
 import { useUser } from '../../context/UserContext';
 import Clipboard from '@react-native-clipboard/clipboard'; // 상단에 추가
 import CustomShareModal from '../shortsPlayer/CustomShareModal';
+import Popover from 'react-native-popover-view';
 
 const ShortsPlayerScreen: React.FC = () => {
+      const touchableRef = useRef();
+  const [visible, setVisible] = useState(false);
+
 const { user } = useUser();
   const navigation = useNavigation();
   const route = useRoute();
@@ -53,6 +57,18 @@ const [shareModalVisible, setShareModalVisible] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
   // 핸들러
+    const handleCopyLink = () => {
+      const shareUrl = `https://3.35.182.180:8080/post/${postId}`;
+      Clipboard.setString(shareUrl);
+      Alert.alert('링크 복사됨', '공유 링크가 클립보드에 복사되었습니다.');
+      setVisible(false);
+    };
+
+const handleDelete = () => {
+  setVisible(false);
+  setTimeout(confirmDeletePost, 300); // ✅ 바르게 참조
+};
+
 const handleCopyURL = () => {
   if (!videoURL) {
     Alert.alert('오류', '영상 URL이 없습니다.');
@@ -311,54 +327,57 @@ const onShare = async () => {
 
             <View style={{ height: 20 }} />
 
-            <TouchableOpacity onPress={() => setIsMoreMenuVisible(true)}>
-              <Ionicons name="ellipsis-vertical" size={32} color="white" />
-            </TouchableOpacity>
+     <TouchableOpacity ref={touchableRef} onPress={() => setVisible(true)}>
+       <Ionicons name="ellipsis-vertical" size={32} color="white" />
+     </TouchableOpacity>
 
           </View>
 
 
         </View>
       </SafeAreaView>
-<Modal visible={isMoreMenuVisible} transparent animationType="fade">
-  <TouchableWithoutFeedback onPress={() => setIsMoreMenuVisible(false)}>
-    <View style={styles.modalBackground} />
+
+
+
+<Modal visible={visible} transparent animationType="fade">
+  <TouchableWithoutFeedback onPress={() => setVisible(false)}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }} />
   </TouchableWithoutFeedback>
 
-<View style={styles.moreMenu}>
-  {/* 기존 링크 복사 */}
-  <TouchableOpacity
-    onPress={() => {
-      const shareUrl = `https://3.35.182.180:8080/post/${postId}`;
-      Clipboard.setString(shareUrl);
-      setIsMoreMenuVisible(false);
-      Alert.alert('링크 복사됨', '공유 링크가 클립보드에 복사되었습니다.');
+  <View
+    style={{
+      position: 'absolute',
+      bottom: 70, // 하단으로부터 거리
+      right: 20,   // 오른쪽으로부터 거리
+      backgroundColor: 'white',
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 5,
+      width: 120, // 너비 조절
+        alignItems: 'center', // ✅ 내용 가운데 정렬
     }}
   >
-    <Text style={styles.moreMenuItem}>링크 복사</Text>
-  </TouchableOpacity>
+    <TouchableOpacity onPress={handleCopyLink} style={{ paddingVertical: 10 }}>
+      <Text style={{ fontSize: 16 }}>링크 복사</Text>
+    </TouchableOpacity>
 
-
-
-  {/* 삭제하기 버튼 */}
-  {currentUserId === creatorUserId && (
-    <>
-      <View style={{ height: 5 }} />
-      <TouchableOpacity
-        onPress={() => {
-          setIsMoreMenuVisible(false);
-          setTimeout(confirmDeletePost, 300);
-        }}
-      >
-        <Text style={styles.moreMenuItem}>삭제하기</Text>
+    {currentUserId === creatorUserId && (
+      <TouchableOpacity onPress={handleDelete} style={{ paddingVertical: 10 }}>
+        <Text style={{ fontSize: 16, color: 'red' }}>삭제하기</Text>
       </TouchableOpacity>
-    </>
-  )}
-</View>
-
+    )}
+  </View>
 </Modal>
 
 
+<TouchableOpacity onPress={() => setVisible(true)}>
+  <Ionicons name="ellipsis-vertical" size={32} color="white" />
+</TouchableOpacity>
       <Modal visible={isCommentsVisible} animationType="slide" transparent>
         <View style={styles.commentModalOverlay}>
           <TouchableWithoutFeedback onPress={() => setIsCommentsVisible(false)}>
