@@ -25,6 +25,7 @@ import {BASE_URL} from '@env';
 import { deletePost } from '../../api/postApi';
 import { useUser } from '../../context/UserContext';
 import Clipboard from '@react-native-clipboard/clipboard'; // 상단에 추가
+import CustomShareModal from '../shortsPlayer/CustomShareModal';
 
 const ShortsPlayerScreen: React.FC = () => {
 const { user } = useUser();
@@ -40,6 +41,7 @@ const { user } = useUser();
       showComments?: boolean;
     };
 const [isMoreMenuVisible, setIsMoreMenuVisible] = useState(false);
+const [shareModalVisible, setShareModalVisible] = useState(false);
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -50,6 +52,49 @@ const [isMoreMenuVisible, setIsMoreMenuVisible] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
+  // 핸들러
+const handleCopyURL = () => {
+  if (!videoURL) {
+    Alert.alert('오류', '영상 URL이 없습니다.');
+    return;
+  }
+
+  Clipboard.setString(videoURL);
+  Alert.alert('복사됨', '영상 주소가 클립보드에 복사되었습니다.');
+  setShareModalVisible(false);
+};
+const handleCopyAndShare = async () => {
+  if (!videoURL) {
+    Alert.alert('오류', '영상 URL이 없습니다.');
+    return;
+  }
+
+  try {
+    Clipboard.setString(videoURL);
+    await Share.share({
+      message: `[${title}]\n\n ${creator}님의 숏츠를 확인해보세요!\n👉 ${videoURL}`,
+    });
+    setShareModalVisible(false);
+  } catch (error) {
+    console.error('공유 실패:', error.message);
+  }
+};
+
+
+const handleYouTubeUpload = () => {
+  if (!videoURL) {
+    Alert.alert('잠시만요', '영상이 아직 로드되지 않았어요.');
+    return;
+  }
+
+  setShareModalVisible(false);
+  navigation.navigate('YouTubeUploadScreen', {
+    videoURI: videoURL,
+    title,
+    description: '',
+  });
+};
+
 const handleDeletePost = async () => {
   try {
     console.log('🧨 삭제 요청 시작');
@@ -68,6 +113,18 @@ const handleDeletePost = async () => {
     console.error('❌ 삭제 실패:', error?.response?.data || error.message);
     Alert.alert('오류', '게시물 삭제 중 문제가 발생했습니다.');
   }
+};
+const onUploadToYouTube = () => {
+  if (!videoURL) {
+    Alert.alert('잠시만요', '영상이 아직 로드되지 않았어요.');
+    return;
+  }
+
+  navigation.navigate('YouTubeUploadScreen', {
+    videoURI: videoURL,
+    title,
+    description: '',
+  });
 };
 
 const confirmDeletePost = () => {
@@ -248,9 +305,10 @@ const onShare = async () => {
             </TouchableOpacity>
             <Text style={styles.count}>{commentCount}</Text>
 
-<TouchableOpacity onPress={onShare}>
-              <Ionicons name="share-social-outline" size={32} color="white" />
-            </TouchableOpacity>
+<TouchableOpacity onPress={() => setShareModalVisible(true)}>
+  <Ionicons name="share-social-outline" size={32} color="white" />
+</TouchableOpacity>
+
             <View style={{ height: 20 }} />
 
             <TouchableOpacity onPress={() => setIsMoreMenuVisible(true)}>
@@ -267,36 +325,37 @@ const onShare = async () => {
     <View style={styles.modalBackground} />
   </TouchableWithoutFeedback>
 
-  <View style={styles.moreMenu}>
-    {/* 링크 복사 버튼은 항상 보이게 */}
-<TouchableOpacity
-  onPress={() => {
-    const shareUrl = `https://3.35.182.180:8080/post/${postId}`; // 실제 공유할 URL로 수정
-    Clipboard.setString(shareUrl);
-    setIsMoreMenuVisible(false);
-    Alert.alert('링크 복사됨', '공유 링크가 클립보드에 복사되었습니다.');
-  }}
->
-  <Text style={styles.moreMenuItem}>링크 복사</Text>
-</TouchableOpacity>
+<View style={styles.moreMenu}>
+  {/* 기존 링크 복사 */}
+  <TouchableOpacity
+    onPress={() => {
+      const shareUrl = `https://3.35.182.180:8080/post/${postId}`;
+      Clipboard.setString(shareUrl);
+      setIsMoreMenuVisible(false);
+      Alert.alert('링크 복사됨', '공유 링크가 클립보드에 복사되었습니다.');
+    }}
+  >
+    <Text style={styles.moreMenuItem}>링크 복사</Text>
+  </TouchableOpacity>
 
-    {/* 삭제하기 버튼은 본인 글일 때만 보여줌 */}
-    {currentUserId === creatorUserId && (
-      <>
-        <View style={{ height: 5 }} />
-        <TouchableOpacity
-          onPress={() => {
-            setIsMoreMenuVisible(false);
-            setTimeout(() => {
-              confirmDeletePost();
-            }, 300);
-          }}
-        >
-          <Text style={styles.moreMenuItem}>삭제하기</Text>
-        </TouchableOpacity>
-      </>
-    )}
-  </View>
+
+
+  {/* 삭제하기 버튼 */}
+  {currentUserId === creatorUserId && (
+    <>
+      <View style={{ height: 5 }} />
+      <TouchableOpacity
+        onPress={() => {
+          setIsMoreMenuVisible(false);
+          setTimeout(confirmDeletePost, 300);
+        }}
+      >
+        <Text style={styles.moreMenuItem}>삭제하기</Text>
+      </TouchableOpacity>
+    </>
+  )}
+</View>
+
 </Modal>
 
 
@@ -347,8 +406,21 @@ const onShare = async () => {
               <Text style={styles.cancelReply}>닫기</Text>
             </TouchableOpacity>
           </View>
+
+
         </SafeAreaView>
+
       </Modal>
+ <CustomShareModal
+   visible={shareModalVisible}
+   onClose={() => setShareModalVisible(false)}
+   onUploadToYouTube={handleYouTubeUpload}
+   onCopyLink={handleCopyURL}
+   videoURL={videoURL} // ✅ 여기가 null이면 안 됩니다!
+   title={title}
+   creator={creator}
+ />
+
     </>
   );
 };
