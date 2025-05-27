@@ -102,30 +102,30 @@ navigation.navigate('FilePosting', {
             <TouchableOpacity
               style={[
                 styles.button,
-                {height: scaleSize(60), marginBottom: scaleSize(15)},
+                {height: scaleSize(70), marginBottom: scaleSize(15)},
               ]}
               onPress={() => handleNavigate('shorts')}>
-              <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
-                쇼츠용 영상
+              <Text style={[styles.buttonText, {fontSize: scaleFont(20)}]}>
+                프롬포트 입력해서 AI 쇼츠 만들기
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.button,
-                {height: scaleSize(60), marginBottom: scaleSize(15)},
+                {height: scaleSize(70), marginBottom: scaleSize(15)},
               ]}
               onPress={() => handleNavigate('photo')}>
-              <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
-                내 사진 영상
+              <Text style={[styles.buttonText, {fontSize: scaleFont(20)}]}>
+                앨범 사진으로 AI 쇼츠 만들기
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, {height: scaleSize(60)}]}
+              style={[styles.button, {height: scaleSize(70),}]}
               onPress={() => handleNavigate('FilePosting')}>
-              <Text style={[styles.buttonText, {fontSize: scaleFont(18)}]}>
-                영상 업로드
+              <Text style={[styles.buttonText, {fontSize: scaleFont(20)}]}>
+                업로드
               </Text>
             </TouchableOpacity>
           </Animated.View>

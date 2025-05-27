@@ -178,7 +178,8 @@ setThumbnails(sortThumbnails(reversed, sortOrder));
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}
+    edges={['top']}>
       <View style={styles.headerWrapper}>
         <Text style={styles.header}>AIDEO</Text>
          <TouchableOpacity onPress={handleSortPress} style={{position: 'absolute', right: 20}}>

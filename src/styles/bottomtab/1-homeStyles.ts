@@ -26,18 +26,18 @@ export const styles = StyleSheet.create({
   headerIconButton: {
     backgroundColor: COLORS.background,
     padding: scaleSize(10),
-    borderRadius: scaleSize(8),
+    borderRadius: scaleSize(10),
   },
   videoContainer: {
     backgroundColor: COLORS.videocontainer,
-    borderRadius: scaleSize(25),
+    borderRadius: scaleSize(23),
     alignItems: 'center',
-    paddingBottom: scaleSize(10),
-    marginBottom: scaleSize(15),
+    paddingBottom: scaleSize(9),
+    marginBottom: scaleSize(6),
   },
   thumbnailPlaceholder: {
     width: '100%',
-    aspectRatio: 9 / 10, // ✅ 세로 비율로 수정
+    aspectRatio: 9 / 11, // ✅ 세로 비율로 수정
     backgroundColor: COLORS.thumbnail,
     borderTopLeftRadius: scaleSize(12),
     borderTopRightRadius: scaleSize(12),
@@ -56,14 +56,14 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: scaleSize(5),
+    marginTop: scaleSize(9),
   },
   profileImage: {
     width: scaleSize(24),
     height: scaleSize(24),
     borderRadius: scaleSize(12),
     backgroundColor: COLORS.maincolor,
-    marginRight: scaleSize(8),
+    marginRight: scaleSize(10),
   },
   creator: {
     color: COLORS.maincolor,
@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   contentContainer: {
-    paddingBottom: scaleSize(10),
-    paddingHorizontal: scaleSize(15),
+    paddingBottom: scaleSize(0),
+    paddingHorizontal: scaleSize(13),
   },
 });
