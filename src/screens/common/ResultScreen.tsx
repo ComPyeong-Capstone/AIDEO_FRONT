@@ -134,37 +134,38 @@ const ResultScreen: React.FC = () => {
         )}
       </View>
 
-      {/* ▶️ 포스팅 버튼 (저장/나가기 위에 위치) */}
-      <View style={{marginBottom: 24, paddingHorizontal: 20}}>
-        <IconGradientButton
-          title="포스팅"
-          iconName="cloud-upload-outline"
-          onPress={handlePost}
-          variant="primary"
-          style={{width: '100%'}}
-        />
-      </View>
-
-      {/* ▶️ 저장/나가기 버튼 하단 고정 */}
+      {/* ▶️ 하단 고정 버튼 */}
       <View
         style={[
           localStyles.bottomFixedButtons,
           {paddingBottom: insets.bottom || 16},
         ]}>
+        {/* 포스팅 버튼 */}
         <IconGradientButton
-          title="저장"
-          iconName="save-outline"
-          onPress={handleSave}
-          variant="blue"
-          style={{flex: 1}}
+          title="포스팅"
+          iconName="cloud-upload-outline"
+          onPress={handlePost}
+          variant="primary"
+          style={{width: '100%', marginBottom: 16}}
         />
-        <IconGradientButton
-          title="나가기"
-          iconName="exit"
-          onPress={handleExit}
-          variant="gray"
-          style={{flex: 1}}
-        />
+
+        {/* 저장/나가기 버튼 */}
+        <View style={localStyles.twoButtonsRow}>
+          <IconGradientButton
+            title="저장"
+            iconName="save-outline"
+            onPress={handleSave}
+            variant="blue"
+            style={{flex: 1}}
+          />
+          <IconGradientButton
+            title="나가기"
+            iconName="exit"
+            onPress={handleExit}
+            variant="gray"
+            style={{flex: 1}}
+          />
+        </View>
       </View>
     </View>
   );
@@ -176,9 +177,11 @@ const localStyles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     paddingHorizontal: 20,
+    backgroundColor: '#fff',
+  },
+  twoButtonsRow: {
     flexDirection: 'row',
     gap: 12,
-    backgroundColor: '#fff',
   },
 });
 
