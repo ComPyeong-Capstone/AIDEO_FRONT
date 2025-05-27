@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,8 +16,8 @@ import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import {Dropdown} from 'react-native-element-dropdown';
 
 const {width: SCREEN_WIDTH} = Dimensions.get('window');
-const IMAGE_WIDTH = SCREEN_WIDTH * 0.65; // ✅ 너비 줄임
-const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9); // ✅ 16:9 비율 유지
+const IMAGE_WIDTH = SCREEN_WIDTH * 0.65;
+const IMAGE_HEIGHT = IMAGE_WIDTH * (16 / 9);
 
 type NavigationProp = StackNavigationProp<
   ShortsStackParamList,
@@ -82,8 +82,17 @@ const SubtitlesSettingScreen: React.FC = () => {
     videos: string[];
     subtitles: string[];
     music: string;
-    previewImage?: string;
+    previewImage: string;
   };
+
+  // ✅ 상세 로그 출력
+  useEffect(() => {
+    console.log('🧪 SubtitlesSettingScreen mounted');
+    console.log('📦 previewImage:', previewImage);
+    console.log('📦 videos:', videos);
+    console.log('📦 subtitles:', subtitles);
+    console.log('📦 music:', music);
+  }, []);
 
   const previewSubtitle = '예시 자막입니다.';
 
@@ -109,29 +118,46 @@ const SubtitlesSettingScreen: React.FC = () => {
       <AnimatedProgressBar progress={3 / 5} />
 
       <View style={styles.previewContainer}>
-        <ImageBackground
-          source={{uri: previewImage}}
-          style={{
-            width: IMAGE_WIDTH,
-            height: IMAGE_HEIGHT,
-            alignSelf: 'center',
-          }}
-          resizeMode="cover">
-          <Text
-            style={[
-              styles.previewText,
-              {
-                color: fontColor,
-                fontFamily: previewFont,
-                bottom: subtitleY === 'bottom' ? 30 : IMAGE_HEIGHT / 2 - 10,
-                textShadowColor: 'rgba(0, 0, 0, 0.6)',
-                textShadowOffset: {width: 1, height: 1},
-                textShadowRadius: 1,
-              },
-            ]}>
-            {previewSubtitle}
-          </Text>
-        </ImageBackground>
+        {previewImage ? (
+          <ImageBackground
+            source={{uri: previewImage}}
+            style={{
+              width: IMAGE_WIDTH,
+              height: IMAGE_HEIGHT,
+              alignSelf: 'center',
+            }}
+            resizeMode="cover"
+            onError={e => {
+              console.log('❌ Image load error:', e.nativeEvent);
+            }}>
+            <Text
+              style={[
+                styles.previewText,
+                {
+                  color: fontColor,
+                  fontFamily: previewFont,
+                  bottom: subtitleY === 'bottom' ? 30 : IMAGE_HEIGHT / 2 - 10,
+                  textShadowColor: 'rgba(0, 0, 0, 0.6)',
+                  textShadowOffset: {width: 1, height: 1},
+                  textShadowRadius: 1,
+                },
+              ]}>
+              {previewSubtitle}
+            </Text>
+          </ImageBackground>
+        ) : (
+          <View
+            style={{
+              width: IMAGE_WIDTH,
+              height: IMAGE_HEIGHT,
+              backgroundColor: '#ddd',
+              justifyContent: 'center',
+              alignItems: 'center',
+              alignSelf: 'center',
+            }}>
+            <Text style={{color: '#555'}}>이미지를 불러올 수 없습니다</Text>
+          </View>
+        )}
       </View>
 
       <ScrollView

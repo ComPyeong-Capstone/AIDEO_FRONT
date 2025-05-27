@@ -31,8 +31,7 @@ export type ShortsStackParamList = {
     videos: string[];
     subtitles: string[];
     music: string;
-    previewImage: string; // ✅ 추가
-    previewSubtitle: string; // ✅ 추가
+    previewImage: string; // ✅ previewSubtitle 제거됨
   };
   EffectPreviewScreen: {
     videos: string[];
@@ -61,6 +60,7 @@ export type ShortsStackParamList = {
     music?: string;
     musicTitle?: string;
     videos?: string[];
+    previewImage: string; // ✅ 추가됨
   };
   ResultScreen: {
     videos: string[];

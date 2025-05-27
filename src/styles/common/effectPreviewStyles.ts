@@ -2,11 +2,10 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {COLORS} from '../colors';
 import {scaleFont, scaleSize} from '../responsive';
 
-const {width} = Dimensions.get('window');
+const {width: SCREEN_WIDTH} = Dimensions.get('window');
 
-// ✅ 영상 미리보기 크기: 너비의 70%, 16:9 비율 유지
-const videoWidth = width * 0.7;
-const videoHeight = videoWidth * (9 / 16);
+// ✅ 반응형 영상 크기: 너비 기준 70%, 9:16 비율 유지
+const videoWidth = SCREEN_WIDTH * 0.7;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -14,62 +13,85 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     paddingHorizontal: scaleSize(16),
   },
+
   title: {
     fontSize: scaleFont(20),
     fontWeight: 'bold',
     color: COLORS.primary,
-    marginVertical: scaleSize(16),
+    marginTop: scaleSize(20),
+    marginBottom: scaleSize(12),
     textAlign: 'center',
   },
-  videoWrapper: {
+
+  videoContainer: {
     width: videoWidth,
-    height: videoHeight,
+    aspectRatio: 9 / 16,
     borderRadius: scaleSize(12),
     overflow: 'hidden',
     backgroundColor: '#000',
     alignSelf: 'center',
-    marginBottom: scaleSize(20),
+    marginBottom: scaleSize(24),
   },
+
   video: {
     width: '100%',
     height: '100%',
   },
+
   label: {
-    fontSize: scaleFont(16),
-    fontWeight: '600',
-    marginBottom: scaleSize(8),
+    fontSize: scaleFont(18),
+    fontWeight: '700',
+    marginBottom: scaleSize(16),
     color: COLORS.text,
     textAlign: 'center',
   },
+
+  // ✅ 버튼을 반씩 나란히 정렬할 컨테이너
   effectList: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginHorizontal: scaleSize(10),
-    marginBottom: scaleSize(20),
+    gap: scaleSize(12),
+    paddingHorizontal: scaleSize(8),
+    marginBottom: scaleSize(36),
   },
+
+  // ✅ 반씩 차지하는 버튼 스타일
   effectButton: {
-    paddingVertical: scaleSize(8),
-    paddingHorizontal: scaleSize(16),
+    flex: 1,
+    paddingVertical: scaleSize(10),
     backgroundColor: '#f0f0f0',
     borderRadius: scaleSize(8),
-    marginBottom: scaleSize(10),
+    alignItems: 'center',
   },
+
   selectedEffectButton: {
     backgroundColor: COLORS.primary,
   },
+
   effectText: {
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(15),
     color: '#333',
   },
+
   selectedEffectText: {
     color: '#fff',
     fontWeight: '600',
   },
+
   scrollBottom: {
-    paddingBottom: scaleSize(40),
+    paddingBottom: scaleSize(60),
     alignItems: 'center',
+    paddingHorizontal: scaleSize(16),
+    width: '100%',
   },
+
+  // ✅ 최종 영상 생성 버튼 (더 아래로)
+  fullButton: {
+    width: '100%',
+    height: scaleSize(50),
+    marginTop: scaleSize(28),
+  },
+
   loadingOverlay: {
     position: 'absolute',
     top: 0,
@@ -81,6 +103,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 10,
   },
+
   loadingText: {
     color: '#fff',
     marginTop: scaleSize(12),

@@ -37,6 +37,7 @@ export type PhotoStackParamList = {
       name: string;
       type: string;
     }[];
+    previewImage: string;
   };
 
   MusicSelectionScreen: {

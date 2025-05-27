@@ -85,11 +85,11 @@ const EffectPreviewScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <Text style={styles.title}>자막 효과 미리보기</Text>
 
-      <View style={styles.videoWrapper}>
+      <View style={styles.videoContainer}>
         <Video
           source={{uri: previewVideoUrl}}
           style={styles.video}
-          resizeMode="contain"
+          resizeMode="cover"
           repeat
           muted={false}
           paused={false}
@@ -97,6 +97,7 @@ const EffectPreviewScreen: React.FC = () => {
       </View>
 
       <Text style={styles.label}>효과 선택</Text>
+
       <View style={styles.effectList}>
         {FONT_EFFECTS.map(effect => (
           <TouchableOpacity
@@ -123,6 +124,7 @@ const EffectPreviewScreen: React.FC = () => {
           onPress={handleGenerateFinalVideo}
           disabled={loading}
           type="primary"
+          style={styles.fullButton}
         />
       </ScrollView>
 

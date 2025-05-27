@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -38,6 +38,7 @@ const FinalVideoScreen: React.FC = () => {
     musicTitle = '',
     videos: preGeneratedVideos = [],
     files = [],
+    previewImage = '', // ✅ 기본값 지정
   } = route.params as {
     from?: 'shorts' | 'photo';
     duration?: number;
@@ -53,11 +54,17 @@ const FinalVideoScreen: React.FC = () => {
       name: string;
       type: string;
     }[];
+    previewImage?: string;
   };
 
   const [videoUrls, setVideoUrls] = useState<string[]>(preGeneratedVideos);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    console.log('🎬 FinalVideoScreen mounted');
+    console.log('📸 previewImage:', previewImage);
+  }, []);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -139,6 +146,7 @@ const FinalVideoScreen: React.FC = () => {
       videos: videoUrls,
       subtitles,
       music,
+      previewImage, // ✅ 꼭 전달
     };
 
     if (from === 'photo') {
@@ -189,7 +197,7 @@ const FinalVideoScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <AnimatedProgressBar progress={3 / 5} />
+      <AnimatedProgressBar progress={3 / 5} />
 
       <View style={styles.container} {...panResponder.panHandlers}>
         <View style={styles.headerContainer}>
@@ -257,12 +265,16 @@ const FinalVideoScreen: React.FC = () => {
           선택된 음악: {musicTitle || '없음'}
         </Text>
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
-       <CustomButton
+        <View
+          style={[
+            styles.fixedButtonWrapper,
+            {paddingBottom: insets.bottom, gap: 12, justifyContent: 'center'},
+          ]}>
+          <CustomButton
             title="부분 영상 재생성"
             onPress={regenerateSelectedVideo}
             type="gray"
-  style={{ flex:1 ,width: '45%', height: 42 }}
+            style={{flex: 1, width: '45%', height: 42}}
             textStyle={styles.buttonText}
             disabled={loading}
           />
@@ -271,8 +283,8 @@ const FinalVideoScreen: React.FC = () => {
             onPress={handleGoToSubtitleSettings}
             disabled={loading || videoUrls.length === 0}
             type="gradient"
-  style={{ flex:1 ,width: '45%', height: 42 }}
-              textStyle={styles.buttonText}
+            style={{flex: 1, width: '45%', height: 42}}
+            textStyle={styles.buttonText}
           />
         </View>
       </View>

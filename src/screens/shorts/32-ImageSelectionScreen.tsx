@@ -12,7 +12,7 @@ import {
 import Swiper from 'react-native-swiper';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {styles} from '../../styles/shorts/imageSelectionStyles';
 import {ShortsStackParamList} from '../../navigator/ShortsNavigator';
@@ -46,7 +46,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [captionText, setCaptionText] = useState('');
   const [loading, setLoading] = useState(false);
-const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const filteredImages = initialImageUrls.filter(
@@ -66,7 +66,6 @@ const insets = useSafeAreaInsets();
     setSubtitles(prev =>
       prev.map((s, i) => (i === selectedIndex ? captionText : s)),
     );
-
     setSelectedIndex(index);
     setCaptionText(subtitles[index] || '');
   };
@@ -116,32 +115,28 @@ const insets = useSafeAreaInsets();
     try {
       setLoading(true);
 
-      if (existingVideos && existingVideos.length > 0) {
-        navigation.navigate('FinalVideoScreen', {
-          from: 'shorts',
-          duration,
-          prompt,
-          imageUrls,
-          subtitles: updatedSubtitles,
-          videos: existingVideos,
-        });
-      } else {
+      let videosToUse = existingVideos;
+
+      if (!existingVideos || existingVideos.length === 0) {
         const response = await generatePartialVideo({
           images: imageFilenames,
           subtitles: updatedSubtitles,
         });
-
-        navigation.navigate('SubtitlesSettingScreen', {
-          videos: response.video_urls,
-          subtitles: updatedSubtitles,
-          music: 'bgm_01.mp3', // 필요 시 실제 선택된 음악으로 교체
-          previewImage: imageUrls[0],
-          previewSubtitle: updatedSubtitles[0],
-        });
+        videosToUse = response.video_urls;
       }
+
+      navigation.navigate('FinalVideoScreen', {
+        from: 'shorts',
+        duration,
+        prompt,
+        imageUrls,
+        subtitles: updatedSubtitles,
+        videos: videosToUse,
+        previewImage: imageUrls[0], // ✅ 첫 번째 이미지만 전달
+      });
     } catch (error) {
       console.error('❌ 영상 생성 실패:', error);
-      Alert.alert('에러', '부분 영상 생성에 실패했습니다.');
+      Alert.alert('에러', '영상 생성에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -204,19 +199,28 @@ const insets = useSafeAreaInsets();
         </View>
       </ScrollView>
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12,      marginBottom: -30, // 👈 버튼과 위 콘텐츠 사이 여백
- }]}>
-    <CustomButton
+      <View
+        style={[
+          styles.fixedButtonWrapper,
+          {
+            paddingBottom: insets.bottom,
+            gap: 12,
+            marginBottom: -30,
+          },
+        ]}>
+        <CustomButton
           title="사진 재생성"
           onPress={handleRegenerateImage}
-    type="gray"
-              disabled={loading}
-  style={{ width: '45%', height: 42 }}       />
+          type="gray"
+          disabled={loading}
+          style={{width: '45%', height: 42}}
+        />
         <CustomButton
           title="영상 생성"
           onPress={handleGenerateVideo}
-    type="gradient"
-  style={{ width: '45%', height: 42 }}         />
+          type="gradient"
+          style={{width: '45%', height: 42}}
+        />
       </View>
 
       {loading && (
