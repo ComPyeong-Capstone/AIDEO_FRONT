@@ -15,6 +15,7 @@ import {
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {launchImageLibrary} from 'react-native-image-picker';
+import { KeyboardAvoidingView, Platform } from 'react-native'; // 추가
 
 import styles from '../../styles/photo/PhotoPromptStyles';
 import {
@@ -185,11 +186,18 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+     <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+        >
       <AnimatedProgressBar progress={2 / 5} />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+   <ScrollView
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 }]} // 👈 padding 추가
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.contentWrapper}>
           <View style={styles.swiperContainer}>
             <Swiper
@@ -238,10 +246,13 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
               textAlignVertical="top"
             />
           </View>
+
+
         </View>
       </ScrollView>
+    </KeyboardAvoidingView>
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
+<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12,marginBottom:0, justifyContent: 'center' }]}>
       <CustomButton
           title="사진 변경"
           onPress={() => pickImage(selectedIndex)}
