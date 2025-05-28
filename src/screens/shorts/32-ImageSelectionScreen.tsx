@@ -144,7 +144,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-            <AnimatedProgressBar progress={3 / 5} />
+      <AnimatedProgressBar progress={3 / 5} />
 
       <ScrollView
         contentContainerStyle={{alignItems: 'center', paddingBottom: 100}}

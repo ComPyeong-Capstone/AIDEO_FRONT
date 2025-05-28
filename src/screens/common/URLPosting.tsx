@@ -61,6 +61,10 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
   );
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
+const buttonStyle = {
+  width: width * 0.44,
+  height: 44,
+};
 
 
 
@@ -195,27 +199,27 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
       return;
     }
 
-  setUploading(true);
-  setUploadProgress(0);
+    setUploading(true);
+    setUploadProgress(0);
 
-  try {
-    const formData = new FormData();
-    const postDTO = {
-      title: title.trim(),
-      hashtags: tags.split(/[#,\s]+/).filter(Boolean),
-    };
+    try {
+      const formData = new FormData();
+      const postDTO = {
+        title: title.trim(),
+        hashtags: tags.split(/[#,\s]+/).filter(Boolean),
+      };
 
-    formData.append('postDTO', {
-      name: 'postDTO',
-      type: 'application/json',
-      string: JSON.stringify(postDTO),
-    } as any);
+      formData.append('postDTO', {
+        name: 'postDTO',
+        type: 'application/json',
+        string: JSON.stringify(postDTO),
+      } as any);
 
-    formData.append('videoFile', {
-      uri: videoURI,
-      type: 'video/mp4',
-      name: 'video.mp4',
-    } as any);
+      formData.append('videoFile', {
+        uri: videoURI,
+        type: 'video/mp4',
+        name: 'video.mp4',
+      } as any);
 
       const response = await axios.post(
         `${BASE_URL}:8080/posts/upload`,
@@ -342,25 +346,28 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
           </Animated.View>
         </View>
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
-<IconGradientButton
-  title="YouTube 업로드"
-  iconName="logo-youtube"
-  onPress={goToYouTubeUpload}
-  variant="youtube"
-  style={buttonStyle}
-/>
+        <View
+          style={[
+            styles.fixedButtonWrapper,
+            {paddingBottom: insets.bottom, gap: 12, justifyContent: 'center'},
+          ]}>
+          <IconGradientButton
+            title="YouTube 업로드"
+            iconName="logo-youtube"
+            onPress={goToYouTubeUpload}
+            variant="youtube"
+            style={buttonStyle}
+          />
 
-<IconGradientButton
-  title="AIVIDEO 업로드"
-  iconName="cloud-upload-outline"
-  onPress={handleUpload}
-  variant="primary"
- // iconSize={18} // ✅ 동일 크기
-  style={{ flex: 1, height: 44 }}
-/>
-
-         </View>
+          <IconGradientButton
+            title="AIVIDEO 업로드"
+            iconName="cloud-upload-outline"
+            onPress={handleUpload}
+            variant="primary"
+            // iconSize={18} // ✅ 동일 크기
+            style={{flex: 1, height: 44}}
+          />
+        </View>
 
         {uploading && (
           <View style={{marginTop: 10, alignItems: 'center'}}>

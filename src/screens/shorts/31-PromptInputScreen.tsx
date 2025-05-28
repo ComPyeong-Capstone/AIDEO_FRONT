@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   Text,
   Modal,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -38,10 +40,6 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   const handleGenerate = async () => {
     const trimmedPrompt = prompt.trim();
 
-    console.log('📤 [handleGenerate] 호출됨');
-    console.log('📝 프롬프트:', trimmedPrompt);
-    console.log('⏱️ 영상 길이:', duration);
-
     if (!trimmedPrompt) {
       Alert.alert('입력 오류', '프롬프트를 입력해주세요.');
       return;
@@ -54,15 +52,8 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
 
     try {
       setLoading(true);
-      console.log('📡 API 요청 시작 → /generate/material');
 
       const res = await generateMaterial({title: trimmedPrompt, duration});
-
-      console.log('✅ API 응답 수신 완료');
-      console.log('🖼️ image_urls:', res.image_urls);
-      console.log('📝 subtitles:', res.subtitles);
-
-      // ✅ 유효한 이미지 URL 필터링
       const filteredImageUrls = res.image_urls.filter(
         url => typeof url === 'string' && url.startsWith('http'),
       );
@@ -89,30 +80,20 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
         subtitles: res.subtitles,
       };
 
-      console.log('📦 resultData 구성 완료:', resultData);
       setResult(resultData);
 
       if (backgroundMode) {
-        console.log('🕶️ 백그라운드 모드: true');
         setNextData(resultData);
         backgroundTimer = setTimeout(() => {
-          console.log('🎉 생성 완료 모달 표시');
           setShowCompleteModal(true);
         }, 500);
       } else {
-        console.log('🚀 ImageSelectionScreen 으로 이동');
         navigation.navigate('ImageSelectionScreen', resultData);
       }
     } catch (error: any) {
-      console.error('❌ API 호출 실패:', error);
-      if (error.response) {
-        console.error('🔍 응답 상태코드:', error.response.status);
-        console.error('📦 응답 데이터:', error.response.data);
-      }
       Alert.alert('에러', '사진 및 자막 생성에 실패했습니다.');
     } finally {
       setLoading(false);
-      console.log('🔚 로딩 종료');
     }
   };
 
@@ -126,103 +107,102 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
   }, []);
 
   const handleExplore = () => {
-    console.log('🧭 [앱 구경하기] 버튼 클릭됨');
     setBackgroundMode(true);
     setLoading(false);
 
     if (navigationRef.isReady()) {
-      console.log('📍 navigationRef 통해 Main(Home)으로 이동');
       navigationRef.navigate('Main', {screen: 'Home'});
     }
   };
 
   const handleModalConfirm = () => {
-    console.log('📦 [생성 완료 모달] → 확인 버튼 클릭됨');
-    console.log('➡️ nextData:', nextData);
     setShowCompleteModal(false);
 
     if (nextData) {
-      console.log('🚀 ShortsStack → ImageSelectionScreen으로 이동');
       navigationRef.navigate('ShortsStack', {
         screen: 'ImageSelectionScreen',
         params: nextData,
       });
-    } else {
-      console.warn('⚠️ nextData가 null입니다. 이동 생략');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* 진행바 */}
-     <AnimatedProgressBar progress={2 / 6} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.container}>
+        <AnimatedProgressBar progress={2 / 6} />
 
+        <View style={styles.contentWrapper}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="프롬프트 입력"
+              placeholderTextColor="#aaa"
+              multiline
+              textAlignVertical="top"
+              onChangeText={setPrompt}
+              value={prompt}
+            />
+          </View>
+        </View>
 
-      <View style={styles.contentWrapper}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="프롬프트 입력"
-            placeholderTextColor="#aaa"
-            multiline
-            textAlignVertical="top"
-            onChangeText={setPrompt}
-            value={prompt}
+        <View
+          style={[
+            styles.fixedButtonWrapper,
+            {
+              paddingBottom: insets.bottom,
+              gap: 12,
+              justifyContent: 'center',
+            },
+          ]}>
+          <CustomButton
+            title="이전"
+            onPress={() => navigation.goBack()}
+            type="gray"
+            style={{flex: 1, width: '45%', height: 42}}
+          />
+          <CustomButton
+            title="이미지 및 자막 생성"
+            onPress={handleGenerate}
+            type="gradient"
+            disabled={loading}
+            style={{flex: 1, width: '45%', height: 42}}
           />
         </View>
-      </View>
 
-      {/* 하단 버튼 */}
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
-        <CustomButton
-          title="이전"
-          onPress={() => navigation.goBack()}
-          type="gray"
-  style={{flex: 1, width: '45%', height: 42 }}
-          />
-        <CustomButton
-          title="이미지 및 자막 생성"
-          onPress={handleGenerate}
-          type="gradient"
-  style={{flex: 1, width: '45%', height: 42 }}           disabled={loading}
-        />
-      </View>
-
-      {/* 로딩 모달 */}
-      {loading && (
-        <Modal transparent animationType="fade">
-          <View style={styles.loadingOverlay}>
-            <View style={styles.loadingBox}>
-              <ActivityIndicator size="large" color="#fff" />
-              <Text style={styles.loadingText}>생성 중입니다...</Text>
-            <CustomButton
-              title="구경하기"
-              onPress={handleExplore}
-              type="gradient"
-              style={{ width: '90%', height: 44 }} // ✅ 안정적인 크기
-            />
-
+        {loading && (
+          <Modal transparent animationType="fade">
+            <View style={styles.loadingOverlay}>
+              <View style={styles.loadingBox}>
+                <ActivityIndicator size="large" color="#fff" />
+                <Text style={styles.loadingText}>생성 중입니다...</Text>
+                <CustomButton
+                  title="구경하기"
+                  onPress={handleExplore}
+                  type="gradient"
+                  style={{width: '90%', height: 44}}
+                />
+              </View>
             </View>
-          </View>
-        </Modal>
-      )}
+          </Modal>
+        )}
 
-      {/* 생성 완료 모달 */}
-      {showCompleteModal && nextData && (
-        <Modal transparent animationType="fade">
-          <View style={styles.loadingOverlay}>
-            <View style={styles.loadingBox}>
-              <Text style={styles.loadingText}>✅ 생성 완료!</Text>
-              <CustomButton title="확인"
-              onPress={handleModalConfirm}
-               type="gradient"
-              style={{ width: '90%', height: 44 }} // ✅ 안정적인 크기
-/>
+        {showCompleteModal && nextData && (
+          <Modal transparent animationType="fade">
+            <View style={styles.loadingOverlay}>
+              <View style={styles.loadingBox}>
+                <Text style={styles.loadingText}>✅ 생성 완료!</Text>
+                <CustomButton
+                  title="확인"
+                  onPress={handleModalConfirm}
+                  type="gradient"
+                  style={{width: '90%', height: 44}}
+                />
+              </View>
             </View>
-          </View>
-        </Modal>
-      )}
-    </SafeAreaView>
+          </Modal>
+        )}
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 

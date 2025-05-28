@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,8 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
-  Pressable,
+  Animated,
+  Dimensions,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,7 +23,6 @@ import {likeComment, unlikeComment} from '../../api/commentLikeApi';
 import {createNotification} from '../../api/notificationApi';
 import {styles} from '../../styles/shortsPlayer/CommentsScreenStyles';
 import CommentItem from '../../components/CommentItem';
-import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface Props {
   postId: number;
@@ -31,6 +30,10 @@ interface Props {
   creatorUserId: number;
   onClose: () => void;
 }
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const INITIAL_HEIGHT = SCREEN_HEIGHT * 0.5;
+const MAX_HEIGHT = SCREEN_HEIGHT;
 
 const CommentsScreen: React.FC<Props> = ({
   postId,
@@ -45,6 +48,8 @@ const CommentsScreen: React.FC<Props> = ({
     username: string;
   } | null>(null);
 
+  const animatedHeight = useRef(new Animated.Value(INITIAL_HEIGHT)).current;
+  const animatedOpacity = useRef(new Animated.Value(1)).current;
   const insets = useSafeAreaInsets();
 
   const loadComments = useCallback(async () => {
@@ -155,19 +160,66 @@ const CommentsScreen: React.FC<Props> = ({
     </View>
   );
 
+  const handleScroll = (e: any) => {
+    const offsetY = e.nativeEvent.contentOffset.y;
+    if (offsetY > 5) {
+      Animated.parallel([
+        Animated.timing(animatedHeight, {
+          toValue: MAX_HEIGHT,
+          duration: 300,
+          useNativeDriver: false,
+        }),
+        Animated.timing(animatedOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    }
+  };
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-      style={{ flex: 1 }}>
-      <SafeAreaView style={styles.modalWrapper}>
-        <View style={styles.modalContainer}>
+    <>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.backdrop,
+          {
+            opacity: animatedOpacity,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+          },
+        ]}
+      />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{flex: 1}}>
+        <Animated.View
+          style={[
+            styles.modalContainer,
+            {
+              height: animatedHeight,
+              paddingBottom: insets.bottom,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 2,
+            },
+          ]}>
           <Text style={styles.headerText}>댓글</Text>
 
           <FlatList
             data={comments}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
             keyExtractor={item => item.commentId.toString()}
-            renderItem={({ item }) => (
+            renderItem={({item}) => (
               <CommentItem
                 item={item}
                 onToggleLike={handleToggleLike}
@@ -176,7 +228,7 @@ const CommentsScreen: React.FC<Props> = ({
                 renderReply={renderReply}
               />
             )}
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{paddingBottom: 100}}
           />
 
           {replyingTo && (
@@ -190,7 +242,6 @@ const CommentsScreen: React.FC<Props> = ({
             </View>
           )}
 
-          {/* ✅ 입력창을 하단 고정 */}
           <View style={styles.inputWrapper}>
             <View style={styles.inputContainer}>
               <TextInput
@@ -209,9 +260,9 @@ const CommentsScreen: React.FC<Props> = ({
               </TouchableOpacity>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </>
   );
 };
 

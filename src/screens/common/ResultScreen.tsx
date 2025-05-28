@@ -2,26 +2,22 @@ import React, {useEffect} from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   Alert,
   PermissionsAndroid,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
-import {styles} from '../../styles/common/resultScreenStyles';
-import {scaleSize} from '../../styles/responsive';
 import {StackNavigationProp} from '@react-navigation/stack';
 import CameraRoll from '@react-native-camera-roll/camera-roll';
 import RNFS from 'react-native-fs';
-import {useUser} from '../../context/UserContext'; // 사용자 토큰용
-import {createPostWithUrl} from '../../api/postApi';
+import {useUser} from '../../context/UserContext';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 import IconGradientButton from '../../styles/IconGradientButton';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {styles} from '../../styles/common/resultScreenStyles';
 
-// ▶️ Stack Param Type
 type ShortsStackParamList = {
   ResultScreen: {videos: string[]; subtitles: string[]; music?: string};
   URLPosting: {finalVideoUrl: string};
@@ -36,7 +32,7 @@ type NavigationProps = StackNavigationProp<
 const ResultScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute();
-  const { user } = useUser(); // 🔥 필수: 유저 정보 가져오기
+  const {user} = useUser();
   const insets = useSafeAreaInsets();
 
   const {videos} = route.params as {
@@ -69,7 +65,6 @@ const ResultScreen: React.FC = () => {
     }
 
     try {
-      // Android 권한 요청
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
@@ -94,7 +89,6 @@ const ResultScreen: React.FC = () => {
           ? `${RNFS.CachesDirectoryPath}/${fileName}`
           : `${RNFS.TemporaryDirectoryPath}${fileName}`;
 
-      console.log('📥 다운로드 시작:', finalVideoUrl);
       const downloadResult = await RNFS.downloadFile({
         fromUrl: finalVideoUrl,
         toFile: localPath,
@@ -104,7 +98,6 @@ const ResultScreen: React.FC = () => {
         throw new Error(`다운로드 실패: ${downloadResult.statusCode}`);
       }
 
-      console.log('✅ 다운로드 성공:', localPath);
       await CameraRoll.save(localPath, {type: 'video'});
       Alert.alert('✅ 저장 완료', '영상이 갤러리에 저장되었습니다.');
     } catch (err) {
@@ -113,25 +106,20 @@ const ResultScreen: React.FC = () => {
     }
   };
 
+  const handlePost = () => {
+    if (!finalVideoUrl) {
+      Alert.alert('에러', '게시할 영상이 없습니다.');
+      return;
+    }
 
-
-const handlePost = () => {
-  if (!finalVideoUrl) {
-    Alert.alert('에러', '게시할 영상이 없습니다.');
-    return;
-  }
-
-  console.log('🚀 포스팅 화면으로 이동:', finalVideoUrl);
-  navigation.navigate('URLPosting', { finalVideoUrl });
-};
-
+    navigation.navigate('URLPosting', {finalVideoUrl});
+  };
 
   return (
     <View style={styles.container}>
-      {/* ▶️ 비디오 미리보기 */}
       <AnimatedProgressBar progress={4 / 5} />
 
-      <View style={styles.videoBox}>
+      <View style={[styles.videoBox, {marginBottom: 24}]}>
         {finalVideoUrl ? (
           <Video
             source={{uri: finalVideoUrl}}
@@ -140,46 +128,61 @@ const handlePost = () => {
             controls
             repeat
             paused={false}
-            onLoad={data => console.log('✅ 비디오 로드 성공:', data)}
-            onError={err => console.error('❌ 비디오 로드 실패:', err)}
-            onBuffer={info => console.log('⏳ 버퍼링 중:', info)}
           />
         ) : (
           <Text style={styles.errorText}>영상이 없습니다.</Text>
         )}
       </View>
 
-      {/* ▶️ 버튼 영역 */}
-      <View style={styles.buttonContainer}>
-   <IconGradientButton
-       title="포스팅"
-       iconName="cloud-upload-outline"
-       onPress={handlePost}
-           variant="primary"
-       style={{ width: '90%' }}
-     />
+      {/* ▶️ 하단 고정 버튼 */}
+      <View
+        style={[
+          localStyles.bottomFixedButtons,
+          {paddingBottom: insets.bottom || 16},
+        ]}>
+        {/* 포스팅 버튼 */}
+        <IconGradientButton
+          title="포스팅"
+          iconName="cloud-upload-outline"
+          onPress={handlePost}
+          variant="primary"
+          style={{width: '100%', marginBottom: 16}}
+        />
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
-      <IconGradientButton
-        title="저장"
-        iconName="save-outline"
-        onPress={handleSave}
-        variant="blue"
-        style={{ flex: 1 }}
-      />
-
-    <IconGradientButton
-      title="나가기"
-      iconName="exit"
-      onPress={handleExit}
-      variant="gray"
-      style={{ flex: 1 }}
-    />
-          </View>
-
+        {/* 저장/나가기 버튼 */}
+        <View style={localStyles.twoButtonsRow}>
+          <IconGradientButton
+            title="저장"
+            iconName="save-outline"
+            onPress={handleSave}
+            variant="blue"
+            style={{flex: 1}}
+          />
+          <IconGradientButton
+            title="나가기"
+            iconName="exit"
+            onPress={handleExit}
+            variant="gray"
+            style={{flex: 1}}
+          />
+        </View>
       </View>
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+  bottomFixedButtons: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    paddingHorizontal: 20,
+    backgroundColor: '#fff',
+  },
+  twoButtonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+});
 
 export default ResultScreen;
