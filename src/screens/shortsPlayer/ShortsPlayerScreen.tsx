@@ -64,19 +64,18 @@ const fetchPostImages = async () => {
   try {
     const res = await fetch(`http://3.35.182.180:8080/posts/${postId}/images`);
     const data = await res.json();
-console.log('이미지 데이터:', data);
 
     if (data.length === 0) {
-      Alert.alert('알림', '사용된 이미지가 없습니다.');
+      console.log('사용된 이미지 없음');
       return;
     }
 
-    setImages(data);
-    setImageViewerVisible(true);
+    setImages(data); // 🔴 이 줄만 필요
   } catch (error) {
     console.error('이미지 불러오기 실패:', error);
   }
 };
+
 
   // 핸들러
     const handleCopyLink = () => {
@@ -204,6 +203,10 @@ const confirmDeletePost = () => {
     loadCounts();
     if (showComments) setIsCommentsVisible(true);
   }, [loadCounts, showComments]);
+useEffect(() => {
+  fetchPostImages();
+}, []);
+
 
   useEffect(() => {
     const fetchPostDetail = async () => {
@@ -322,11 +325,54 @@ const onShare = async () => {
                 <Text style={styles.creator}>{creator ?? ''}</Text>
                 <Text style={styles.title}>{title ?? ''}</Text>
               </View>
-   <TouchableOpacity onPress={fetchPostImages} style={{ padding: 8 }}>
-                            <Ionicons name="images-outline" size={28} color="white" />
-                          </TouchableOpacity>
+
+
+
+
+
 
             </View>
+<TouchableOpacity
+  onPress={() => setImageViewerVisible(true)}
+  style={{
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 10,
+  }}
+>
+  {images.slice(0, 3).map((uri, index) => (
+    <Image
+      key={index}
+      source={{ uri }}
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 6,
+        borderWidth: 1,
+        marginLeft: index === 0 ? 0 : -21,
+        zIndex: 3 - index,
+        backgroundColor: '#ccc',
+      }}
+    />
+  ))}
+  {images.length > 4 && (
+    <View
+   style={{
+       marginLeft: 2,
+       zIndex: 1,
+       justifyContent: 'center',
+       alignItems: 'center',
+     }}
+    >
+      <Text style={{ color: 'white', fontSize: 17 }}>
+        +{images.length - 3}
+      </Text>
+    </View>
+  )}
+</TouchableOpacity>
 
           </View>
 
@@ -375,7 +421,7 @@ const onShare = async () => {
   <View
     style={{
       position: 'absolute',
-      bottom: 70, // 하단으로부터 거리
+      bottom:50, // 하단으로부터 거리
       right: 20,   // 오른쪽으로부터 거리
       backgroundColor: 'white',
       borderRadius: 12,
@@ -401,8 +447,9 @@ const onShare = async () => {
     )}
   </View>
 </Modal>
+
 <Modal visible={isImageViewerVisible} transparent animationType="slide">
-  <View style={{ flex: 1, backgroundColor: 'black' }}>
+  <View style={{ flex: 1 }}>
  <FlatList
    data={images}
    horizontal
@@ -418,22 +465,20 @@ const onShare = async () => {
      onLoadEnd={() => console.log('이미지 로딩 완료')}
      onError={(e) => console.warn('이미지 로드 실패:', e.nativeEvent.error)}
    />
-
-     </View>
-   )}
- />
-    <TouchableOpacity
+ <TouchableOpacity
       onPress={() => setImageViewerVisible(false)}
-      style={{ position: 'absolute', top: 40, right: 20, zIndex: 1 }}
+      style={{ position: 'absolute', top: 60, right: 10, zIndex: 1 }}
     >
       <Ionicons name="close" size={30} color="white" />
     </TouchableOpacity>
+     </View>
+   )}
+ />
+
   </View>
 </Modal>
 
-<TouchableOpacity onPress={() => setVisible(true)}>
-  <Ionicons name="ellipsis-vertical" size={32} color="white" />
-</TouchableOpacity>
+
       <Modal visible={isCommentsVisible} animationType="slide" transparent>
         <View style={styles.commentModalOverlay}>
           <TouchableWithoutFeedback onPress={() => setIsCommentsVisible(false)}>
