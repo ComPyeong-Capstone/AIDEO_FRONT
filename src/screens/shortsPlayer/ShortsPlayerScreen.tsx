@@ -27,10 +27,14 @@ import { useUser } from '../../context/UserContext';
 import Clipboard from '@react-native-clipboard/clipboard'; // 상단에 추가
 import CustomShareModal from '../shortsPlayer/CustomShareModal';
 import Popover from 'react-native-popover-view';
+import { Dimensions } from 'react-native';
 
 const ShortsPlayerScreen: React.FC = () => {
       const touchableRef = useRef();
   const [visible, setVisible] = useState(false);
+const [images, setImages] = useState<string[]>([]);
+const [isImageViewerVisible, setImageViewerVisible] = useState(false);
+const { width, height } = Dimensions.get('window');
 
 const { user } = useUser();
   const navigation = useNavigation();
@@ -56,6 +60,24 @@ const [shareModalVisible, setShareModalVisible] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
+const fetchPostImages = async () => {
+  try {
+    const res = await fetch(`http://3.35.182.180:8080/posts/${postId}/images`);
+    const data = await res.json();
+console.log('이미지 데이터:', data);
+
+    if (data.length === 0) {
+      Alert.alert('알림', '사용된 이미지가 없습니다.');
+      return;
+    }
+
+    setImages(data);
+    setImageViewerVisible(true);
+  } catch (error) {
+    console.error('이미지 불러오기 실패:', error);
+  }
+};
+
   // 핸들러
     const handleCopyLink = () => {
       const shareUrl = `https://3.35.182.180:8080/post/${postId}`;
@@ -300,8 +322,14 @@ const onShare = async () => {
                 <Text style={styles.creator}>{creator ?? ''}</Text>
                 <Text style={styles.title}>{title ?? ''}</Text>
               </View>
+   <TouchableOpacity onPress={fetchPostImages} style={{ padding: 8 }}>
+                            <Ionicons name="images-outline" size={28} color="white" />
+                          </TouchableOpacity>
+
             </View>
+
           </View>
+
 
           <View style={styles.sideMenu}>
     <TouchableOpacity onPress={handleToggleLike}>
@@ -373,7 +401,35 @@ const onShare = async () => {
     )}
   </View>
 </Modal>
+<Modal visible={isImageViewerVisible} transparent animationType="slide">
+  <View style={{ flex: 1, backgroundColor: 'black' }}>
+ <FlatList
+   data={images}
+   horizontal
+   pagingEnabled
+   showsHorizontalScrollIndicator={false}
+   keyExtractor={(item, index) => index.toString()}
+   renderItem={({ item }) => (
+     <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
+   <Image
+     source={{ uri: item }}
+     style={{ width: width * 0.95, height: height * 0.95, resizeMode: 'contain' }}
+     onLoadStart={() => console.log('이미지 로딩 시작')}
+     onLoadEnd={() => console.log('이미지 로딩 완료')}
+     onError={(e) => console.warn('이미지 로드 실패:', e.nativeEvent.error)}
+   />
 
+     </View>
+   )}
+ />
+    <TouchableOpacity
+      onPress={() => setImageViewerVisible(false)}
+      style={{ position: 'absolute', top: 40, right: 20, zIndex: 1 }}
+    >
+      <Ionicons name="close" size={30} color="white" />
+    </TouchableOpacity>
+  </View>
+</Modal>
 
 <TouchableOpacity onPress={() => setVisible(true)}>
   <Ionicons name="ellipsis-vertical" size={32} color="white" />
@@ -430,6 +486,7 @@ const onShare = async () => {
         </SafeAreaView>
 
       </Modal>
+
  <CustomShareModal
    visible={shareModalVisible}
    onClose={() => setShareModalVisible(false)}
@@ -439,6 +496,7 @@ const onShare = async () => {
    title={title}
    creator={creator}
  />
+
 
     </>
   );
