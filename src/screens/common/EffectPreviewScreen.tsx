@@ -62,7 +62,14 @@ const EffectPreviewScreen: React.FC = () => {
     try {
       setLoading(true);
 
-      const cleanedVideoFilenames = videos.map(v => v.split('/').pop() || '');
+const cleanedVideoFilenames = videos
+  .map(v => {
+    if (typeof v === 'string' && v.includes('/')) {
+      return v.split('/').pop() || '';
+    }
+    console.warn('🚨 잘못된 video 경로:', v);
+    return '';
+  });
       const cleanedMusic =
         music && typeof music === 'string' && music.includes('/')
           ? music.split('/').pop() || 'bgm_01.mp3'
