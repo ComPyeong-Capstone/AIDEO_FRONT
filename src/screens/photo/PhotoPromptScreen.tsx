@@ -209,10 +209,17 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
                 horizontal
                 scrollEnabled
                 loop={false}
+                  containerStyle={{width}}
+
                 showsButtons={false}
                 activeDotColor={COLORS.primary}
                 dotColor={COLORS.dotInactive}
-                paginationStyle={styles.pagination}
+paginationStyle={{
+  position: 'absolute',
+  bottom: 8,
+  left:-100,
+  alignSelf: 'center',
+}}
                 onIndexChanged={setSelectedIndex}>
                 {images.map((item, index) => (
                   <View key={item.id} style={[styles.slide, {width}]}>
