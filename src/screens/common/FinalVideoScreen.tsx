@@ -64,7 +64,12 @@ const FinalVideoScreen: React.FC = () => {
   useEffect(() => {
     console.log('🎬 FinalVideoScreen mounted');
     console.log('🖼️ previewImage:', previewImage);
+    console.log('🎥 전달된 초기 영상 URL 목록:', preGeneratedVideos);
   }, []);
+
+  useEffect(() => {
+    console.log('🎞️ 현재 videoUrls:', videoUrls);
+  }, [videoUrls]);
 
   const panResponder = useRef(
     PanResponder.create({

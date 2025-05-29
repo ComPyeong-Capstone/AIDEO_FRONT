@@ -30,12 +30,14 @@ export type ShortsStackParamList = {
   SubtitlesSettingScreen: {
     videos: string[];
     subtitles: string[];
+    imageUrls: string[];
     music: string;
     previewImage: string;
   };
   EffectPreviewScreen: {
     videos: string[];
     subtitles: string[];
+    imageUrls: string[];
     music: string;
     font_path: string;
     font_family: string;
@@ -66,9 +68,10 @@ export type ShortsStackParamList = {
   ResultScreen: {
     videos: string[];
     subtitles: string[];
+    imageUrls: string[];
     music?: string;
   };
-  URLPosting: undefined;
+  URLPosting: {imageUrls: string[]};
 };
 
 // ✅ Stack Navigator 생성
