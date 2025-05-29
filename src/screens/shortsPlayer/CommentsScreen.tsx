@@ -5,10 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
+  Keyboard,
   Animated,
   Dimensions,
+  KeyboardEvent,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -33,7 +33,6 @@ interface Props {
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const INITIAL_HEIGHT = SCREEN_HEIGHT * 0.5;
-const MAX_HEIGHT = SCREEN_HEIGHT;
 
 const CommentsScreen: React.FC<Props> = ({
   postId,
@@ -50,6 +49,8 @@ const CommentsScreen: React.FC<Props> = ({
 
   const animatedHeight = useRef(new Animated.Value(INITIAL_HEIGHT)).current;
   const animatedOpacity = useRef(new Animated.Value(1)).current;
+  const inputTranslateY = useRef(new Animated.Value(0)).current;
+  const lastOffsetY = useRef(0);
   const insets = useSafeAreaInsets();
 
   const loadComments = useCallback(async () => {
@@ -64,6 +65,48 @@ const CommentsScreen: React.FC<Props> = ({
   useEffect(() => {
     loadComments();
   }, [loadComments]);
+
+  useEffect(() => {
+    const handleKeyboardShow = (e: KeyboardEvent) => {
+      const keyboardHeight = e.endCoordinates.height;
+
+      Animated.parallel([
+        Animated.timing(inputTranslateY, {
+          toValue: -keyboardHeight + insets.bottom,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedHeight, {
+          toValue: SCREEN_HEIGHT - keyboardHeight,
+          duration: 250,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    };
+
+    const handleKeyboardHide = () => {
+      Animated.parallel([
+        Animated.timing(inputTranslateY, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedHeight, {
+          toValue: INITIAL_HEIGHT,
+          duration: 250,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    };
+
+    const showSub = Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
+    const hideSub = Keyboard.addListener('keyboardDidHide', handleKeyboardHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [insets.bottom]);
 
   const handleCreateComment = async () => {
     if (newComment.trim().length === 0) return;
@@ -102,12 +145,7 @@ const CommentsScreen: React.FC<Props> = ({
       const target = all.find(c => c.commentId === commentId);
       const receiverId = target?.author.userId;
 
-      if (!receiverId) return;
-
-      if (receiverId === currentUserId) {
-        console.warn('자신의 댓글에는 좋아요를 누를 수 없습니다.');
-        return;
-      }
+      if (!receiverId || receiverId === currentUserId) return;
 
       if (liked) {
         await unlikeComment(postId, commentId);
@@ -162,10 +200,12 @@ const CommentsScreen: React.FC<Props> = ({
 
   const handleScroll = (e: any) => {
     const offsetY = e.nativeEvent.contentOffset.y;
-    if (offsetY > 5) {
+    const deltaY = offsetY - lastOffsetY.current;
+
+    if (deltaY > 5) {
       Animated.parallel([
         Animated.timing(animatedHeight, {
-          toValue: MAX_HEIGHT,
+          toValue: SCREEN_HEIGHT,
           duration: 300,
           useNativeDriver: false,
         }),
@@ -176,6 +216,12 @@ const CommentsScreen: React.FC<Props> = ({
         }),
       ]).start();
     }
+
+    if (deltaY < -25) {
+      onClose();
+    }
+
+    lastOffsetY.current = offsetY;
   };
 
   return (
@@ -187,7 +233,7 @@ const CommentsScreen: React.FC<Props> = ({
           {
             opacity: animatedOpacity,
             position: 'absolute',
-            top: 0,
+            top: insets.top,
             left: 0,
             right: 0,
             bottom: 0,
@@ -196,72 +242,84 @@ const CommentsScreen: React.FC<Props> = ({
         ]}
       />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{flex: 1}}>
-        <Animated.View
-          style={[
-            styles.modalContainer,
-            {
-              height: animatedHeight,
-              paddingBottom: insets.bottom,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 2,
-            },
-          ]}>
-          <Text style={styles.headerText}>댓글</Text>
+      <Animated.View
+        style={[
+          styles.modalContainer,
+          {
+            height: animatedHeight,
+            paddingBottom: insets.bottom,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 2,
+            overflow: 'hidden',
+            backgroundColor: '#fff',
+          },
+        ]}>
+        <Text style={styles.headerText}>댓글</Text>
 
-          <FlatList
-            data={comments}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            keyExtractor={item => item.commentId.toString()}
-            renderItem={({item}) => (
-              <CommentItem
-                item={item}
-                onToggleLike={handleToggleLike}
-                onDelete={handleDeleteComment}
-                onReplyTo={handleReplyTo}
-                renderReply={renderReply}
-              />
-            )}
-            contentContainerStyle={{paddingBottom: 100}}
-          />
-
-          {replyingTo && (
-            <View style={styles.replyingNotice}>
-              <Text style={styles.replyingText}>
-                @{replyingTo.username}에게 답글 중
-              </Text>
-              <TouchableOpacity onPress={() => setReplyingTo(null)}>
-                <Text style={styles.cancelReply}>취소</Text>
-              </TouchableOpacity>
-            </View>
+        <FlatList
+          data={comments}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          keyExtractor={item => item.commentId.toString()}
+          renderItem={({item}) => (
+            <CommentItem
+              item={item}
+              onToggleLike={handleToggleLike}
+              onDelete={handleDeleteComment}
+              onReplyTo={handleReplyTo}
+              renderReply={renderReply}
+            />
           )}
+          contentContainerStyle={{paddingBottom: 120 + insets.bottom}}
+          keyboardShouldPersistTaps="handled"
+        />
 
-          <View style={styles.inputWrapper}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder={
-                  replyingTo ? '답글을 입력하세요' : '댓글을 입력하세요'
-                }
-                placeholderTextColor="#aaa"
-                value={newComment}
-                onChangeText={setNewComment}
-              />
-              <TouchableOpacity
-                style={styles.sendButton}
-                onPress={handleCreateComment}>
-                <Ionicons name="paper-plane-outline" size={26} color="black" />
-              </TouchableOpacity>
-            </View>
+        {replyingTo && (
+          <View style={styles.replyingNotice}>
+            <Text style={styles.replyingText}>
+              @{replyingTo.username}에게 답글 중
+            </Text>
+            <TouchableOpacity onPress={() => setReplyingTo(null)}>
+              <Text style={styles.cancelReply}>취소</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <Animated.View
+          style={{
+            transform: [{translateY: inputTranslateY}],
+            position: 'absolute',
+            bottom: insets.bottom,
+            left: 0,
+            right: 0,
+            paddingHorizontal: 16,
+            backgroundColor: '#fff',
+          }}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder={
+                replyingTo ? '답글을 입력하세요' : '댓글을 입력하세요'
+              }
+              placeholderTextColor="#aaa"
+              value={newComment}
+              onChangeText={setNewComment}
+              returnKeyType="send"
+              onSubmitEditing={handleCreateComment}
+            />
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={handleCreateComment}>
+              <Ionicons name="paper-plane-outline" size={26} color="black" />
+            </TouchableOpacity>
           </View>
         </Animated.View>
-      </KeyboardAvoidingView>
+      </Animated.View>
     </>
   );
 };
