@@ -147,7 +147,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       <AnimatedProgressBar progress={3 / 5} />
 
       <ScrollView
-        contentContainerStyle={{alignItems: 'center', paddingBottom: 100}}
+        contentContainerStyle={{alignItems: 'center', paddingBottom: 500}}
         showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>
