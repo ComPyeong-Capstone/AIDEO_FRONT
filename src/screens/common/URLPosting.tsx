@@ -283,7 +283,7 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
             showsVerticalScrollIndicator={false}>
             {/* 영상 업로드 박스 */}
             <TouchableOpacity
-              onPress={handlePickVideo}
+              //onPress={handlePickVideo}
               style={[
                 styles.videoContainer,
                 {

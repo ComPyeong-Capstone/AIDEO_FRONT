@@ -232,25 +232,27 @@ const FinalVideoScreen: React.FC = () => {
                 <Text style={styles.videoText}>영상 생성 중...</Text>
               </View>
             ) : (
-              <Swiper
-                loop={false}
-                showsButtons={false}
-                showsPagination={false}
-                onIndexChanged={setSelectedIndex}
-                containerStyle={styles.swiperContainer}>
-                {videoUrls.map((url, index) => (
-                  <View key={index} style={styles.videoItem}>
-                    <Video
-                      source={{uri: url}}
-                      style={styles.videoPlayer}
-                      resizeMode="cover"
-                      repeat
-                      muted
-                      controls
-                    />
-                  </View>
-                ))}
-              </Swiper>
+              <View style={styles.swiperContainer}>
+                <Swiper
+                  loop={false}
+                  showsButtons={false}
+                  showsPagination={false}
+                  onIndexChanged={setSelectedIndex}>
+                  {videoUrls.map((url, index) => (
+                    <View key={index} style={styles.videoItem}>
+                      <Video
+                        source={{uri: url}}
+                        style={styles.videoPlayer}
+                        resizeMode="cover"
+                        repeat
+                        muted
+                        controls
+                      />
+                    </View>
+                  ))}
+                </Swiper>
+              </View>
+
             )}
           </View>
 
