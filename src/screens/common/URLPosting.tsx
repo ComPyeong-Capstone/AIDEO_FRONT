@@ -52,7 +52,10 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
   const [videoLoading, setVideoLoading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const route = useRoute();
-  const {finalVideoUrl} = route.params as {finalVideoUrl: string};
+  const {finalVideoUrl, imageUrls} = route.params as {
+    finalVideoUrl: string;
+    imageUrls?: string[];
+  };
   const [titleError, setTitleError] = useState('');
   const [tagsError, setTagsError] = useState('');
   const [title, setTitle] = useState('');
@@ -126,6 +129,7 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
       console.log('🧾 저장된 토큰 from 스토리지:', savedToken);
     };
     fetchToken();
+    console.log('🖼️ 전달된 imageUrls:', imageUrls);
   }, []);
 
   const handlePickVideo = async () => {
@@ -189,6 +193,7 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
     tags: string,
     videoURI: string | null,
     token: string | undefined,
+    imageUrls: string[] = [],
   ) => {
     if (!videoURI) {
       Alert.alert('오류', '업로드할 영상을 선택해주세요.');
@@ -208,7 +213,10 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
       const postDTO = {
         title: title.trim(),
         hashtags: tags.split(/[#,\s]+/).filter(Boolean),
+        imageUrls,
       };
+
+      console.log('🚀 서버에 전송할 postDTO.imageUrls:', postDTO.imageUrls);
 
       formData.append('postDTO', {
         name: 'postDTO',
@@ -264,8 +272,8 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
     if (!valid) return;
 
     setUploading(true);
-    uploadToMyServer(title, tags, videoURI, user?.token).finally(() =>
-      setUploading(false),
+    uploadToMyServer(title, tags, videoURI, user?.token, imageUrls).finally(
+      () => setUploading(false),
     );
   };
 

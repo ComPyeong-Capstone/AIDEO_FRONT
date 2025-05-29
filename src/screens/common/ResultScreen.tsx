@@ -19,8 +19,16 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {styles} from '../../styles/common/resultScreenStyles';
 
 type ShortsStackParamList = {
-  ResultScreen: {videos: string[]; subtitles: string[]; music?: string};
-  URLPosting: {finalVideoUrl: string};
+  ResultScreen: {
+    videos: string[];
+    subtitles: string[];
+    music?: string;
+    imageUrls?: string[]; // ✅ imageUrls 추가
+  };
+  URLPosting: {
+    finalVideoUrl: string;
+    imageUrls?: string[]; // ✅ 전달 시 타입 정의
+  };
   Main: undefined;
 };
 
@@ -35,11 +43,12 @@ const ResultScreen: React.FC = () => {
   const {user} = useUser();
   const insets = useSafeAreaInsets();
 
-  const {videos} = route.params as {
-    videos: string[];
-    subtitles: string[];
-    music?: string;
-  };
+  const {
+    videos,
+    subtitles,
+    music,
+    imageUrls = [], // ✅ 기본값으로 빈 배열
+  } = route.params as ShortsStackParamList['ResultScreen'];
 
   const rawUrl = videos?.[0];
   const finalVideoUrl = rawUrl?.includes(':8000')
@@ -49,6 +58,7 @@ const ResultScreen: React.FC = () => {
   useEffect(() => {
     console.log('🎥 비디오 원본 URL:', rawUrl);
     console.log('🎉 재사용 URL:', finalVideoUrl);
+    console.log('🖼️ imageUrls:', imageUrls); // ✅ 로그 찍기
   }, [rawUrl, finalVideoUrl]);
 
   const handleExit = () => {
@@ -112,7 +122,10 @@ const ResultScreen: React.FC = () => {
       return;
     }
 
-    navigation.navigate('URLPosting', {finalVideoUrl});
+    navigation.navigate('URLPosting', {
+      finalVideoUrl,
+      imageUrls, // ✅ 함께 전달
+    });
   };
 
   return (
@@ -140,7 +153,6 @@ const ResultScreen: React.FC = () => {
           localStyles.bottomFixedButtons,
           {paddingBottom: insets.bottom || 16},
         ]}>
-        {/* 포스팅 버튼 */}
         <IconGradientButton
           title="포스팅"
           iconName="cloud-upload-outline"
@@ -149,7 +161,6 @@ const ResultScreen: React.FC = () => {
           style={{width: '100%', marginBottom: 16}}
         />
 
-        {/* 저장/나가기 버튼 */}
         <View style={localStyles.twoButtonsRow}>
           <IconGradientButton
             title="저장"
