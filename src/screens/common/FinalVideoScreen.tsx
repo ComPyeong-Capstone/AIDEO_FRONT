@@ -65,6 +65,7 @@ const FinalVideoScreen: React.FC = () => {
     console.log('🎬 FinalVideoScreen mounted');
     console.log('🖼️ previewImage:', previewImage);
     console.log('🎥 전달된 초기 영상 URL 목록:', preGeneratedVideos);
+    console.log('🖼️ imageUrls:', imageUrls);
   }, []);
 
   useEffect(() => {
@@ -157,6 +158,7 @@ const FinalVideoScreen: React.FC = () => {
       subtitles,
       music,
       previewImage,
+      imageUrls,
     };
 
     if (from === 'photo') {
@@ -193,6 +195,7 @@ const FinalVideoScreen: React.FC = () => {
           subtitles,
           files,
           ...musicParams,
+          imageUrls,
         },
       });
     } else {

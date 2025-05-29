@@ -34,8 +34,18 @@ const SAMPLE_VIDEO_MAP: Record<FontEffect, string> = {
 const EffectPreviewScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute();
-  const {videos, subtitles, music, font_path, font_color, subtitle_y_position} =
-    route.params as ShortsStackParamList['EffectPreviewScreen'];
+
+  const {
+    videos,
+    subtitles,
+    music,
+    font_path,
+    font_color,
+    subtitle_y_position,
+    imageUrls = [], // ✅ imageUrls 추가
+  } = route.params as ShortsStackParamList['EffectPreviewScreen'] & {
+    imageUrls?: string[];
+  };
 
   const [selectedEffect, setSelectedEffect] = useState<FontEffect>('poping');
   const [previewVideoUrl, setPreviewVideoUrl] = useState(
@@ -56,6 +66,7 @@ const EffectPreviewScreen: React.FC = () => {
       font_color,
       subtitle_y_position,
     });
+    console.log('🖼️ imageUrls:', imageUrls); // ✅ 로그 출력
   }, []);
 
   const handleGenerateFinalVideo = async () => {
@@ -93,6 +104,7 @@ const cleanedVideoFilenames = videos
         videos: [response.final_video_url],
         subtitles,
         music,
+        imageUrls, // ✅ 함께 전달
       });
     } catch (e) {
       Alert.alert('에러', '최종 영상 생성 실패');

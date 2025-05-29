@@ -4,14 +4,14 @@ import axiosInstance from './axiosInstance';
 /** 파일 기반 업로드 */
 export const createPostWithFile = (
   fileUri: string,
-  { title, hashtags }: { title: string; hashtags: string[] },
-  token: string,               // ★ 추가
+  {title, hashtags}: {title: string; hashtags: string[]},
+  token: string, // ★ 추가
 ) => {
   const fd = new FormData();
   fd.append('postDTO', {
     name: 'postDTO',
     type: 'application/json',
-    string: JSON.stringify({ title, hashtags }),
+    string: JSON.stringify({title, hashtags}),
   } as any);
   fd.append('videoFile', {
     uri: fileUri,
@@ -20,23 +20,32 @@ export const createPostWithFile = (
   } as any);
 
   return axiosInstance.post('/posts/upload', fd, {
-    headers: { Authorization: `Bearer ${token}` },  // ★ 직접 세팅
+    headers: {Authorization: `Bearer ${token}`}, // ★ 직접 세팅
   });
 };
 
 /** URL 기반 업로드 */
 export const createPostWithUrl = (
   videoURL: string,
-  { title, hashtags }: { title: string; hashtags: string[] },
-  token: string,               // ★ 추가
+  {
+    title,
+    hashtags,
+    imageUrls,
+  }: {title: string; hashtags: string[]; imageUrls?: string[]},
+  token: string,
 ) =>
   axiosInstance.post(
     '/posts',
-    { title, hashtags, videoURL },
-    { headers: { Authorization: `Bearer ${token}` } },   // ★ 직접 세팅
+    {
+      title,
+      hashtags,
+      videoURL,
+      imageUrls, // ✅ 추가
+    },
+    {
+      headers: {Authorization: `Bearer ${token}`},
+    },
   );
-
-
 
 // 📌 게시물 업로드용 Payload
 export interface PostPayload {
@@ -91,15 +100,15 @@ export interface PostResponse {
 // 🔹 게시물 등록
 export const createPost = async (
   payload: PostPayload,
-): Promise<{ message: string }> => {
+): Promise<{message: string}> => {
   const formData = new FormData();
 
   formData.append(
     'postDTO',
     new Blob(
-      [JSON.stringify({ title: payload.title, hashtags: payload.hashtags })],
-      { type: 'application/json' }
-    )
+      [JSON.stringify({title: payload.title, hashtags: payload.hashtags})],
+      {type: 'application/json'},
+    ),
   );
 
   formData.append('videoFile', payload.videoFile);
@@ -112,7 +121,6 @@ export const createPost = async (
 
   return response.data;
 };
-
 
 // 🔹 전체 게시물 조회
 export const getAllPosts = async (): Promise<PostResponse[]> => {
@@ -153,9 +161,6 @@ export const deletePost = async (postId: number, token: string) => {
   });
   return response.data;
 };
-
-
-
 
 // 🔹 게시물 수정
 export const updatePost = async (
