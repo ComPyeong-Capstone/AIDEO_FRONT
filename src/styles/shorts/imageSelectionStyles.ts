@@ -79,7 +79,7 @@ export const styles = StyleSheet.create({
   },
 
   progressDotActive: {
-    fontSize: scaleFont(17),
+    fontSize: scaleFont(15),
     color: COLORS.primary,
   },
 
