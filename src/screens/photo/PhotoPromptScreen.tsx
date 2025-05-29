@@ -15,7 +15,7 @@ import {
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import {launchImageLibrary} from 'react-native-image-picker';
-import { KeyboardAvoidingView, Platform } from 'react-native'; // 추가
+import {KeyboardAvoidingView, Platform} from 'react-native'; // 추가
 
 import styles from '../../styles/photo/PhotoPromptStyles';
 import {
@@ -150,14 +150,17 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
       const response = await generatePartialVideoWithUpload(files, subtitles);
       setLoading(false);
 
+      console.log('🎞️ 영상 URL들:', response.video_urls);
+
       notifyReady({
         from: 'photo',
         prompt: '',
         images,
         subtitles,
         videos: response.video_urls,
+        imageUrls: response.image_urls, // ✅ 추가
         files,
-        previewImage: images[0]?.uri || '',
+        previewImage: response.image_urls[0] || '', // ✅ 수정
         previewSubtitle: subtitles[0] || '',
       });
 
@@ -168,6 +171,8 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
       setLoading(false);
     }
   };
+
+  console.log('🚀 videoData:', videoData);
 
   const goToFinalVideo = () => {
     if (!videoData) return;
@@ -186,85 +191,90 @@ const PhotoPromptScreen: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-     <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-        >
-      <AnimatedProgressBar progress={2 / 5} />
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}>
+        <AnimatedProgressBar progress={2 / 5} />
 
-   <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 }]} // 👈 padding 추가
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.contentWrapper}>
-          <View style={styles.swiperContainer}>
-            <Swiper
-              ref={swiperRef}
-              key={images.length}
-              horizontal
-              scrollEnabled
-              loop={false}
-              showsButtons={false}
-              activeDotColor={COLORS.primary}
-              dotColor={COLORS.dotInactive}
-              paginationStyle={styles.pagination}
-              onIndexChanged={setSelectedIndex}>
-              {images.map((item, index) => (
-                <View key={item.id} style={[styles.slide, {width}]}>
-                  {/* ✅ swiper slide width 지정 */}
-                  {item.uri ? (
-                    <Image
-                      source={{uri: item.uri}}
-                      style={styles.image}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={() => pickImage(index)}>
-                      <Text style={styles.addButtonText}>+</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </Swiper>
+        <ScrollView
+          contentContainerStyle={[styles.scrollContent, {paddingBottom: 40}]} // 👈 padding 추가
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          <View style={styles.contentWrapper}>
+            <View style={styles.swiperContainer}>
+              <Swiper
+                ref={swiperRef}
+                key={images.length}
+                horizontal
+                scrollEnabled
+                loop={false}
+                showsButtons={false}
+                activeDotColor={COLORS.primary}
+                dotColor={COLORS.dotInactive}
+                paginationStyle={styles.pagination}
+                onIndexChanged={setSelectedIndex}>
+                {images.map((item, index) => (
+                  <View key={item.id} style={[styles.slide, {width}]}>
+                    {/* ✅ swiper slide width 지정 */}
+                    {item.uri ? (
+                      <Image
+                        source={{uri: item.uri}}
+                        style={styles.image}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() => pickImage(index)}>
+                        <Text style={styles.addButtonText}>+</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </Swiper>
+            </View>
+
+            <View style={styles.paginationSpacing} />
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.promptInput}
+                placeholder={`자막 입력 (${selectedIndex + 1}/${maxCount})`}
+                placeholderTextColor="#aaa"
+                value={subtitles[selectedIndex]}
+                onChangeText={handleCaptionChange}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+            </View>
           </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-          <View style={styles.paginationSpacing} />
-
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.promptInput}
-              placeholder={`자막 입력 (${selectedIndex + 1}/${maxCount})`}
-              placeholderTextColor="#aaa"
-              value={subtitles[selectedIndex]}
-              onChangeText={handleCaptionChange}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
-
-
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12,marginBottom:0, justifyContent: 'center' }]}>
-      <CustomButton
+      <View
+        style={[
+          styles.fixedButtonWrapper,
+          {
+            paddingBottom: insets.bottom,
+            gap: 12,
+            marginBottom: 0,
+            justifyContent: 'center',
+          },
+        ]}>
+        <CustomButton
           title="사진 변경"
           onPress={() => pickImage(selectedIndex)}
-    type="gray"
-  style={{flex: 1, width: '45%', height: 42 }}
-          />
+          type="gray"
+          style={{flex: 1, width: '45%', height: 42}}
+        />
         <CustomButton
           title="영상 생성"
           onPress={handleGeneratePartialVideos}
-    type="gradient"
-  style={{flex: 1, width: '45%', height: 42 }}
-            disabled={loading}
+          type="gradient"
+          style={{flex: 1, width: '45%', height: 42}}
+          disabled={loading}
         />
       </View>
 

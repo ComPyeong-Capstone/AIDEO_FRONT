@@ -54,6 +54,11 @@ const PromptInputScreen: React.FC<Props> = ({navigation, route}) => {
       setLoading(true);
 
       const res = await generateMaterial({title: trimmedPrompt, duration});
+
+      console.log('📦 generateMaterial 응답:', res);
+      console.log('🖼️ 이미지 URL 목록:', res.image_urls);
+      console.log('💬 자막 목록:', res.subtitles);
+
       const filteredImageUrls = res.image_urls.filter(
         url => typeof url === 'string' && url.startsWith('http'),
       );

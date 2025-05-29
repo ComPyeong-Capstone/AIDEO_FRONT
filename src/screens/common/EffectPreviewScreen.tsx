@@ -47,12 +47,26 @@ const EffectPreviewScreen: React.FC = () => {
     setPreviewVideoUrl(SAMPLE_VIDEO_MAP[selectedEffect]);
   }, [selectedEffect]);
 
+  useEffect(() => {
+    console.log('📦 EffectPreviewScreen 전달된 params:', {
+      videos,
+      subtitles,
+      music,
+      font_path,
+      font_color,
+      subtitle_y_position,
+    });
+  }, []);
+
   const handleGenerateFinalVideo = async () => {
     try {
       setLoading(true);
 
       const cleanedVideoFilenames = videos.map(v => v.split('/').pop() || '');
-      const cleanedMusic = music.split('/').pop() || 'bgm_01.mp3';
+      const cleanedMusic =
+        music && typeof music === 'string' && music.includes('/')
+          ? music.split('/').pop() || 'bgm_01.mp3'
+          : 'bgm_01.mp3';
 
       const payload = {
         videos: cleanedVideoFilenames,

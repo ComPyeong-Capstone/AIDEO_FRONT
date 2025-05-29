@@ -38,6 +38,7 @@ export type PhotoStackParamList = {
       type: string;
     }[];
     previewImage: string;
+    imageUrls: string[];
     music?: string;
     musicTitle?: string;
   };
@@ -49,6 +50,7 @@ export type PhotoStackParamList = {
       id: string;
       uri: string | null;
     }[];
+    imageUrls: string[];
     subtitles: string[];
     videos: string[];
     files: {
@@ -68,12 +70,14 @@ export type PhotoStackParamList = {
     music: string;
     previewImage: string;
     previewSubtitle: string;
+    imageUrls: string[];
   };
 
   EffectPreviewScreen: {
     from: 'photo';
     videos: string[];
     subtitles: string[];
+    imageUrls: string[];
     music: string;
     font_path: string;
     font_family: string;
@@ -83,13 +87,15 @@ export type PhotoStackParamList = {
 
   ResultScreen: {
     finalVideoUrl: string;
+    imageUrls: string[];
   };
 
   PostVideoScreen: {
     finalVideoUrl: string;
+    imageUrls: string[];
   };
 
-  URLPosting: undefined;
+  URLPosting: {imageUrls: string[]};
 };
 
 // ✅ Stack 생성
