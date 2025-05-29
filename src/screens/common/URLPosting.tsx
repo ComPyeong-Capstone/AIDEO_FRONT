@@ -187,16 +187,15 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
     });
   };
 
-  // ✅ 올바른 수정
   const uploadToMyServer = async (
     title: string,
     tags: string,
-    videoURI: string | null,
+    videoURL: string | null,
     token: string | undefined,
     imageUrls: string[] = [],
   ) => {
-    if (!videoURI) {
-      Alert.alert('오류', '업로드할 영상을 선택해주세요.');
+    if (!videoURL) {
+      Alert.alert('오류', '업로드할 영상이 없습니다.');
       return;
     }
 
@@ -209,43 +208,28 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
     setUploadProgress(0);
 
     try {
-      const formData = new FormData();
-      const postDTO = {
+      const trimmedImageUrls = imageUrls
+        .map(url => url.split('/').pop())
+        .filter(Boolean);
+
+      const postBody = {
         title: title.trim(),
         hashtags: tags.split(/[#,\s]+/).filter(Boolean),
-        imageUrls,
+        videoURL, // ✅ 직접 videoURL 넘기기
+        imageUrls: trimmedImageUrls,
       };
 
-      console.log('🚀 서버에 전송할 postDTO.imageUrls:', postDTO.imageUrls);
+      console.log('🚀 서버로 보낼 JSON Request Body:', postBody);
 
-      formData.append('postDTO', {
-        name: 'postDTO',
-        type: 'application/json',
-        string: JSON.stringify(postDTO),
-      } as any);
-
-      formData.append('videoFile', {
-        uri: videoURI,
-        type: 'video/mp4',
-        name: 'video.mp4',
-      } as any);
-
-      const response = await axios.post(
-        `${BASE_URL}:8080/posts/upload`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${user.token}`,
-          },
-          onUploadProgress: e => {
-            const percent = Math.round((e.loaded * 100) / e.total);
-            setUploadProgress(percent);
-          },
+      const response = await axios.post(`${BASE_URL}:8080/posts`, postBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
         },
-      );
+      });
 
-      Alert.alert('성공', '업로드 완료');
+      console.log('✅ 서버 응답:', response.data);
+      Alert.alert('성공', '게시물이 등록되었습니다.');
       setUploadSuccess(true);
     } catch (err) {
       console.error('❌ 업로드 실패:', err?.response?.data || err.message);
@@ -254,6 +238,7 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
       setUploading(false);
     }
   };
+
   const handleUpload = () => {
     let valid = true;
 
@@ -272,9 +257,13 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
     if (!valid) return;
 
     setUploading(true);
-    uploadToMyServer(title, tags, videoURI, user?.token, imageUrls).finally(
-      () => setUploading(false),
-    );
+    uploadToMyServer(
+      title,
+      tags,
+      finalVideoUrl,
+      user?.token,
+      imageUrls,
+    ).finally(() => setUploading(false));
   };
 
   return (
@@ -362,31 +351,23 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
             </Animated.View>
 
             {/* 업로드 버튼 */}
-            <View
-              style={[
-                styles.fixedButtonWrapper,
-                {
-                  marginTop: 24,
-                  width: '90%',
-                  gap: 12,
-                  paddingBottom: insets.bottom,
-                },
-              ]}>
-              <IconGradientButton
-                title="YouTube 업로드"
-                iconName="logo-youtube"
-                onPress={goToYouTubeUpload}
-                variant="youtube"
-                style={{width: width * 0.44, height: 44}}
-              />
+        <View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
 
-              <IconGradientButton
-                title="AIVIDEO 업로드"
-                iconName="cloud-upload-outline"
-                onPress={handleUpload}
-                variant="primary"
-                style={{flex: 1, height: 44}}
-              />
+         <IconGradientButton
+           title="YouTube 업로드"
+           iconName="logo-youtube"
+           onPress={goToYouTubeUpload}
+           variant="youtube"
+           style={buttonStyle}
+         />
+
+         <IconGradientButton
+           title="AIVIDEO 업로드"
+           iconName="cloud-upload-outline"
+           onPress={handleUpload}
+           variant="primary"
+           style={{ flex: 1, height: 44 }}
+         />
             </View>
 
             {/* 업로드 진행률 */}
