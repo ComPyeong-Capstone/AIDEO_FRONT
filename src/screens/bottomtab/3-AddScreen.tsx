@@ -106,7 +106,7 @@ navigation.navigate('FilePosting', {
               ]}
               onPress={() => handleNavigate('shorts')}>
               <Text style={[styles.buttonText, {fontSize: scaleFont(20)}]}>
-                프롬포트 입력해서 AI 쇼츠 만들기
+                프롬프트 입력해서 AI 쇼츠 만들기
               </Text>
             </TouchableOpacity>
 
