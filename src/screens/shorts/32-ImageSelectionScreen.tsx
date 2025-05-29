@@ -131,7 +131,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         prompt,
         imageUrls,
         subtitles: updatedSubtitles,
-        videos: videosToUse,
+videos: (videosToUse ?? []).filter((v): v is string => !!v),
         previewImage: imageUrls[0], // ✅ 첫 번째 이미지만 전달
       });
     } catch (error) {

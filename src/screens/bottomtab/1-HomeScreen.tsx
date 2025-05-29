@@ -165,7 +165,7 @@ setThumbnails(sortThumbnails(reversed, sortOrder));
     <SafeAreaView style={styles.container}
     edges={['top']}>
       <View style={styles.headerWrapper}>
-        <Text style={styles.header}>AIDEO</Text>
+        <Text style={styles.header}>∇IDEO</Text>
     <TouchableOpacity ref={sortButtonRef} onPress={handleSortPress}>
       <Icon name="sort-ascending" size={24} />
     </TouchableOpacity>

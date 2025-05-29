@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     marginBottom: scaleSize(11),
   },
   header: {
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
     color: COLORS.black,
     fontSize: scaleFont(21),
   },

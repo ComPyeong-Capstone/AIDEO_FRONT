@@ -305,13 +305,8 @@ const onShare = async () => {
             <Text style={styles.videoText}>영상 불러오는 중...</Text>
           )}
 
-          {currentUserId === creatorUserId && (
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={handleEditPost}>
-              <Ionicons name="create-outline" size={28} color="white" />
-            </TouchableOpacity>
-          )}
+
+
 
           <View style={styles.topBar}>
             <View style={styles.profileTitleContainer}>
@@ -440,11 +435,18 @@ const onShare = async () => {
       <Text style={{ fontSize: 16 }}>링크 복사</Text>
     </TouchableOpacity>
 
-    {currentUserId === creatorUserId && (
-      <TouchableOpacity onPress={handleDelete} style={{ paddingVertical: 10 }}>
-        <Text style={{ fontSize: 16, color: 'red' }}>삭제하기</Text>
-      </TouchableOpacity>
-    )}
+ {currentUserId === creatorUserId && (
+   <View>
+     <TouchableOpacity style={{ paddingVertical: 10 }} onPress={handleEditPost}>
+          <Text style={{ fontSize: 16 }}>수정하기</Text>
+        </TouchableOpacity>
+     <TouchableOpacity onPress={handleDelete} style={{ paddingVertical: 10 }}>
+       <Text style={{ fontSize: 16, color: 'red' }}>삭제하기</Text>
+     </TouchableOpacity>
+
+   </View>
+ )}
+
   </View>
 </Modal>
 

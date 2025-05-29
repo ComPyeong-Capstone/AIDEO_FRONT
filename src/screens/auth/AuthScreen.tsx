@@ -122,7 +122,7 @@ const handleGoogleLogin = async () => {
 
   return (
     <SafeAreaView style={authStyles.container}>
-      <Text style={authStyles.title}>로그인</Text>
+      <Text style={authStyles.title}>∇IDEO</Text>
 
       <TextInput
         placeholder="이메일"
