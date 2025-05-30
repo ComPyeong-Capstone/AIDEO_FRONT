@@ -44,10 +44,8 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
 
   useEffect(() => {
     console.log('🎶 MusicSelectionScreen mounted');
-    console.log(
-      '🖼️ route.params.previewImage:',
-      (route.params as any).previewImage,
-    );
+    console.log('🖼️ previewImage:', (route.params as any).previewImage);
+    console.log('🖼️ imageUrls:', (route.params as any).imageUrls); // ✅ imageUrls 로그 출력
 
     const fetchMusic = async () => {
       try {
@@ -65,7 +63,6 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     return () => {
       stopAndReleaseSound();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const stopAndReleaseSound = () => {
@@ -119,11 +116,14 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     const selectedTitle =
       musicList.find(m => m.url === selectedMusic)?.title ?? '';
 
+    const imageUrls = (route.params as any).imageUrls ?? [];
+
     const commonParams = {
       music: selectedMusic,
       musicTitle: selectedTitle,
       videos: route.params.videos ?? [],
       previewImage: (route.params as any).previewImage ?? '',
+      imageUrls, // ✅ 추가
     };
 
     if ('imageUrls' in route.params) {
@@ -133,7 +133,6 @@ const MusicSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         from: 'shorts',
         duration: route.params.duration,
         prompt: route.params.prompt,
-        imageUrls: route.params.imageUrls,
         subtitles: route.params.subtitles,
       });
     } else {

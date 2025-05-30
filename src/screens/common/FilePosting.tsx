@@ -317,7 +317,6 @@ const uploadToMyServer = async (
   iconName="cloud-upload-outline"
   onPress={handleUpload}
   variant="primary"
- // iconSize={18} // ✅ 동일 크기
   style={{ flex: 1, height: 44 }}
 />
 

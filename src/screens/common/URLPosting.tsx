@@ -9,6 +9,10 @@ import {
   Platform,
   ActivityIndicator,
   Animated,
+  KeyboardAvoidingView,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Video from 'react-native-video';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -33,8 +37,12 @@ interface Props {
   navigation: StackNavigationProp<AppStackParamList, 'URLPosting'>;
 }
 
-
 const URLPosting: React.FC<Props> = ({navigation}) => {
+  const buttonStyle = {
+    width: width * 0.44,
+    height: 44,
+  };
+
   const {width, height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const {user} = useUser();
@@ -44,7 +52,10 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
   const [videoLoading, setVideoLoading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const route = useRoute();
-  const {finalVideoUrl} = route.params as {finalVideoUrl: string};
+  const {finalVideoUrl, imageUrls} = route.params as {
+    finalVideoUrl: string;
+    imageUrls?: string[];
+  };
   const [titleError, setTitleError] = useState('');
   const [tagsError, setTagsError] = useState('');
   const [title, setTitle] = useState('');
@@ -56,12 +67,10 @@ const URLPosting: React.FC<Props> = ({navigation}) => {
   );
   const handleTagInput = (text: string) => {
     const words = text.split(/[\s\n]+/); // 단어 단위 분할
-const buttonStyle = {
-  width: width * 0.44,
-  height: 44,
-};
-
-
+    const buttonStyle = {
+      width: width * 0.44,
+      height: 44,
+    };
 
     const processed = words
       .filter(word => word.length > 0) // 빈 문자열 제거
@@ -120,6 +129,7 @@ const buttonStyle = {
       console.log('🧾 저장된 토큰 from 스토리지:', savedToken);
     };
     fetchToken();
+    console.log('🖼️ 전달된 imageUrls:', imageUrls);
   }, []);
 
   const handlePickVideo = async () => {
@@ -177,15 +187,15 @@ const buttonStyle = {
     });
   };
 
-  // ✅ 올바른 수정
   const uploadToMyServer = async (
     title: string,
     tags: string,
-    videoURI: string | null,
+    videoURL: string | null,
     token: string | undefined,
+    imageUrls: string[] = [],
   ) => {
-    if (!videoURI) {
-      Alert.alert('오류', '업로드할 영상을 선택해주세요.');
+    if (!videoURL) {
+      Alert.alert('오류', '업로드할 영상이 없습니다.');
       return;
     }
 
@@ -194,44 +204,32 @@ const buttonStyle = {
       return;
     }
 
-  setUploading(true);
-  setUploadProgress(0);
+    setUploading(true);
+    setUploadProgress(0);
 
-  try {
-    const formData = new FormData();
-    const postDTO = {
-      title: title.trim(),
-      hashtags: tags.split(/[#,\s]+/).filter(Boolean),
-    };
+    try {
+      const trimmedImageUrls = imageUrls
+        .map(url => url.split('/').pop())
+        .filter(Boolean);
 
-    formData.append('postDTO', {
-      name: 'postDTO',
-      type: 'application/json',
-      string: JSON.stringify(postDTO),
-    } as any);
+      const postBody = {
+        title: title.trim(),
+        hashtags: tags.split(/[#,\s]+/).filter(Boolean),
+        videoURL, // ✅ 직접 videoURL 넘기기
+        imageUrls: trimmedImageUrls,
+      };
 
-    formData.append('videoFile', {
-      uri: videoURI,
-      type: 'video/mp4',
-      name: 'video.mp4',
-    } as any);
+      console.log('🚀 서버로 보낼 JSON Request Body:', postBody);
 
-      const response = await axios.post(
-        `${BASE_URL}:8080/posts/upload`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${user.token}`,
-          },
-          onUploadProgress: e => {
-            const percent = Math.round((e.loaded * 100) / e.total);
-            setUploadProgress(percent);
-          },
+      const response = await axios.post(`${BASE_URL}:8080/posts`, postBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
         },
-      );
+      });
 
-      Alert.alert('성공', '업로드 완료');
+      console.log('✅ 서버 응답:', response.data);
+      Alert.alert('성공', '게시물이 등록되었습니다.');
       setUploadSuccess(true);
     } catch (err) {
       console.error('❌ 업로드 실패:', err?.response?.data || err.message);
@@ -240,6 +238,7 @@ const buttonStyle = {
       setUploading(false);
     }
   };
+
   const handleUpload = () => {
     let valid = true;
 
@@ -258,174 +257,188 @@ const buttonStyle = {
     if (!valid) return;
 
     setUploading(true);
-    uploadToMyServer(title, tags, videoURI, user?.token).finally(() =>
-      setUploading(false),
-    );
+    uploadToMyServer(
+      title,
+      tags,
+      finalVideoUrl,
+      user?.token,
+      imageUrls,
+    ).finally(() => setUploading(false));
   };
 
   return (
     <SafeAreaView style={[styles.container, {paddingTop: 0, flex: 1}]}>
       <AnimatedProgressBar progress={5 / 5} />
 
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <View style={{alignItems: 'center'}}>
-          <TouchableOpacity
-            onPress={handlePickVideo} // ✅ 영상 선택 트리거
-            style={[
-              styles.videoContainer,
-              {
-                width: width * 0.8,
-                height: width * 0.8 * (16 / 9),
-              },
-            ]}>
-            {videoLoading ? (
-              <ActivityIndicator size="large" color="#51BCB4" />
-            ) : videoURI ? (
-              <Video
-                source={{uri: videoURI}}
-                style={{width: '100%', height: '100%'}}
-                resizeMode="cover"
-                repeat
-                muted={false}
-                paused={isPaused}
-              />
-            ) : (
-              <>
-                <Icon
-                  name="upload"
-                  size={40}
-                  color="#51BCB4"
-                  style={{marginBottom: 20}}
-                />
-                <Text style={styles.videoText}>동영상 파일 업로드</Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          <Animated.View style={{transform: [{translateX: shakeTitle}]}}>
-            <TextInput
-              style={[styles.input, {width: width * 0.9}]}
-              placeholder={titleError ? '제목을 입력해주세요.' : '제목'}
-              placeholderTextColor={titleError ? 'red' : '#999'}
-              value={title}
-              onChangeText={text => {
-                setTitle(text);
-                if (titleError) setTitleError('');
-              }}
-            />
-          </Animated.View>
-
-          <Animated.View style={{transform: [{translateX: shakeTags}]}}>
-            <TextInput
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={{
+              alignItems: 'center',
+              paddingBottom: 200,
+            }}
+            showsVerticalScrollIndicator={false}>
+            {/* 영상 업로드 박스 */}
+            <TouchableOpacity
+              //onPress={handlePickVideo}
               style={[
-                styles.input,
-                styles.inputMultiline,
-                {width: width * 0.9},
-              ]}
-              placeholder={
-                tagsError ? '태그를 입력해주세요.' : '태그 입력 ex) #AI, #GPT'
-              }
-              placeholderTextColor={tagsError ? 'red' : '#999'}
-              value={tags}
-              onChangeText={text => {
-                handleTagInput(text);
-                if (tagsError) setTagsError('');
-              }}
-              multiline
-            />
-          </Animated.View>
-        </View>
+                styles.videoContainer,
+                {
+                  width: width * 0.8,
+                  height: width * 0.8 * (16 / 9),
+                },
+              ]}>
+              {videoLoading ? (
+                <ActivityIndicator size="large" color="#51BCB4" />
+              ) : videoURI ? (
+                <Video
+                  source={{uri: videoURI}}
+                  style={{width: '100%', height: '100%'}}
+                  resizeMode="cover"
+                  repeat
+                  muted={false}
+                  paused={isPaused}
+                />
+              ) : (
+                <>
+                  <Icon
+                    name="upload"
+                    size={40}
+                    color="#51BCB4"
+                    style={{marginBottom: 20}}
+                  />
+                  <Text style={styles.videoText}>동영상 파일 업로드</Text>
+                </>
+              )}
+            </TouchableOpacity>
 
-<View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
-<IconGradientButton
-  title="YouTube 업로드"
-  iconName="logo-youtube"
-  onPress={goToYouTubeUpload}
-  variant="youtube"
-  style={buttonStyle}
-/>
+            {/* 제목 입력 */}
+            <Animated.View style={{transform: [{translateX: shakeTitle}]}}>
+              <TextInput
+                style={[styles.input, {width: width * 0.9, marginTop: 20}]}
+                placeholder={titleError ? '제목을 입력해주세요.' : '제목'}
+                placeholderTextColor={titleError ? 'red' : '#999'}
+                value={title}
+                onChangeText={text => {
+                  setTitle(text);
+                  if (titleError) setTitleError('');
+                }}
+              />
+            </Animated.View>
 
-<IconGradientButton
-  title="AIVIDEO 업로드"
-  iconName="cloud-upload-outline"
-  onPress={handleUpload}
-  variant="primary"
- // iconSize={18} // ✅ 동일 크기
-  style={{ flex: 1, height: 44 }}
-/>
+            {/* 태그 입력 */}
+            <Animated.View style={{transform: [{translateX: shakeTags}]}}>
+              <TextInput
+                style={[
+                  styles.input,
+                  styles.inputMultiline,
+                  {width: width * 0.9, marginTop: 12},
+                ]}
+                placeholder={
+                  tagsError ? '태그를 입력해주세요.' : '태그 입력 ex) #AI, #GPT'
+                }
+                placeholderTextColor={tagsError ? 'red' : '#999'}
+                value={tags}
+                onChangeText={text => {
+                  handleTagInput(text);
+                  if (tagsError) setTagsError('');
+                }}
+                multiline
+              />
+            </Animated.View>
 
-         </View>
+            {/* 업로드 버튼 */}
+        <View style={[styles.fixedButtonWrapper, { paddingBottom: insets.bottom, gap: 12, justifyContent: 'center' }]}>
 
-        {uploading && (
-          <View style={{marginTop: 10, alignItems: 'center'}}>
-            <Progress.Bar
-              progress={uploadProgress / 100}
-              width={width * 0.8}
-              color="#51BCB4"
-              borderColor="#ccc"
-            />
-            <Text style={{marginTop: 5, color: '#51BCB4'}}>
-              {uploadProgress}% 업로드 중...
-            </Text>
-          </View>
-        )}
+         <IconGradientButton
+           title="YouTube 업로드"
+           iconName="logo-youtube"
+           onPress={goToYouTubeUpload}
+           variant="youtube"
+           style={buttonStyle}
+         />
 
-        {uploadSuccess && (
+         <IconGradientButton
+           title="AIVIDEO 업로드"
+           iconName="cloud-upload-outline"
+           onPress={handleUpload}
+           variant="primary"
+           style={{ flex: 1, height: 44 }}
+         />
+            </View>
+
+            {/* 업로드 진행률 */}
+            {uploading && (
+              <View style={{marginTop: 20, alignItems: 'center'}}>
+                <Progress.Bar
+                  progress={uploadProgress / 100}
+                  width={width * 0.8}
+                  color="#51BCB4"
+                  borderColor="#ccc"
+                />
+                <Text style={{marginTop: 5, color: '#51BCB4'}}>
+                  {uploadProgress}% 업로드 중...
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+
+      {/* 업로드 완료 모달 */}
+      {uploadSuccess && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}>
           <View
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              justifyContent: 'center',
+              backgroundColor: 'white',
+              padding: 20,
+              borderRadius: 10,
               alignItems: 'center',
-              zIndex: 10,
             }}>
-            <View
-              style={{
-                backgroundColor: 'white',
-                padding: 20,
-                borderRadius: 10,
-                alignItems: 'center',
-              }}>
-              <Text style={{fontSize: 16, marginBottom: 20}}>
-                홈화면으로 돌아가시겠습니까?
-              </Text>
-              <View style={{flexDirection: 'row', gap: 12}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setUploadSuccess(false);
-                    navigation.navigate('Main', {screen: 'Home'});
-                  }}
-                  style={{
-                    backgroundColor: '#51BCB4',
-                    padding: 10,
-                    borderRadius: 8,
-                    marginRight: 10,
-                  }}>
-                  <Text style={{color: 'white'}}>예</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setUploadSuccess(false)}
-                  style={{
-                    backgroundColor: '#ccc',
-                    padding: 10,
-                    borderRadius: 8,
-                  }}>
-                  <Text style={{color: '#333'}}>아니오</Text>
-                </TouchableOpacity>
-              </View>
+            <Text style={{fontSize: 16, marginBottom: 20}}>
+              홈화면으로 돌아가시겠습니까?
+            </Text>
+            <View style={{flexDirection: 'row', gap: 12}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setUploadSuccess(false);
+                  navigation.navigate('Main', {screen: 'Home'});
+                }}
+                style={{
+                  backgroundColor: '#51BCB4',
+                  padding: 10,
+                  borderRadius: 8,
+                  marginRight: 10,
+                }}>
+                <Text style={{color: 'white'}}>예</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setUploadSuccess(false)}
+                style={{
+                  backgroundColor: '#ccc',
+                  padding: 10,
+                  borderRadius: 8,
+                }}>
+                <Text style={{color: '#333'}}>아니오</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        )}
-      </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };

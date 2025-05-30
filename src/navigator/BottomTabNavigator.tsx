@@ -111,14 +111,14 @@ const BottomTabNavigator: React.FC = () => {
 
 const styles = StyleSheet.create({
   customButton: {
-    top: Platform.OS === 'ios' ? -scaleSize(20) : -scaleSize(15),
+    top: Platform.OS === 'ios' ? -scaleSize(20) : -scaleSize(20),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: scaleSize(35),
     backgroundColor: '#FFFFFF',
     width: scaleSize(70),
     height: scaleSize(70),
-    elevation: 5,
+    elevation: 10,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.35,
@@ -127,15 +127,15 @@ const styles = StyleSheet.create({
   innerButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: scaleSize(70),
-    height: scaleSize(70),
+    width: scaleSize(75),
+    height: scaleSize(75),
     backgroundColor: COLORS.primary,
     borderRadius: scaleSize(100),
   },
   tabBarStyle: {
     backgroundColor: COLORS.background,
-    height: scaleSize(80),
-    paddingBottom: Platform.OS === 'ios' ? scaleSize(10) : scaleSize(5),
+    height: scaleSize(75),
+    paddingBottom: Platform.OS === 'ios' ? scaleSize(10) : scaleSize(10),
   },
 });
 

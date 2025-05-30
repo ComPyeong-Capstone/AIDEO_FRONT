@@ -26,6 +26,7 @@ const AuthScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const {setUser} = useUser();
+const [isGoogleLoggingIn, setIsGoogleLoggingIn] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -78,6 +79,9 @@ const AuthScreen = () => {
 
   };
 const handleGoogleLogin = async () => {
+    if (isGoogleLoggingIn) return; // 중복 로그인 방지
+
+      setIsGoogleLoggingIn(true); // 로그인 중 상태 표시
   try {
     await GoogleSignin.hasPlayServices();
 
@@ -110,13 +114,15 @@ const handleGoogleLogin = async () => {
   } catch (error) {
     console.error('❌ Google 로그인 실패:', error);
     Alert.alert('로그인 실패', 'Google 로그인 중 오류가 발생했습니다.');
-  }
+  }finally {
+            setIsGoogleLoggingIn(false); // 항상 초기화
+          }
 };
 
 
   return (
     <SafeAreaView style={authStyles.container}>
-      <Text style={authStyles.title}>로그인</Text>
+      <Text style={authStyles.title}>∇IDEO</Text>
 
       <TextInput
         placeholder="이메일"

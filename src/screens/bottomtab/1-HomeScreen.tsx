@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,  useRef,
+} from 'react';
 import {getPostThumbnails} from '../../api/postApi';
 
 import {
@@ -20,7 +21,7 @@ import {styles} from '../../styles/bottomtab/1-homeStyles';
 import {getAllPosts, PostResponse} from '../../api/postApi';
 import {useUser} from '../../context/UserContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import SortModal from '../common/SortModal.tsx';
 type RootStackParamList = {
   ShortsPlayerScreen: {
     postId: number;
@@ -39,6 +40,9 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
   const {user} = useUser();
   const insets = useSafeAreaInsets();
+const [sortModalVisible, setSortModalVisible] = useState(false);
+const [anchorPosition, setAnchorPosition] = useState<{x: number, y: number} | null>(null);
+const sortButtonRef = useRef<TouchableOpacity>(null);
 
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,30 +71,10 @@ const sortThumbnails = (data: PostThumbnail[], order: 'latest' | 'likes' | 'olde
 };
 
 const handleSortPress = () => {
-  Alert.alert('정렬 기준 선택', '', [
-    {
-      text: '최신순',
-      onPress: () => {
-        setSortOrder('latest');
-        setThumbnails(prev => sortThumbnails(prev, 'latest'));
-      },
-    },
-    {
-      text: '오래된순',
-      onPress: () => {
-        setSortOrder('oldest');
-        setThumbnails(prev => sortThumbnails(prev, 'oldest'));
-      },
-    },
-    {
-      text: '좋아요순',
-      onPress: () => {
-        setSortOrder('likes');
-        setThumbnails(prev => sortThumbnails(prev, 'likes'));
-      },
-    },
-    {text: '취소', style: 'cancel'},
-  ]);
+  sortButtonRef.current?.measureInWindow((x, y) => {
+    setAnchorPosition({ x, y });
+    setSortModalVisible(true);
+  });
 };
 
 
@@ -137,7 +121,7 @@ setThumbnails(sortThumbnails(reversed, sortOrder));
   const renderItem = ({item}: {item: PostThumbnail}) => {
     return (
       <TouchableOpacity
-        style={[styles.videoContainer, {width: (width - 40) / 2}]}
+        style={[styles.videoContainer, {width: (width -23) / 2}]}
         onPress={() =>
           navigation.navigate('ShortsPlayerScreen', {
             postId: item.postId,
@@ -178,12 +162,14 @@ setThumbnails(sortThumbnails(reversed, sortOrder));
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}
+    edges={['top']}>
       <View style={styles.headerWrapper}>
-        <Text style={styles.header}>AIDEO</Text>
-         <TouchableOpacity onPress={handleSortPress} style={{position: 'absolute', right: 20}}>
-            <Icon name="sort-ascending" size={24}/>
-          </TouchableOpacity>
+        <Text style={styles.header}>∇IDEO</Text>
+    <TouchableOpacity ref={sortButtonRef} onPress={handleSortPress}>
+      <Icon name="sort-ascending" size={24} />
+    </TouchableOpacity>
+
       </View>
 
 
@@ -202,6 +188,19 @@ setThumbnails(sortThumbnails(reversed, sortOrder));
       />
 
       )}
+          <SortModal
+            visible={sortModalVisible}
+              anchorPosition={anchorPosition} // ✅ 이 줄 추가
+
+            onSelect={(option) => {
+              if (option === '최신순') setSortOrder('latest');
+              else if (option === '오래된순') setSortOrder('oldest');
+              else setSortOrder('likes');
+              setThumbnails(prev => sortThumbnails(prev, option === '최신순' ? 'latest' : option === '오래된순' ? 'oldest' : 'likes'));
+              setSortModalVisible(false);
+            }}
+            onClose={() => setSortModalVisible(false)}
+          />
     </SafeAreaView>
   );
 };

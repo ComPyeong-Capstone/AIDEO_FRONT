@@ -17,13 +17,13 @@ export default StyleSheet.create({
   },
 
   contentWrapper: {
-    width: '80%',
+    width: '85%',
     alignItems: 'center',
     paddingTop: scaleSize(20),
   },
 
   swiperContainer: {
-    width: '100%',
+    width: '90%',
     aspectRatio: 9 / 16,
     maxHeight: height * 0.6,
   },
@@ -32,7 +32,7 @@ export default StyleSheet.create({
     width: '100%',
     aspectRatio: 9 / 16,
     maxHeight: height * 0.6,
-    borderRadius: scaleSize(12),
+    borderRadius: scaleSize(5),
     backgroundColor: COLORS.imagebox,
     alignItems: 'center',
     justifyContent: 'center',
@@ -50,7 +50,7 @@ export default StyleSheet.create({
     backgroundColor: '#f0f0f0',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: scaleSize(2),
+    borderWidth: scaleSize(4),
     borderColor: COLORS.primary,
   },
 
@@ -62,11 +62,17 @@ export default StyleSheet.create({
 
   pagination: {
     position: 'absolute',
-    bottom: -scaleSize(24),
+    bottom: scaleSize(24),
   },
 
   paginationSpacing: {
     height: scaleSize(32),
+        position: 'absolute',
+
+        alignSelf: 'center',
+        left: 0,
+        right: 0,
+        justifyContent: 'center',
   },
 
   inputContainer: {
@@ -78,6 +84,8 @@ export default StyleSheet.create({
     paddingHorizontal: scaleSize(12),
     paddingVertical: scaleSize(8),
     marginBottom: scaleSize(16),
+    bottom:-30,
+
   },
 
   promptInput: {
@@ -104,7 +112,7 @@ export default StyleSheet.create({
   },
 
   buttonSpacing: {
-    width: '48%',
+    width: '50%',
   },
 
   toast: {
@@ -124,6 +132,8 @@ export default StyleSheet.create({
     fontSize: scaleFont(14),
     textAlign: 'center',
   },
+
+
 
   loadingOverlay: {
     flex: 1,

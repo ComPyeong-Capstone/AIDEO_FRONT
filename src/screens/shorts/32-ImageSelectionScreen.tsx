@@ -131,7 +131,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
         prompt,
         imageUrls,
         subtitles: updatedSubtitles,
-        videos: videosToUse,
+videos: (videosToUse ?? []).filter((v): v is string => !!v),
         previewImage: imageUrls[0], // ✅ 첫 번째 이미지만 전달
       });
     } catch (error) {
@@ -147,7 +147,7 @@ const ImageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
       <AnimatedProgressBar progress={3 / 5} />
 
       <ScrollView
-        contentContainerStyle={{alignItems: 'center', paddingBottom: 100}}
+        contentContainerStyle={{alignItems: 'center', paddingBottom: 500}}
         showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.imageNumberText}>{selectedIndex + 1}번 사진</Text>

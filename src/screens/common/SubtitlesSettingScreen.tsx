@@ -78,11 +78,13 @@ const SubtitlesSettingScreen: React.FC = () => {
     subtitles,
     music,
     previewImage = '',
+    imageUrls = [],
   } = route.params as {
     videos: string[];
     subtitles: string[];
     music: string;
     previewImage: string;
+    imageUrls: string[];
   };
 
   // ✅ 상세 로그 출력
@@ -92,6 +94,7 @@ const SubtitlesSettingScreen: React.FC = () => {
     console.log('📦 videos:', videos);
     console.log('📦 subtitles:', subtitles);
     console.log('📦 music:', music);
+    console.log('🖼️ imageUrls:', imageUrls);
   }, []);
 
   const previewSubtitle = '예시 자막입니다.';
@@ -110,6 +113,7 @@ const SubtitlesSettingScreen: React.FC = () => {
       font_family: previewFont,
       font_color: fontColor,
       subtitle_y_position: subtitleY,
+      imageUrls,
     });
   };
 

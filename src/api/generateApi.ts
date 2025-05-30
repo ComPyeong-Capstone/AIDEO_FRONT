@@ -95,7 +95,7 @@ export const generatePartialVideo = async (
 export const generatePartialVideoWithUpload = async (
   files: {uri: string; name: string; type: string}[],
   subtitles: string[],
-): Promise<{video_urls: string[]}> => {
+): Promise<{video_urls: string[]; image_urls: string[]}> => {
   const formData = new FormData();
 
   subtitles.forEach(subtitle => {
@@ -120,7 +120,15 @@ export const generatePartialVideoWithUpload = async (
     },
   );
 
-  return response.data;
+  const results = response.data.results;
+
+  const video_urls = results.map((item: any) => item.video_url);
+  const image_urls = results.map((item: any) => item.image_url);
+
+  console.log('🎥 video_urls:', video_urls);
+  console.log('🖼️ image_urls:', image_urls);
+
+  return {video_urls, image_urls};
 };
 
 export const regenerateSinglePartialVideo = async (

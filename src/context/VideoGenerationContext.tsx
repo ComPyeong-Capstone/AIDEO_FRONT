@@ -7,6 +7,7 @@ interface VideoData {
   videos: string[];
   subtitles: string[];
   images: any[];
+  imageUrls: string[];
   files: any[];
   previewImage?: string;
   previewSubtitle?: string;

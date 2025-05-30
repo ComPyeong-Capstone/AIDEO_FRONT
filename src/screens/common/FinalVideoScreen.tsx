@@ -64,7 +64,13 @@ const FinalVideoScreen: React.FC = () => {
   useEffect(() => {
     console.log('🎬 FinalVideoScreen mounted');
     console.log('🖼️ previewImage:', previewImage);
+    console.log('🎥 전달된 초기 영상 URL 목록:', preGeneratedVideos);
+    console.log('🖼️ imageUrls:', imageUrls);
   }, []);
+
+  useEffect(() => {
+    console.log('🎞️ 현재 videoUrls:', videoUrls);
+  }, [videoUrls]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -152,6 +158,7 @@ const FinalVideoScreen: React.FC = () => {
       subtitles,
       music,
       previewImage,
+      imageUrls,
     };
 
     if (from === 'photo') {
@@ -188,6 +195,7 @@ const FinalVideoScreen: React.FC = () => {
           subtitles,
           files,
           ...musicParams,
+          imageUrls,
         },
       });
     } else {
@@ -224,25 +232,27 @@ const FinalVideoScreen: React.FC = () => {
                 <Text style={styles.videoText}>영상 생성 중...</Text>
               </View>
             ) : (
-              <Swiper
-                loop={false}
-                showsButtons={false}
-                showsPagination={false}
-                onIndexChanged={setSelectedIndex}
-                containerStyle={styles.swiperContainer}>
-                {videoUrls.map((url, index) => (
-                  <View key={index} style={styles.videoItem}>
-                    <Video
-                      source={{uri: url}}
-                      style={styles.videoPlayer}
-                      resizeMode="cover"
-                      repeat
-                      muted
-                      controls
-                    />
-                  </View>
-                ))}
-              </Swiper>
+              <View style={styles.swiperContainer}>
+                <Swiper
+                  loop={false}
+                  showsButtons={false}
+                  showsPagination={false}
+                  onIndexChanged={setSelectedIndex}>
+                  {videoUrls.map((url, index) => (
+                    <View key={index} style={styles.videoItem}>
+                      <Video
+                        source={{uri: url}}
+                        style={styles.videoPlayer}
+                        resizeMode="cover"
+                        repeat
+                        muted
+                        controls
+                      />
+                    </View>
+                  ))}
+                </Swiper>
+              </View>
+
             )}
           </View>
 
